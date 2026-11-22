@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`native review in dark theme advances correct answers, opens history/details, and restores the exact pending question 1`] = `
 <View

@@ -118,7 +118,7 @@ describe('initial synchronization', () => {
           finishInitialization = () => resolve(initializedDatabase)
         })
     )
-    const { result, unmount } = renderHook(() => useSyncManager(options))
+    const { result, unmount } = await renderHook(() => useSyncManager(options))
     expect(syncManager.performSync).not.toHaveBeenCalled()
     await act(async () => {
       finishInitialization()
@@ -128,7 +128,7 @@ describe('initial synchronization', () => {
     )
     expect(syncManager.performSync).toHaveBeenCalledWith('sync-user')
     expect(result.current.isSyncing).toBe(false)
-    unmount()
+    await unmount()
     AppState.currentState = previousAppState
   })
 
@@ -140,8 +140,8 @@ describe('initial synchronization', () => {
           finishInitialization = () => resolve(initializedDatabase)
         })
     )
-    const { unmount } = renderHook(() => useSyncManager(options))
-    unmount()
+    const { unmount } = await renderHook(() => useSyncManager(options))
+    await unmount()
     await act(async () => {
       finishInitialization()
     })
@@ -167,7 +167,7 @@ describe('dictionary recovery delivery on foreground resume', () => {
       .mocked(syncManager.performSync)
       .mockClear()
       .mockResolvedValue({ ...successfulSync, userId })
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useSyncManager({
         autoSyncOnMount: false,
         autoSyncOnFocus: false,
@@ -190,7 +190,7 @@ describe('dictionary recovery delivery on foreground resume', () => {
       expect(syncManager.performSync).toHaveBeenCalledTimes(1)
       expect(syncManager.performSync).toHaveBeenCalledWith(userId)
     } finally {
-      unmount()
+      await unmount()
       listener.mockRestore()
       AppState.currentState = previousAppState
     }

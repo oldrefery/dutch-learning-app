@@ -47,12 +47,12 @@ describe('useReviewScreen', () => {
   })
 
   it('resets reveal state when the current word changes', async () => {
-    const { result } = renderHook(() => useReviewScreen())
+    const { result } = await renderHook(() => useReviewScreen())
 
-    act(() => result.current.revealAnswer())
+    await act(() => result.current.revealAnswer())
     expect(result.current.isFlipped).toBe(true)
 
-    act(() => {
+    await act(() => {
       useApplicationStore.setState({
         reviewSession: createSession(REVIEW_MODE.MEANING_RECALL, 1),
         currentWord: secondWord,
@@ -63,11 +63,11 @@ describe('useReviewScreen', () => {
   })
 
   it('resets reveal state when the session mode changes', async () => {
-    const { result } = renderHook(() => useReviewScreen())
+    const { result } = await renderHook(() => useReviewScreen())
 
-    act(() => result.current.revealAnswer())
+    await act(() => result.current.revealAnswer())
 
-    act(() => {
+    await act(() => {
       useApplicationStore.setState({
         reviewSession: createSession(REVIEW_MODE.DUTCH_PRODUCTION),
       })
@@ -80,9 +80,9 @@ describe('useReviewScreen', () => {
     jest.useFakeTimers().setSystemTime(new Date('2026-08-28T12:00:00.000Z'))
     const submitReviewAssessment = jest.fn().mockResolvedValue(undefined)
     useApplicationStore.setState({ submitReviewAssessment })
-    const { result } = renderHook(() => useReviewScreen())
+    const { result } = await renderHook(() => useReviewScreen())
 
-    act(() => {
+    await act(() => {
       jest.setSystemTime(new Date('2026-08-28T12:00:01.250Z'))
       result.current.revealAnswer()
     })
@@ -105,9 +105,9 @@ describe('useReviewScreen', () => {
   })
 
   it('keeps the completed session summary after the store clears it', async () => {
-    const { result } = renderHook(() => useReviewScreen())
+    const { result } = await renderHook(() => useReviewScreen())
 
-    act(() => {
+    await act(() => {
       useApplicationStore.setState({
         reviewSession: null,
         currentWord: null,
@@ -118,13 +118,13 @@ describe('useReviewScreen', () => {
     expect(result.current.reviewWords).toHaveLength(2)
     expect(result.current.totalWords).toBe(2)
   })
-  it('clears the previous summary when choosing another mode', () => {
+  it('clears the previous summary when choosing another mode', async () => {
     const endReviewSession = jest.fn(() => {
       useApplicationStore.setState({ reviewSession: null, currentWord: null })
     })
     useApplicationStore.setState({ endReviewSession })
-    const { result } = renderHook(() => useReviewScreen())
-    act(() => result.current.chooseAnotherMode())
+    const { result } = await renderHook(() => useReviewScreen())
+    await act(() => result.current.chooseAnotherMode())
     expect(result.current.sessionComplete).toBe(false)
     expect(result.current.reviewWords).toEqual([])
   })
@@ -133,12 +133,12 @@ describe('useReviewScreen', () => {
     jest.useFakeTimers().setSystemTime(1000)
     const submitReviewAssessment = jest.fn().mockResolvedValue(undefined)
     useApplicationStore.setState({ submitReviewAssessment })
-    const { result } = renderHook(() => useReviewScreen())
-    act(() => {
+    const { result } = await renderHook(() => useReviewScreen())
+    await act(() => {
       jest.setSystemTime(2500)
       result.current.revealAnswer()
     })
-    act(() => {
+    await act(() => {
       jest.setSystemTime(5000)
       useApplicationStore.setState({
         reviewSession: createSession(REVIEW_MODE.MEANING_RECALL, 1),

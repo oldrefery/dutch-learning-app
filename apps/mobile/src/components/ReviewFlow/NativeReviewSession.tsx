@@ -51,7 +51,7 @@ export function NativeReviewSession({
     controller.getSnapshot
   )
   const insets = useSafeAreaInsets()
-  const scroll = useRef<ScrollView>(null)
+  const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null)
   const { playAudio, isPlaying } = useAudioPlayer()
   useFocusEffect(
     useCallback(() => attachNativeReviewLifecycle(controller), [controller])

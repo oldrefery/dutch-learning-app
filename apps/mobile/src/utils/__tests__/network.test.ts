@@ -278,7 +278,7 @@ describe('network', () => {
       ;(NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true })
       ;(NetInfo.addEventListener as jest.Mock).mockReturnValue(jest.fn())
 
-      const { result } = renderHook(() => useNetworkStatus())
+      const { result } = await renderHook(() => useNetworkStatus())
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false)
@@ -291,7 +291,7 @@ describe('network', () => {
       ;(NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: false })
       ;(NetInfo.addEventListener as jest.Mock).mockReturnValue(jest.fn())
 
-      const { result } = renderHook(() => useNetworkStatus())
+      const { result } = await renderHook(() => useNetworkStatus())
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false)
@@ -304,7 +304,7 @@ describe('network', () => {
       ;(NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true })
       ;(NetInfo.addEventListener as jest.Mock).mockReturnValue(jest.fn())
 
-      const { result } = renderHook(() => useNetworkStatus())
+      const { result } = await renderHook(() => useNetworkStatus())
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false)

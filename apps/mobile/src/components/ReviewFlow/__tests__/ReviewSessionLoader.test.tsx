@@ -25,13 +25,15 @@ beforeEach(() => {
 
 it.each([undefined, false, true])(
   'passes a boolean manual preference when the saved value is %s',
-  preference => {
+  async preference => {
     useSettingsStore.setState({
       manualRecognitionByUser:
         preference === undefined ? {} : { [userId]: preference },
     })
     load.mockReturnValue(new Promise(() => {}))
-    render(<ReviewSessionLoader session={makeSession()} userId={userId} />)
+    await render(
+      <ReviewSessionLoader session={makeSession()} userId={userId} />
+    )
     expect(load.mock.calls[0][2]).toBe(preference ?? false)
   }
 )
@@ -43,15 +45,15 @@ it('renders progress and keeps cancellation available before preparation finishe
     reviewSession: session,
   })
   load.mockReturnValue(new Promise(() => {}))
-  const screen = render(
+  const screen = await render(
     <ReviewSessionLoader session={session} userId={userId} />
   )
   expect(screen.getByText('Preparing review: 0 / 3')).toBeTruthy()
-  act(() => load.mock.calls[0][4](2))
+  await act(() => load.mock.calls[0][4](2))
   expect(screen.getByText('Preparing review: 2 / 3')).toBeTruthy()
-  fireEvent.press(screen.getByLabelText('Cancel preparation'))
+  await fireEvent.press(screen.getByLabelText('Cancel preparation'))
   expect(useApplicationStore.getState().reviewSession).toBeNull()
-  screen.unmount()
+  await screen.unmount()
   expect(load.mock.calls[0][3].aborted).toBe(true)
 })
 
@@ -59,18 +61,18 @@ it('shows a recoverable error and allows a fresh attempt', async () => {
   load
     .mockRejectedValueOnce(new Error('Invalid fixture'))
     .mockReturnValueOnce(new Promise(() => {}))
-  const screen = render(
+  const screen = await render(
     <ReviewSessionLoader session={makeSession()} userId={userId} />
   )
   await act(async () => {})
   expect(screen.getByText(/Could not prepare review/)).toBeTruthy()
-  fireEvent.press(screen.getByLabelText('Retry preparation'))
+  await fireEvent.press(screen.getByLabelText('Retry preparation'))
   expect(load).toHaveBeenCalledTimes(2)
   expect(screen.getByText('Preparing review: 0 / 3')).toBeTruthy()
   expect(load.mock.calls[0][3].aborted).toBe(true)
 })
 
-it('does not cancel another user or a replacement session', () => {
+it('does not cancel another user or a replacement session', async () => {
   const session = makeSession()
   const replacement = makeSession()
   useApplicationStore.setState({
@@ -78,9 +80,9 @@ it('does not cancel another user or a replacement session', () => {
     reviewSession: replacement,
   })
   load.mockReturnValue(new Promise(() => {}))
-  const screen = render(
+  const screen = await render(
     <ReviewSessionLoader session={session} userId={userId} />
   )
-  fireEvent.press(screen.getByLabelText('Cancel preparation'))
+  await fireEvent.press(screen.getByLabelText('Cancel preparation'))
   expect(useApplicationStore.getState().reviewSession).toBe(replacement)
 })

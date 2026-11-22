@@ -18,15 +18,15 @@ describe('useDebounce', () => {
 
   it('should debounce callback execution', async () => {
     const callback = jest.fn<void, [string]>()
-    const { result } = renderHook(() => useDebounce(callback, 500))
+    const { result } = await renderHook(() => useDebounce(callback, 500))
 
-    act(() => {
+    await act(() => {
       result.current('test')
     })
 
     expect(callback).not.toHaveBeenCalled()
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(500)
     })
 
@@ -37,18 +37,18 @@ describe('useDebounce', () => {
   it('should delay execution by specified delay', async () => {
     const callback = jest.fn<void, [string]>()
     const delay = 1000
-    const { result } = renderHook(() => useDebounce(callback, delay))
+    const { result } = await renderHook(() => useDebounce(callback, delay))
 
-    act(() => {
+    await act(() => {
       result.current('arg1')
     })
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(delay - 1)
     })
     expect(callback).not.toHaveBeenCalled()
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(1)
     })
     expect(callback).toHaveBeenCalledWith('arg1')
@@ -56,9 +56,9 @@ describe('useDebounce', () => {
 
   it('should cancel previous timeout on new call', async () => {
     const callback = jest.fn<void, [string]>()
-    const { result } = renderHook(() => useDebounce(callback, 500))
+    const { result } = await renderHook(() => useDebounce(callback, 500))
 
-    act(() => {
+    await act(() => {
       result.current('first')
       jest.advanceTimersByTime(300)
       result.current('second')
@@ -67,7 +67,7 @@ describe('useDebounce', () => {
 
     expect(callback).not.toHaveBeenCalled()
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(200)
     })
 
@@ -77,9 +77,9 @@ describe('useDebounce', () => {
 
   it('should only execute the latest call', async () => {
     const callback = jest.fn<void, [string]>()
-    const { result } = renderHook(() => useDebounce(callback, 300))
+    const { result } = await renderHook(() => useDebounce(callback, 300))
 
-    act(() => {
+    await act(() => {
       result.current('arg1')
       jest.advanceTimersByTime(100)
       result.current('arg2')
@@ -94,9 +94,9 @@ describe('useDebounce', () => {
 
   it('should handle multiple arguments', async () => {
     const callback = jest.fn<void, [string, string, string]>()
-    const { result } = renderHook(() => useDebounce(callback, 500))
+    const { result } = await renderHook(() => useDebounce(callback, 500))
 
-    act(() => {
+    await act(() => {
       result.current('arg1', 'arg2', 'arg3')
       jest.advanceTimersByTime(500)
     })
@@ -107,13 +107,15 @@ describe('useDebounce', () => {
   it('should cleanup timeout on unmount', async () => {
     const callback = jest.fn<void, [string]>()
     const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout')
-    const { result, unmount } = renderHook(() => useDebounce(callback, 500))
+    const { result, unmount } = await renderHook(() =>
+      useDebounce(callback, 500)
+    )
 
-    act(() => {
+    await act(() => {
       result.current('test')
     })
 
-    unmount()
+    await unmount()
 
     expect(clearTimeoutSpy).toHaveBeenCalled()
     clearTimeoutSpy.mockRestore()
@@ -121,9 +123,9 @@ describe('useDebounce', () => {
 
   it('should handle rapid successive calls', async () => {
     const callback = jest.fn<void, [string]>()
-    const { result } = renderHook(() => useDebounce(callback, 100))
+    const { result } = await renderHook(() => useDebounce(callback, 100))
 
-    act(() => {
+    await act(() => {
       for (let i = 0; i < 10; i++) {
         result.current(`call-${i}`)
         jest.advanceTimersByTime(50)
@@ -132,7 +134,7 @@ describe('useDebounce', () => {
 
     expect(callback).not.toHaveBeenCalled()
 
-    act(() => {
+    await act(() => {
       jest.advanceTimersByTime(100)
     })
 
@@ -142,9 +144,9 @@ describe('useDebounce', () => {
 
   it('should respect zero delay', async () => {
     const callback = jest.fn<void, [string]>()
-    const { result } = renderHook(() => useDebounce(callback, 0))
+    const { result } = await renderHook(() => useDebounce(callback, 0))
 
-    act(() => {
+    await act(() => {
       result.current('test')
       jest.runOnlyPendingTimers()
     })
@@ -154,12 +156,12 @@ describe('useDebounce', () => {
 
   it('should update delay when it changes', async () => {
     const callback = jest.fn<void, [string]>()
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ delay }: { delay: number }) => useDebounce(callback, delay),
       { initialProps: { delay: 300 } }
     )
 
-    act(() => {
+    await act(() => {
       result.current('test')
       jest.advanceTimersByTime(300)
     })
@@ -167,9 +169,9 @@ describe('useDebounce', () => {
     expect(callback).toHaveBeenCalledTimes(1)
     callback.mockClear()
 
-    rerender({ delay: 500 })
+    await rerender({ delay: 500 })
 
-    act(() => {
+    await act(() => {
       result.current('test2')
       jest.advanceTimersByTime(500)
     })
@@ -179,9 +181,9 @@ describe('useDebounce', () => {
 
   it('should handle empty calls', async () => {
     const callback = jest.fn<void, []>()
-    const { result } = renderHook(() => useDebounce(callback, 100))
+    const { result } = await renderHook(() => useDebounce(callback, 100))
 
-    act(() => {
+    await act(() => {
       result.current()
       jest.advanceTimersByTime(100)
     })
@@ -194,19 +196,19 @@ describe('useDebounce', () => {
       const callback1 = jest.fn()
       const callback2 = jest.fn()
 
-      const { result, rerender } = renderHook(
+      const { result, rerender } = await renderHook(
         ({ callback }: { callback: (arg: string) => void }) =>
           useDebounce(callback, 100),
         { initialProps: { callback: callback1 } }
       )
 
-      act(() => {
+      await act(() => {
         result.current('test1')
       })
 
-      rerender({ callback: callback2 })
+      await rerender({ callback: callback2 })
 
-      act(() => {
+      await act(() => {
         result.current('test2')
         jest.advanceTimersByTime(100)
       })
@@ -219,30 +221,30 @@ describe('useDebounce', () => {
       const callback = jest.fn<void, [string]>(() => {
         throw new Error('Callback error')
       })
-      const { result } = renderHook(() => useDebounce(callback, 100))
+      const { result } = await renderHook(() => useDebounce(callback, 100))
 
-      act(() => {
+      await act(() => {
         result.current('test')
       })
 
-      expect(() => {
-        act(() => {
-          jest.advanceTimersByTime(100)
-        })
-      }).toThrow()
+      await expect(async () => {
+        await act(() => jest.advanceTimersByTime(100))
+      }).rejects.toThrow('Callback error')
     })
 
     it('should not execute after unmount', async () => {
       const callback = jest.fn<void, [string]>()
-      const { result, unmount } = renderHook(() => useDebounce(callback, 500))
+      const { result, unmount } = await renderHook(() =>
+        useDebounce(callback, 500)
+      )
 
-      act(() => {
+      await act(() => {
         result.current('test')
       })
 
-      unmount()
+      await unmount()
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(500)
       })
 
@@ -253,9 +255,9 @@ describe('useDebounce', () => {
   describe('performance', () => {
     it('should handle large delay values', async () => {
       const callback = jest.fn<void, [string]>()
-      const { result } = renderHook(() => useDebounce(callback, 10000))
+      const { result } = await renderHook(() => useDebounce(callback, 10000))
 
-      act(() => {
+      await act(() => {
         result.current('test')
         jest.advanceTimersByTime(10000)
       })
@@ -265,9 +267,9 @@ describe('useDebounce', () => {
 
     it('should handle very small delay values', async () => {
       const callback = jest.fn<void, [string]>()
-      const { result } = renderHook(() => useDebounce(callback, 1))
+      const { result } = await renderHook(() => useDebounce(callback, 1))
 
-      act(() => {
+      await act(() => {
         result.current('test')
         jest.advanceTimersByTime(1)
       })

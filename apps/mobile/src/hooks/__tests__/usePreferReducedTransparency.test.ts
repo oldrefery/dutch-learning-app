@@ -15,12 +15,12 @@ describe('usePreferReducedTransparency', () => {
     jest.clearAllMocks()
   })
 
-  it('should default to false', () => {
+  it('should default to false', async () => {
     jest
       .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
       .mockReturnValue(Promise.resolve(false))
 
-    const { result } = renderHook(() => usePreferReducedTransparency())
+    const { result } = await renderHook(() => usePreferReducedTransparency())
 
     expect(result.current).toBe(false)
   })
@@ -30,7 +30,7 @@ describe('usePreferReducedTransparency', () => {
       .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
       .mockReturnValue(Promise.resolve(true))
 
-    const { result } = renderHook(() => usePreferReducedTransparency())
+    const { result } = await renderHook(() => usePreferReducedTransparency())
 
     await waitFor(() => {
       expect(result.current).toBe(true)
@@ -42,7 +42,7 @@ describe('usePreferReducedTransparency', () => {
       .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
       .mockReturnValue(Promise.resolve(false))
 
-    const { result } = renderHook(() => usePreferReducedTransparency())
+    const { result } = await renderHook(() => usePreferReducedTransparency())
 
     await waitFor(() => {
       expect(result.current).toBe(false)
@@ -59,10 +59,12 @@ describe('usePreferReducedTransparency', () => {
       .spyOn(AccessibilityInfo, 'isReduceMotionEnabled')
       .mockReturnValue(pendingPromise)
 
-    const { result, unmount } = renderHook(() => usePreferReducedTransparency())
+    const { result, unmount } = await renderHook(() =>
+      usePreferReducedTransparency()
+    )
 
     // Unmount before promise resolves
-    unmount()
+    await unmount()
 
     // Resolve after unmount — should not cause state update
     resolvePromise!(true)

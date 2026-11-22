@@ -70,28 +70,32 @@ it('wires production session creation through restoration and assessment correct
       },
     })
   )
+  let finishRestoration!: (value: null) => void
+  const pendingRestoration = new Promise<null>(resolve => {
+    finishRestoration = resolve
+  })
   jest.mocked(createNativeCorrectionTransport).mockReturnValue({
     ownsSession: () => true,
-    loadPending: jest.fn().mockResolvedValue(null),
+    loadPending: () => pendingRestoration,
     apply,
     keepServer: jest.fn(),
   })
-  const screen = render(
+  const screen = await render(
     <NativeReviewSession session={makeSession()} userId={userId} />
   )
   expect(screen.getByLabelText('house')).toBeDisabled()
-  await act(async () => {})
-  fireEvent.press(screen.getByLabelText('house'))
+  await act(() => finishRestoration(null))
+  await fireEvent.press(screen.getByLabelText('house'))
   await act(async () => {
     await jest.advanceTimersByTimeAsync(600)
   })
-  fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
-  fireEvent.press(screen.getByLabelText('Change to hard'))
+  await fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
+  await fireEvent.press(screen.getByLabelText('Change to hard'))
   await act(async () => {})
   expect(screen.getByText('Recorded: hard')).toBeTruthy()
   expect(persist).toHaveBeenCalledTimes(1)
   expect(apply).toHaveBeenCalledTimes(1)
-  fireEvent.press(screen.getByLabelText('Return to current question'))
+  await fireEvent.press(screen.getByLabelText('Return to current question'))
   expect(screen.getByLabelText('chair')).toBeEnabled()
 })
 
@@ -103,20 +107,20 @@ describe.each(['light', 'dark'] as const)(
     )
     it('advances correct answers, opens history/details, and restores the exact pending question', async () => {
       const session = makeSession()
-      const screen = render(
+      const screen = await render(
         <NativeReviewSession session={session} userId={userId} />
       )
-      fireEvent.press(screen.getByLabelText('house'))
+      await fireEvent.press(screen.getByLabelText('house'))
       await act(async () => {
         await jest.advanceTimersByTimeAsync(600)
       })
       expect(screen.getByText(SECOND_WORD)).toBeTruthy()
-      fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
+      await fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
       expect(screen.getByText('History 1 / 1')).toBeTruthy()
-      fireEvent.press(screen.getByLabelText('Full details'))
+      await fireEvent.press(screen.getByLabelText('Full details'))
       expect(screen.getByText(EXAMPLE_TRANSLATION)).toBeTruthy()
       expect(screen.queryByTestId(GOOD_BUTTON)).toBeNull()
-      fireEvent.press(screen.getByLabelText('Return to current question'))
+      await fireEvent.press(screen.getByLabelText('Return to current question'))
       expect(screen.getByText(SECOND_WORD)).toBeTruthy()
       expect(screen.getByLabelText('chair')).toBeTruthy()
       expect(persist).toHaveBeenCalledTimes(1)
@@ -126,13 +130,13 @@ describe.each(['light', 'dark'] as const)(
 )
 
 it('reveals the entire card after an incorrect answer and requires Continue', async () => {
-  const screen = render(
+  const screen = await render(
     <NativeReviewSession session={makeSession()} userId={userId} />
   )
-  fireEvent.press(screen.getByLabelText('chair'))
+  await fireEvent.press(screen.getByLabelText('chair'))
   expect(screen.getByText(EXAMPLE_TRANSLATION)).toBeTruthy()
   expect(persist).not.toHaveBeenCalled()
-  fireEvent.press(screen.getByLabelText('Continue'))
+  await fireEvent.press(screen.getByLabelText('Continue'))
   await act(async () => {})
   expect(persist).toHaveBeenCalledWith(
     expect.objectContaining({ assessment: 'again' })
@@ -141,13 +145,13 @@ it('reveals the entire card after an incorrect answer and requires Continue', as
 })
 
 it('offers only Again or Skip after an early full-card peek', async () => {
-  const screen = render(
+  const screen = await render(
     <NativeReviewSession session={makeSession()} userId={userId} />
   )
-  fireEvent.press(screen.getByLabelText('Full details'))
+  await fireEvent.press(screen.getByLabelText('Full details'))
   expect(screen.queryByTestId(GOOD_BUTTON)).toBeNull()
   expect(screen.getByTestId('srs-again-button')).toBeTruthy()
-  fireEvent.press(screen.getByLabelText('Skip without rating'))
+  await fireEvent.press(screen.getByLabelText('Skip without rating'))
   expect(screen.getByText('0 reviewed · 1 skipped')).toBeTruthy()
   expect(persist).not.toHaveBeenCalled()
 })
@@ -155,30 +159,30 @@ it('offers only Again or Skip after an early full-card peek', async () => {
 it('shows manual ratings when opted in and retains history after completion', async () => {
   useSettingsStore.setState({ manualRecognitionByUser: { [userId]: true } })
   const session = { ...makeSession(), words: vocabulary.slice(0, 1) }
-  const screen = render(
+  const screen = await render(
     <NativeReviewSession session={session} userId={userId} />
   )
-  fireEvent.press(screen.getByLabelText('house'))
+  await fireEvent.press(screen.getByLabelText('house'))
   expect(persist).not.toHaveBeenCalled()
-  fireEvent.press(screen.getByTestId('srs-easy-button'))
+  await fireEvent.press(screen.getByTestId('srs-easy-button'))
   await act(async () => {})
   expect(screen.getByText('Session Complete!')).toBeTruthy()
-  fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
+  await fireEvent.press(screen.getByLabelText(PREVIOUS_WORD))
   expect(screen.getByText('Recorded: easy')).toBeTruthy()
   expect(persist).toHaveBeenCalledTimes(1)
 })
 
 it('keeps a session across a route remount without recording another answer', async () => {
   const session = makeSession()
-  const first = render(
+  const first = await render(
     <NativeReviewSession session={session} userId={userId} />
   )
-  fireEvent.press(first.getByLabelText('house'))
+  await fireEvent.press(first.getByLabelText('house'))
   await act(async () => {
     await jest.advanceTimersByTimeAsync(600)
   })
-  first.unmount()
-  const second = render(
+  await first.unmount()
+  const second = await render(
     <NativeReviewSession session={session} userId={userId} />
   )
   expect(second.getByText(SECOND_WORD)).toBeTruthy()
@@ -186,15 +190,15 @@ it('keeps a session across a route remount without recording another answer', as
 })
 
 it('reveals recall by tapping the card without treating it as an assisted peek', async () => {
-  const screen = render(
+  const screen = await render(
     <NativeReviewSession
       session={makeSession('meaning-recall')}
       userId={userId}
     />
   )
-  fireEvent.press(screen.getByLabelText('Reveal meaning'))
+  await fireEvent.press(screen.getByLabelText('Reveal meaning'))
   expect(screen.getByText(EXAMPLE_TRANSLATION)).toBeTruthy()
-  fireEvent.press(screen.getByTestId(GOOD_BUTTON))
+  await fireEvent.press(screen.getByTestId(GOOD_BUTTON))
   await act(async () => {})
   expect(persist).toHaveBeenCalledWith(
     expect.objectContaining({

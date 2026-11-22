@@ -26,7 +26,7 @@ describe('AudioProvider', () => {
   })
 
   it('configures foreground playback and owns a single controllable player', async () => {
-    render(
+    await render(
       <AudioProvider>
         <Probe />
       </AudioProvider>
@@ -51,10 +51,10 @@ describe('AudioProvider', () => {
     )
     expect(player.play).toHaveBeenCalledTimes(1)
 
-    act(() => audio?.pauseAudio())
+    await act(() => audio?.pauseAudio())
     expect(player.pause).toHaveBeenCalled()
 
-    act(() => audio?.resumeAudio())
+    await act(() => audio?.resumeAudio())
     expect(player.play).toHaveBeenCalledTimes(2)
 
     await act(async () => {

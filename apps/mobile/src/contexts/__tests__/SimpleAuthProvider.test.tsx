@@ -61,7 +61,7 @@ describe('SimpleAuthProvider', () => {
   )
 
   const renderAuth = async () => {
-    const hook = renderHook(() => useSimpleAuth(), { wrapper })
+    const hook = await renderHook(() => useSimpleAuth(), { wrapper })
 
     await waitFor(() => {
       expect(hook.result.current.loading).toBe(false)
@@ -170,7 +170,7 @@ describe('SimpleAuthProvider', () => {
       await act(async () => {
         void change('active')
       })
-      if (destination === 'unmounted') unmount()
+      if (destination === 'unmounted') await unmount()
       else
         await act(async () => {
           void change(destination)
@@ -244,7 +244,7 @@ describe('SimpleAuthProvider', () => {
             .mockResolvedValue({ data: { session: null }, error }),
         })
       else jest.mocked(supabase.auth.getSession).mockRejectedValue(error)
-      renderHook(() => useSimpleAuth(), { wrapper })
+      await renderHook(() => useSimpleAuth(), { wrapper })
       await act(async () => {})
       expect(mockInitializeApp).not.toHaveBeenCalled()
       expect(Sentry.captureException).not.toHaveBeenCalled()
@@ -268,7 +268,7 @@ describe('SimpleAuthProvider', () => {
         .fn()
         .mockResolvedValue({ data: { session: null }, error }),
     })
-    renderHook(() => useSimpleAuth(), { wrapper })
+    await renderHook(() => useSimpleAuth(), { wrapper })
     await act(async () => {})
     expect(mockInitializeApp).not.toHaveBeenCalled()
     expect(Sentry.captureException).toHaveBeenCalledWith(
@@ -284,7 +284,7 @@ describe('SimpleAuthProvider', () => {
     jest
       .mocked(supabase.auth.getSession)
       .mockRejectedValue(new Error('Offline'))
-    renderHook(() => useSimpleAuth(), { wrapper })
+    await renderHook(() => useSimpleAuth(), { wrapper })
     await act(async () => {})
     expect(mockInitializeApp).not.toHaveBeenCalled()
   })
@@ -293,7 +293,7 @@ describe('SimpleAuthProvider', () => {
     jest
       .mocked(supabase.auth.getSession)
       .mockImplementation(() => new Promise(() => {}))
-    renderHook(() => useSimpleAuth(), { wrapper })
+    await renderHook(() => useSimpleAuth(), { wrapper })
     const callback = jest.mocked(supabase.auth.onAuthStateChange).mock
       .calls[0][0]
     await act(async () => callback('INITIAL_SESSION', null))
@@ -310,7 +310,7 @@ describe('SimpleAuthProvider', () => {
           finish = () => resolve({ data: { session: null }, error: null })
         })
     )
-    renderHook(() => useSimpleAuth(), { wrapper })
+    await renderHook(() => useSimpleAuth(), { wrapper })
     const callback = jest.mocked(supabase.auth.onAuthStateChange).mock
       .calls[0][0]
     await act(async () =>
@@ -329,8 +329,8 @@ describe('SimpleAuthProvider', () => {
           finish = () => resolve({ data: { session: null }, error: null })
         })
     )
-    const { unmount } = renderHook(() => useSimpleAuth(), { wrapper })
-    unmount()
+    const { unmount } = await renderHook(() => useSimpleAuth(), { wrapper })
+    await unmount()
     await act(async () => finish())
     expect(mockInitializeApp).not.toHaveBeenCalled()
   })
@@ -415,7 +415,7 @@ describe('SimpleAuthProvider', () => {
       'Password successfully reset! You can now sign in.'
     )
 
-    act(() => {
+    await act(() => {
       jest.runOnlyPendingTimers()
     })
     expect(router.replace).toHaveBeenCalledWith(ROUTES.AUTH.LOGIN)

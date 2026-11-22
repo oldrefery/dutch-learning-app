@@ -1,4 +1,5 @@
 import React from 'react'
+import { View } from 'react-native'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { Colors } from '@/constants/Colors'
 import { styles } from '../styles'
@@ -28,45 +29,45 @@ export function ConjugationSection({ word, config }: WordSectionProps) {
         darkColor={Colors.dark.backgroundSecondary}
       >
         {conjugation.present && (
-          <ViewThemed style={styles.conjugationRow}>
+          <View style={styles.conjugationRow}>
             <TextThemed style={styles.conjugationLabel}>
               Present (ik):
             </TextThemed>
             <TextThemed style={styles.conjugationValue}>
               {conjugation.present}
             </TextThemed>
-          </ViewThemed>
+          </View>
         )}
 
         {conjugation.simple_past && (
-          <ViewThemed style={styles.conjugationRow}>
+          <View style={styles.conjugationRow}>
             <TextThemed style={styles.conjugationLabel}>Past (ik):</TextThemed>
             <TextThemed style={styles.conjugationValue}>
               {conjugation.simple_past}
             </TextThemed>
-          </ViewThemed>
+          </View>
         )}
 
         {conjugation.simple_past_plural && (
-          <ViewThemed style={styles.conjugationRow}>
+          <View style={styles.conjugationRow}>
             <TextThemed style={styles.conjugationLabel}>
               Past (plural):
             </TextThemed>
             <TextThemed style={styles.conjugationValue}>
               {conjugation.simple_past_plural}
             </TextThemed>
-          </ViewThemed>
+          </View>
         )}
 
         {conjugation.past_participle && (
-          <ViewThemed style={styles.conjugationRow}>
+          <View style={styles.conjugationRow}>
             <TextThemed style={styles.conjugationLabel}>
               Past Participle:
             </TextThemed>
             <TextThemed style={styles.conjugationValue}>
               {conjugation.past_participle}
             </TextThemed>
-          </ViewThemed>
+          </View>
         )}
       </ViewThemed>
     </ViewThemed>

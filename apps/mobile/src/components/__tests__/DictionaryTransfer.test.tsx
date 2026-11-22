@@ -1,4 +1,10 @@
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native'
+import {
+  act,
+  fireEvent,
+  render,
+  userEvent,
+  waitFor,
+} from '@testing-library/react-native'
 import * as ReactNative from 'react-native'
 import * as Clipboard from 'expo-clipboard'
 import { router } from 'expo-router'
@@ -120,12 +126,12 @@ describe('dictionary document transfer UI', () => {
   afterEach(() => jest.restoreAllMocks())
 
   const preview = async () => {
-    const view = render(<DictionaryDocumentImportScreen />)
-    fireEvent.changeText(
+    const view = await render(<DictionaryDocumentImportScreen />)
+    await fireEvent.changeText(
       view.getByLabelText(JSON_INPUT),
       JSON.stringify(document)
     )
-    fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
+    await fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
     await waitFor(() => expect(view.getByText(EXPORT_NAME)).toBeOnTheScreen())
     return view
   }
@@ -134,24 +140,24 @@ describe('dictionary document transfer UI', () => {
     'previews and imports selected full content in the %s theme',
     async theme => {
       jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue(theme)
-      const view = render(<DictionaryDocumentImportScreen />)
+      const view = await render(<DictionaryDocumentImportScreen />)
       expect(view.getByLabelText(JSON_INPUT)).toHaveStyle({
         color: Colors[theme].text,
         borderColor: Colors[theme].border,
       })
-      fireEvent.changeText(
+      await fireEvent.changeText(
         view.getByLabelText(JSON_INPUT),
         JSON.stringify(document)
       )
-      fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
+      await fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
       await waitFor(() =>
         expect(view.getByTestId('import-word-1')).toBeOnTheScreen()
       )
-      fireEvent.press(view.getByTestId('import-word-1'))
+      await fireEvent.press(view.getByTestId('import-word-1'))
       jest
         .mocked(importOfflineDictionaryCollection)
         .mockResolvedValueOnce({ importedCount: 1, skippedCount: 0 })
-      fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
+      await fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
       await waitFor(() =>
         expect(
           view.getByText('1 word saved. 0 duplicates skipped.')
@@ -164,7 +170,7 @@ describe('dictionary document transfer UI', () => {
         OWNER
       )
       expect(fetchWords).toHaveBeenCalledTimes(1)
-      fireEvent.press(view.getByText('Open collection'))
+      await fireEvent.press(view.getByText('Open collection'))
       expect(router.replace).toHaveBeenCalledWith(`/collection/${TARGET}`)
     }
   )
@@ -175,8 +181,8 @@ describe('dictionary document transfer UI', () => {
       .mocked(importOfflineDictionaryCollection)
       .mockReturnValueOnce(result.promise)
     const view = await preview()
-    fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
-    fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
+    await userEvent.setup().press(view.getByLabelText(IMPORT_BUTTON))
+    await fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
     expect(importOfflineDictionaryCollection).toHaveBeenCalledTimes(1)
     await act(async () => result.resolve({ importedCount: 2, skippedCount: 0 }))
     expect(view.queryByLabelText(IMPORT_BUTTON)).toBeNull()
@@ -185,7 +191,7 @@ describe('dictionary document transfer UI', () => {
   it('keeps success visible after a cache reload fails, without offering another import', async () => {
     fetchWords.mockRejectedValueOnce(new Error('synthetic cache failure'))
     const view = await preview()
-    fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
+    await fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
     await waitFor(() =>
       expect(
         view.getByText(
@@ -209,7 +215,7 @@ describe('dictionary document transfer UI', () => {
     ])
     const view = await preview()
     expect(view.queryByTestId('import-word-0')).toBeNull()
-    fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
+    await fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
     await waitFor(() =>
       expect(importOfflineDictionaryCollection).toHaveBeenCalledWith(
         JSON.stringify(document),
@@ -227,14 +233,17 @@ describe('dictionary document transfer UI', () => {
         content: { ...content, dutch_lemma: `word ${index}` },
       })),
     }
-    const view = render(<DictionaryDocumentImportScreen />)
-    fireEvent.changeText(view.getByLabelText(JSON_INPUT), JSON.stringify(large))
-    fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
+    const view = await render(<DictionaryDocumentImportScreen />)
+    await fireEvent.changeText(
+      view.getByLabelText(JSON_INPUT),
+      JSON.stringify(large)
+    )
+    await fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
     await waitFor(() =>
       expect(view.getByTestId('import-word-0')).toBeOnTheScreen()
     )
     expect(view.queryByTestId('import-word-999')).toBeNull()
-    fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
+    await fireEvent.press(view.getByLabelText(IMPORT_BUTTON))
     await waitFor(() =>
       expect(importOfflineDictionaryCollection).toHaveBeenCalledWith(
         JSON.stringify(large),
@@ -248,7 +257,7 @@ describe('dictionary document transfer UI', () => {
   it('does not expose the previous owner document after an account change', async () => {
     const view = await preview()
     mockOwner = OTHER_OWNER
-    view.rerender(<DictionaryDocumentImportScreen />)
+    await view.rerender(<DictionaryDocumentImportScreen />)
     expect(view.queryByText(EXPORT_NAME)).toBeNull()
     expect(view.getByLabelText(JSON_INPUT)).toHaveProp('value', '')
     expect(importOfflineDictionaryCollection).not.toHaveBeenCalled()
@@ -262,14 +271,14 @@ describe('dictionary document transfer UI', () => {
     jest
       .mocked(collectionRepository.getCollectionsByUserId)
       .mockReturnValueOnce(pending.promise)
-    const view = render(<DictionaryDocumentImportScreen />)
-    fireEvent.changeText(
+    const view = await render(<DictionaryDocumentImportScreen />)
+    await fireEvent.changeText(
       view.getByLabelText(JSON_INPUT),
       JSON.stringify(document)
     )
-    fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
+    await userEvent.setup().press(view.getByLabelText(PREVIEW_BUTTON))
     mockOwner = OTHER_OWNER
-    view.rerender(<DictionaryDocumentImportScreen />)
+    await view.rerender(<DictionaryDocumentImportScreen />)
     await act(async () =>
       pending.resolve([
         {
@@ -285,9 +294,9 @@ describe('dictionary document transfer UI', () => {
   })
 
   it('shows validation and missing-target errors without attempting an import', async () => {
-    const view = render(<DictionaryDocumentImportScreen />)
-    fireEvent.changeText(view.getByLabelText(JSON_INPUT), '{')
-    fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
+    const view = await render(<DictionaryDocumentImportScreen />)
+    await fireEvent.changeText(view.getByLabelText(JSON_INPUT), '{')
+    await fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
     await waitFor(() =>
       expect(
         view.getByText('Invalid dictionary collection document.')
@@ -296,11 +305,11 @@ describe('dictionary document transfer UI', () => {
     jest
       .mocked(collectionRepository.getCollectionsByUserId)
       .mockResolvedValueOnce([])
-    fireEvent.changeText(
+    await fireEvent.changeText(
       view.getByLabelText(JSON_INPUT),
       JSON.stringify(document)
     )
-    fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
+    await fireEvent.press(view.getByLabelText(PREVIEW_BUTTON))
     await waitFor(() =>
       expect(
         view.getByText(
@@ -312,8 +321,8 @@ describe('dictionary document transfer UI', () => {
   })
 
   it('copies only the validated self-contained export without sharing or server writes', async () => {
-    const view = render(<DictionaryExportButton collectionId={TARGET} />)
-    fireEvent.press(view.getByLabelText(EXPORT_BUTTON))
+    const view = await render(<DictionaryExportButton collectionId={TARGET} />)
+    await fireEvent.press(view.getByLabelText(EXPORT_BUTTON))
     await waitFor(() =>
       expect(Clipboard.setStringAsync).toHaveBeenCalledWith(
         JSON.stringify(document)
@@ -331,8 +340,8 @@ describe('dictionary document transfer UI', () => {
     jest
       .mocked(exportOfflineDictionaryCollection)
       .mockReturnValueOnce(pending.promise)
-    const view = render(<DictionaryExportButton collectionId={TARGET} />)
-    fireEvent.press(view.getByLabelText(EXPORT_BUTTON))
+    const view = await render(<DictionaryExportButton collectionId={TARGET} />)
+    await userEvent.setup().press(view.getByLabelText(EXPORT_BUTTON))
     mockOwner = OTHER_OWNER
     await act(async () => pending.resolve(document))
     expect(Clipboard.setStringAsync).not.toHaveBeenCalled()
@@ -341,8 +350,10 @@ describe('dictionary document transfer UI', () => {
 
   it('reports clipboard failure and blocks dormant transfer entrypoints', async () => {
     jest.mocked(Clipboard.setStringAsync).mockResolvedValueOnce(false)
-    const button = render(<DictionaryExportButton collectionId={TARGET} />)
-    fireEvent.press(button.getByLabelText(EXPORT_BUTTON))
+    const button = await render(
+      <DictionaryExportButton collectionId={TARGET} />
+    )
+    await fireEvent.press(button.getByLabelText(EXPORT_BUTTON))
     await waitFor(() =>
       expect(ToastService.show).toHaveBeenCalledWith(
         'Could not copy the document.',
@@ -350,9 +361,9 @@ describe('dictionary document transfer UI', () => {
       )
     )
     jest.mocked(isDictionaryContentEnabled).mockReturnValue(false)
-    button.rerender(<DictionaryExportButton collectionId={TARGET} />)
+    await button.rerender(<DictionaryExportButton collectionId={TARGET} />)
     expect(button.queryByLabelText(EXPORT_BUTTON)).toBeNull()
-    const screen = render(<DictionaryDocumentImportScreen />)
+    const screen = await render(<DictionaryDocumentImportScreen />)
     expect(screen.queryByLabelText(JSON_INPUT)).toBeNull()
     expect(importOfflineDictionaryCollection).not.toHaveBeenCalled()
   })

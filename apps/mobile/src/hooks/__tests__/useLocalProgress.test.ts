@@ -56,7 +56,7 @@ describe('useLocalProgress', () => {
   })
 
   const renderInitializedHook = async () => {
-    const renderedHook = renderHook(() => useLocalProgress())
+    const renderedHook = await renderHook(() => useLocalProgress())
 
     await waitFor(() => {
       expect(progressRepository.getProgressByUserId).toHaveBeenCalledWith(
@@ -95,9 +95,9 @@ describe('useLocalProgress', () => {
         () => new Promise(resolve => setTimeout(() => resolve([]), 100))
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
-      act(() => {
+      await act(() => {
         result.current.fetchProgress()
       })
 
@@ -135,7 +135,7 @@ describe('useLocalProgress', () => {
         currentUserId: null,
       })
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
       await act(async () => {
         await result.current.fetchProgress()
@@ -150,7 +150,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
       await waitFor(() => {
         expect(result.current.progress).toEqual(mockProgress)
@@ -162,7 +162,7 @@ describe('useLocalProgress', () => {
         currentUserId: null,
       })
 
-      renderHook(() => useLocalProgress())
+      await renderHook(() => useLocalProgress())
 
       await waitFor(() => {
         expect(progressRepository.getProgressByUserId).not.toHaveBeenCalled()
@@ -281,7 +281,7 @@ describe('useLocalProgress', () => {
         currentUserId: null,
       })
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
       const updates = { reviewed_count: 1 }
 
@@ -436,7 +436,7 @@ describe('useLocalProgress', () => {
         progressRepository.getProgressByUserId as jest.Mock
       ).mockResolvedValueOnce(updatedProgress)
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
       await waitFor(() => {
         expect(result.current.progress).toEqual(initialProgress)
@@ -507,7 +507,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
       await waitFor(() => {
         expect(result.current.progress.length).toBe(3)
@@ -520,7 +520,7 @@ describe('useLocalProgress', () => {
         mockProgress
       )
 
-      const { result } = renderHook(() => useLocalProgress())
+      const { result } = await renderHook(() => useLocalProgress())
 
       await waitFor(() => {
         expect(result.current.progress.length).toBeGreaterThan(0)

@@ -1,15 +1,12 @@
 import React from 'react'
-import { useColorScheme } from 'react-native'
+import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { act, fireEvent, render } from '@testing-library/react-native'
 import CollectionContent from '@/components/CollectionContent'
 import { createMockWord } from '@/__tests__/helpers/factories'
 import { SEARCH_DEBOUNCE_DELAY } from '@/constants/UIConstants'
 import type { Word } from '@/types/database'
 
-jest.mock('react-native/Libraries/Utilities/useColorScheme', () => ({
-  __esModule: true,
-  default: jest.fn(() => 'light'),
-}))
+jest.mock('@/hooks/useNormalizedColorScheme')
 jest.mock('@/components/SwipeableWordItem', () => {
   const { Text } =
     jest.requireActual<typeof import('react-native')>('react-native')
@@ -21,9 +18,9 @@ jest.mock('@/components/SwipeableWordItem', () => {
 
 it.each(['light', 'dark'] as const)(
   'preserves pending search across refresh and finds the final word among 5000 in %s mode',
-  theme => {
+  async theme => {
     jest.useFakeTimers()
-    jest.mocked(useColorScheme).mockReturnValue(theme)
+    jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
     try {
       const words = Array.from({ length: 5000 }, (_, index) =>
         createMockWord({
@@ -45,21 +42,21 @@ it.each(['light', 'dark'] as const)(
         onDeleteWord: jest.fn(),
         onStartReview: jest.fn(),
       }
-      const screen = render(<CollectionContent {...props} />)
-      fireEvent.changeText(
+      const screen = await render(<CollectionContent {...props} />)
+      await fireEvent.changeText(
         screen.getByPlaceholderText('Search Dutch words...'),
         'woord4999'
       )
-      screen.rerender(<CollectionContent {...props} refreshing />)
+      await screen.rerender(<CollectionContent {...props} refreshing />)
       expect(
         screen.getByPlaceholderText('Search Dutch words...').props.value
       ).toBe('woord4999')
-      act(() => jest.advanceTimersByTime(SEARCH_DEBOUNCE_DELAY))
+      await act(() => jest.advanceTimersByTime(SEARCH_DEBOUNCE_DELAY))
       expect(screen.getByText('woord4999')).toBeTruthy()
       expect(screen.queryByText('woord0')).toBeNull()
-      fireEvent.press(screen.getByText('Review 5000 Words'))
+      await fireEvent.press(screen.getByText('Review 5000 Words'))
       expect(props.onStartReview).toHaveBeenCalledTimes(1)
-      screen.unmount()
+      await screen.unmount()
     } finally {
       jest.useRealTimers()
     }

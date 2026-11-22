@@ -116,7 +116,7 @@ describe('Settings sync status integration', () => {
     const openURL = jest
       .spyOn(ReactNative.Linking, 'openURL')
       .mockResolvedValue(undefined)
-    const screen = render(<SettingsScreen />)
+    const screen = await render(<SettingsScreen />)
     await act(async () => fireEvent.press(screen.getByText(label)))
     expect(openURL).toHaveBeenCalledWith(url)
     expect(ToastService.show).not.toHaveBeenCalled()
@@ -126,7 +126,7 @@ describe('Settings sync status integration', () => {
     jest
       .spyOn(ReactNative.Linking, 'openURL')
       .mockRejectedValue(new Error('No browser available'))
-    const screen = render(<SettingsScreen />)
+    const screen = await render(<SettingsScreen />)
     await act(async () => fireEvent.press(screen.getByText(label)))
     expect(ToastService.show).toHaveBeenCalledWith(
       'Could not open link. Please try again.',
@@ -144,7 +144,7 @@ describe('Settings sync status integration', () => {
       jest
         .mocked(syncStatusService.getSnapshot)
         .mockResolvedValue(snapshot(completedAt))
-      const screen = render(<SettingsScreen />)
+      const screen = await render(<SettingsScreen />)
       const badge = await screen.findByText(UP_TO_DATE_LABEL)
       expect(badge).toHaveStyle({ color: expectedColor })
       // A translucent chip-background token must never become the text color.
@@ -156,7 +156,7 @@ describe('Settings sync status integration', () => {
     'updates the open %s screen on automatic synchronization',
     async theme => {
       jest.spyOn(ReactNative, 'useColorScheme').mockReturnValue(theme)
-      const screen = render(<SettingsScreen />)
+      const screen = await render(<SettingsScreen />)
       await waitFor(() =>
         expect(screen.getByText('No complete sync yet')).toBeTruthy()
       )
@@ -178,7 +178,7 @@ describe('Settings sync status integration', () => {
       jest
         .mocked(syncStatusService.getSnapshot)
         .mockResolvedValue(snapshot(completedAt))
-      const screen = render(<SettingsScreen />)
+      const screen = await render(<SettingsScreen />)
       await screen.findByText(UP_TO_DATE_LABEL)
       jest.mocked(syncStatusService.getSnapshot).mockResolvedValue({
         ...snapshot(completedAt),
@@ -217,7 +217,7 @@ describe('Settings sync status integration', () => {
         pendingDownloads: 2105,
         totalPending: 2105,
       })
-      const screen = render(<SettingsScreen />)
+      const screen = await render(<SettingsScreen />)
       await screen.findByText('2105 pending')
       expect(screen.getByTestId('sync-upload-count')).toHaveTextContent('0')
       expect(screen.getByTestId('sync-download-count')).toHaveTextContent(
@@ -251,14 +251,14 @@ describe('Settings sync status integration', () => {
   )
 
   it('refreshes after manual sync and keeps the previous success after a failed retry', async () => {
-    const screen = render(<SettingsScreen />)
+    const screen = await render(<SettingsScreen />)
     await waitFor(() =>
       expect(screen.getByTestId(SYNC_BUTTON_ID)).toBeEnabled()
     )
     jest
       .mocked(syncStatusService.getSnapshot)
       .mockResolvedValue(snapshot(completedAt))
-    fireEvent.press(screen.getByTestId(SYNC_BUTTON_ID))
+    await fireEvent.press(screen.getByTestId(SYNC_BUTTON_ID))
     await waitFor(() => expect(screen.getByText(UP_TO_DATE_LABEL)).toBeTruthy())
     expect(syncManager.performSync).toHaveBeenCalledWith('qa-settings-user')
     jest.mocked(syncManager.performSync).mockResolvedValueOnce({
@@ -266,7 +266,7 @@ describe('Settings sync status integration', () => {
       success: false,
       error: 'Network unavailable',
     })
-    fireEvent.press(screen.getByTestId(SYNC_BUTTON_ID))
+    await fireEvent.press(screen.getByTestId(SYNC_BUTTON_ID))
     await waitFor(() =>
       expect(screen.getByTestId(SYNC_BUTTON_ID)).toBeEnabled()
     )

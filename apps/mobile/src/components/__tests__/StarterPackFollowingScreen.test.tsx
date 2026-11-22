@@ -64,8 +64,8 @@ beforeEach(() => {
     handleGoBack: jest.fn(),
   } as never)
 })
-it('routes the complete original to following import and requires an existing target', () => {
-  const view = render(<StarterPackScreenContent />)
+it('routes the complete original to following import and requires an existing target', async () => {
+  const view = await render(<StarterPackScreenContent />)
   expect(view.getByText('Shared pack panel')).toBeTruthy()
   expect(
     jest.mocked(DictionaryFollowingTransferPanel).mock.calls[0][0]
@@ -76,17 +76,17 @@ it('routes the complete original to following import and requires an existing ta
   })
   expect(view.queryByText('Legacy starter preview')).toBeNull()
 })
-it('fails closed for a signed-out following pack', () => {
+it('fails closed for a signed-out following pack', async () => {
   jest.mocked(useApplicationStore).mockReturnValue(null as never)
-  const view = render(<StarterPackScreenContent />)
+  const view = await render(<StarterPackScreenContent />)
   expect(
     view.getByText('Sign in to prepare an official shared pack import.')
   ).toBeTruthy()
   expect(DictionaryFollowingTransferPanel).not.toHaveBeenCalled()
 })
-it('preserves the legacy preview when the gate is off', () => {
+it('preserves the legacy preview when the gate is off', async () => {
   jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
-  const view = render(<StarterPackScreenContent />)
+  const view = await render(<StarterPackScreenContent />)
   expect(view.getByText('Legacy starter preview')).toBeTruthy()
   expect(DictionaryFollowingTransferPanel).not.toHaveBeenCalled()
 })

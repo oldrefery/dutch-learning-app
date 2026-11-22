@@ -69,8 +69,10 @@ describe.each(['light', 'dark'] as const)(
     it.each([
       ['review', WordCardPresets.review.config],
       ['Word Detail', WordCardPresets.modal.config],
-    ])('renders structured guidance in %s', (_surface, config) => {
-      const result = render(<UniversalWordCard word={word} config={config} />)
+    ])('renders structured guidance in %s', async (_surface, config) => {
+      const result = await render(
+        <UniversalWordCard word={word} config={config} />
+      )
 
       expect(result.getByTestId('usage-nuance-section')).toBeTruthy()
       expect(result.getByText('AI-generated guidance')).toBeTruthy()
@@ -82,8 +84,8 @@ describe.each(['light', 'dark'] as const)(
   }
 )
 
-it('hides the section for legacy words without usage notes', () => {
-  const result = render(
+it('hides the section for legacy words without usage notes', async () => {
+  const result = await render(
     <UniversalWordCard
       word={createMockWord({ usage_notes: null })}
       config={WordCardPresets.modal.config}
@@ -93,9 +95,9 @@ it('hides the section for legacy words without usage notes', () => {
   expect(result.queryByTestId('usage-nuance-section')).toBeNull()
 })
 
-it('renders a long summary and no contrast cards', () => {
+it('renders a long summary and no contrast cards', async () => {
   const summary = 'Use this form in context. '.repeat(12).trim()
-  const result = render(
+  const result = await render(
     <UniversalWordCard
       word={createMockWord({
         usage_notes: { summary, contrasts: [] },
@@ -108,8 +110,8 @@ it('renders a long summary and no contrast cards', () => {
   expect(result.queryByText('huis')).toBeNull()
 })
 
-it('omits a missing Russian example translation', () => {
-  const result = render(
+it('omits a missing Russian example translation', async () => {
+  const result = await render(
     <UniversalWordCard
       word={createMockWord({
         usage_notes: {

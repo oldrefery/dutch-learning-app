@@ -57,7 +57,7 @@ const mockedFindWordByLemma =
   >
 const mockedGetApplicationState = useApplicationStore.getState as jest.Mock
 
-const renderProcessor = (isConnected: boolean | null = true) =>
+const renderProcessor = async (isConnected: boolean | null = true) =>
   renderHook(() =>
     useBatchCaptureProcessor({
       currentUserId: 'user-1',
@@ -82,7 +82,7 @@ describe('useBatchCaptureProcessor', () => {
   })
 
   it('keeps an offline item queued without making a remote request', async () => {
-    const { result } = renderProcessor(false)
+    const { result } = await renderProcessor(false)
 
     await act(async () => result.current.processItem(item))
 
@@ -105,7 +105,7 @@ describe('useBatchCaptureProcessor', () => {
         },
       ],
     })
-    const { result } = renderProcessor()
+    const { result } = await renderProcessor()
 
     await act(async () => result.current.processItem(item))
 
@@ -128,7 +128,7 @@ describe('useBatchCaptureProcessor', () => {
   })
 
   it('opens exactly one explicit review after duplicate checks pass', async () => {
-    const { result } = renderProcessor()
+    const { result } = await renderProcessor()
 
     await act(async () => result.current.processItem(item))
 
@@ -150,7 +150,7 @@ describe('useBatchCaptureProcessor', () => {
     mockedFindWordByLemma.mockRejectedValue(
       new NetworkError('Offline during lookup')
     )
-    const { result } = renderProcessor()
+    const { result } = await renderProcessor()
 
     await act(async () => result.current.processItem(item))
 
@@ -171,7 +171,7 @@ describe('useBatchCaptureProcessor', () => {
       userMessage: 'Please try again later.',
       isRetryable: true,
     })
-    const { result } = renderProcessor()
+    const { result } = await renderProcessor()
 
     await act(async () => result.current.processItem(item))
 

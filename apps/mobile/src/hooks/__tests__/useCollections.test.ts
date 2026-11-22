@@ -42,7 +42,7 @@ describe('useCollections', () => {
   })
 
   describe('collections state', () => {
-    it('should return collections from store', () => {
+    it('should return collections from store', async () => {
       const mockCollections = [
         createMockCollection({ collection_id: 'coll-1', name: 'Verbs' }),
         createMockCollection({ collection_id: 'coll-2', name: 'Nouns' }),
@@ -55,12 +55,12 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections).toEqual(mockCollections)
     })
 
-    it('should return empty collections array initially', () => {
+    it('should return empty collections array initially', async () => {
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
@@ -68,13 +68,13 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections).toEqual([])
       expect(Array.isArray(result.current.collections)).toBe(true)
     })
 
-    it('should handle collections with different properties', () => {
+    it('should handle collections with different properties', async () => {
       const mockCollections = [
         createMockCollection({ name: 'Verbs', description: 'Dutch verbs' }),
         createMockCollection({ name: 'Nouns', description: 'Dutch nouns' }),
@@ -91,7 +91,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections.length).toBe(3)
       expect(result.current.collections[0].name).toBe('Verbs')
@@ -100,7 +100,7 @@ describe('useCollections', () => {
   })
 
   describe('collectionsLoading state', () => {
-    it('should return loading state from store', () => {
+    it('should return loading state from store', async () => {
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: true,
@@ -108,12 +108,12 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collectionsLoading).toBe(true)
     })
 
-    it('should return false when not loading', () => {
+    it('should return false when not loading', async () => {
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [createMockCollection()],
         collectionsLoading: false,
@@ -121,13 +121,13 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collectionsLoading).toBe(false)
     })
 
-    it('should handle loading state changes', () => {
-      const { rerender } = renderHook(() => useCollections())
+    it('should handle loading state changes', async () => {
+      const { rerender } = await renderHook(() => useCollections())
 
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
@@ -136,9 +136,9 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      rerender(undefined)
+      await rerender(undefined)
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
       expect(result.current.collectionsLoading).toBe(true)
     })
   })
@@ -154,7 +154,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       await act(async () => {
         await result.current.fetchCollections()
@@ -174,7 +174,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       const returnedPromise = result.current.fetchCollections()
 
@@ -192,7 +192,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       await expect(
         act(async () => {
@@ -217,7 +217,7 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       let createdCollection: Collection | null = null
 
@@ -243,7 +243,7 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       let createdCollection: Collection | null = null
 
@@ -271,7 +271,7 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       await expect(
         act(async () => {
@@ -293,7 +293,7 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       await act(async () => {
         await result.current.createNewCollection(SPECIAL_COLLECTION_NAME)
@@ -312,7 +312,7 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       await act(async () => {
         await result.current.createNewCollection('')
@@ -323,7 +323,7 @@ describe('useCollections', () => {
   })
 
   describe('hook integration', () => {
-    it('should provide all expected properties', () => {
+    it('should provide all expected properties', async () => {
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: [],
         collectionsLoading: false,
@@ -331,7 +331,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current).toHaveProperty('collections')
       expect(result.current).toHaveProperty('collectionsLoading')
@@ -339,7 +339,7 @@ describe('useCollections', () => {
       expect(result.current).toHaveProperty('createNewCollection')
     })
 
-    it('should maintain referential stability for functions', () => {
+    it('should maintain referential stability for functions', async () => {
       const fetchFn = jest.fn()
       const createFn = jest.fn()
 
@@ -350,8 +350,8 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result: result1 } = renderHook(() => useCollections())
-      const { result: result2 } = renderHook(() => useCollections())
+      const { result: result1 } = await renderHook(() => useCollections())
+      const { result: result2 } = await renderHook(() => useCollections())
 
       expect(result1.current.fetchCollections).toBe(fetchFn)
       expect(result2.current.fetchCollections).toBe(fetchFn)
@@ -368,7 +368,7 @@ describe('useCollections', () => {
         createNewCollection: createFn,
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       await act(async () => {
         await Promise.all([
@@ -384,7 +384,7 @@ describe('useCollections', () => {
   })
 
   describe('store integration', () => {
-    it('should directly return store values', () => {
+    it('should directly return store values', async () => {
       const storeData = {
         collections: [createMockCollection({ name: 'Verbs' })],
         collectionsLoading: true,
@@ -394,7 +394,7 @@ describe('useCollections', () => {
 
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue(storeData)
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections).toBe(storeData.collections)
       expect(result.current.collectionsLoading).toBe(
@@ -406,7 +406,7 @@ describe('useCollections', () => {
       )
     })
 
-    it('should use correct store selector', () => {
+    it('should use correct store selector', async () => {
       const storeData = {
         collections: [createMockCollection()],
         collectionsLoading: false,
@@ -416,14 +416,14 @@ describe('useCollections', () => {
 
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue(storeData)
 
-      renderHook(() => useCollections())
+      await renderHook(() => useCollections())
 
       expect(useApplicationStore).toHaveBeenCalled()
     })
   })
 
   describe('type safety', () => {
-    it('should return correct types for all properties', () => {
+    it('should return correct types for all properties', async () => {
       const mockCollections = [createMockCollection()]
 
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
@@ -433,7 +433,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(Array.isArray(result.current.collections)).toBe(true)
       expect(typeof result.current.collectionsLoading).toBe('boolean')
@@ -443,7 +443,7 @@ describe('useCollections', () => {
   })
 
   describe('edge cases', () => {
-    it('should handle undefined collections gracefully', () => {
+    it('should handle undefined collections gracefully', async () => {
       ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
         collections: undefined as unknown as Collection[],
         collectionsLoading: false,
@@ -451,12 +451,12 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections).toBeUndefined()
     })
 
-    it('should handle large collections list', () => {
+    it('should handle large collections list', async () => {
       const largeCollectionsList = Array.from({ length: 100 }, (_, i) =>
         createMockCollection({
           collection_id: `coll-${i}`,
@@ -471,12 +471,12 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections.length).toBe(100)
     })
 
-    it('should handle collections with all optional fields', () => {
+    it('should handle collections with all optional fields', async () => {
       const mockCollections = [
         createMockCollection({
           description: null,
@@ -492,7 +492,7 @@ describe('useCollections', () => {
         createNewCollection: jest.fn(),
       })
 
-      const { result } = renderHook(() => useCollections())
+      const { result } = await renderHook(() => useCollections())
 
       expect(result.current.collections[0].description).toBeNull()
     })

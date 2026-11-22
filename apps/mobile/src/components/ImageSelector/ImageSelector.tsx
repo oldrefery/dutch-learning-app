@@ -197,6 +197,8 @@ export default function ImageSelector({
               styles.imageOption,
               currentImageUrl === image.url && styles.currentImage,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel={image.alt}
             onPress={() => handleImageSelect(image.url)}
           >
             <Image source={{ uri: image.url }} style={styles.optionImage} />

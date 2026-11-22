@@ -19,8 +19,8 @@ describe('useBatchCaptureStore', () => {
     useBatchCaptureStore.setState(INITIAL_BATCH_CAPTURE_STATE)
   })
 
-  it('creates a user-scoped paused queue', () => {
-    act(() => {
+  it('creates a user-scoped paused queue', async () => {
+    await act(() => {
       useBatchCaptureStore.getState().createQueue(
         'user-1',
         [
@@ -45,7 +45,7 @@ describe('useBatchCaptureStore', () => {
     )
   })
 
-  it('clears persisted drafts when the signed-in owner changes', () => {
+  it('clears persisted drafts when the signed-in owner changes', async () => {
     useBatchCaptureStore.setState({
       ownerUserId: 'user-1',
       targetCollectionId: COLLECTION_ID,
@@ -66,7 +66,7 @@ describe('useBatchCaptureStore', () => {
       activeItemId: 'item-1',
     })
 
-    act(() => useBatchCaptureStore.getState().ensureOwner('user-2'))
+    await act(() => useBatchCaptureStore.getState().ensureOwner('user-2'))
 
     expect(useBatchCaptureStore.getState()).toEqual(
       expect.objectContaining({
@@ -79,7 +79,7 @@ describe('useBatchCaptureStore', () => {
     )
   })
 
-  it('recovers transient work after restart without losing queued content', () => {
+  it('recovers transient work after restart without losing queued content', async () => {
     useBatchCaptureStore.setState({
       ownerUserId: 'user-1',
       items: [
@@ -99,7 +99,7 @@ describe('useBatchCaptureStore', () => {
       activeItemId: 'item-1',
     })
 
-    act(() => useBatchCaptureStore.getState().recoverInterruptedItems())
+    await act(() => useBatchCaptureStore.getState().recoverInterruptedItems())
 
     expect(useBatchCaptureStore.getState()).toEqual(
       expect.objectContaining({
@@ -116,7 +116,7 @@ describe('useBatchCaptureStore', () => {
     )
   })
 
-  it('resumes partial completion without resetting already saved items', () => {
+  it('resumes partial completion without resetting already saved items', async () => {
     const baseItem = {
       translationHint: null,
       sourceLine: 1,
@@ -144,7 +144,7 @@ describe('useBatchCaptureStore', () => {
       activeItemId: 'item-2',
     })
 
-    act(() => useBatchCaptureStore.getState().recoverInterruptedItems())
+    await act(() => useBatchCaptureStore.getState().recoverInterruptedItems())
 
     expect(useBatchCaptureStore.getState().items).toEqual([
       expect.objectContaining({ id: 'item-1', status: 'completed' }),
@@ -152,7 +152,7 @@ describe('useBatchCaptureStore', () => {
     ])
   })
 
-  it('keeps completed items when the remaining queue is cancelled', () => {
+  it('keeps completed items when the remaining queue is cancelled', async () => {
     const baseItem = {
       translationHint: null,
       sourceLine: 1,
@@ -180,7 +180,7 @@ describe('useBatchCaptureStore', () => {
       activeItemId: 'item-2',
     })
 
-    act(() => useBatchCaptureStore.getState().cancelRemaining())
+    await act(() => useBatchCaptureStore.getState().cancelRemaining())
 
     expect(useBatchCaptureStore.getState().items).toEqual([
       expect.objectContaining({ id: 'item-1', status: 'completed' }),

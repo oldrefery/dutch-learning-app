@@ -1,5 +1,4 @@
 import React from 'react'
-import { Image } from 'react-native'
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native'
 import { supabase } from '@/lib/supabaseClient'
 import ImageSelector from './ImageSelector'
@@ -21,6 +20,7 @@ const imageResult = (alt: string) => ({
 describe('ImageSelector requests', () => {
   beforeEach(() => {
     invoke.mockReset()
+    callbacks.onSelect.mockClear()
   })
 
   it.each(['light', 'dark'] as const)(
@@ -40,7 +40,7 @@ describe('ImageSelector requests', () => {
             })
         )
         .mockResolvedValueOnce(imageResult('table'))
-      const { rerender, queryByText, UNSAFE_getAllByType } = render(
+      const { rerender, queryByText, getByRole, queryByRole } = await render(
         <ImageSelector
           {...callbacks}
           visible
@@ -48,7 +48,7 @@ describe('ImageSelector requests', () => {
           partOfSpeech="noun"
         />
       )
-      rerender(
+      await rerender(
         <ImageSelector
           {...callbacks}
           visible
@@ -68,15 +68,17 @@ describe('ImageSelector requests', () => {
         finishPrevious(imageResult('house'))
       })
       expect(queryByText('Finding better images...')).toBeNull()
-      expect(
-        UNSAFE_getAllByType(Image).map(image => image.props.source.uri)
-      ).toEqual(['https://example.com/table.jpg'])
+      expect(queryByRole('button', { name: 'house' })).toBeNull()
+      await fireEvent.press(getByRole('button', { name: 'table' }))
+      expect(callbacks.onSelect).toHaveBeenCalledWith(
+        'https://example.com/table.jpg'
+      )
     }
   )
 
   it('searches only on submission and retains the query when reopened', async () => {
     invoke.mockResolvedValue(imageResult('house'))
-    const { getByPlaceholderText, rerender } = render(
+    const { getByPlaceholderText, rerender } = await render(
       <ImageSelector
         {...callbacks}
         visible
@@ -85,14 +87,17 @@ describe('ImageSelector requests', () => {
       />
     )
     await waitFor(() => expect(invoke).toHaveBeenCalledTimes(1))
-    fireEvent.changeText(
+    await fireEvent.changeText(
       getByPlaceholderText('Change search query...'),
       'canal house'
     )
     expect(invoke).toHaveBeenCalledTimes(1)
-    fireEvent(getByPlaceholderText('Change search query...'), 'submitEditing')
+    await fireEvent(
+      getByPlaceholderText('Change search query...'),
+      'submitEditing'
+    )
     await waitFor(() => expect(invoke).toHaveBeenCalledTimes(2))
-    rerender(
+    await rerender(
       <ImageSelector
         {...callbacks}
         visible={false}
@@ -100,7 +105,7 @@ describe('ImageSelector requests', () => {
         partOfSpeech="noun"
       />
     )
-    rerender(
+    await rerender(
       <ImageSelector
         {...callbacks}
         visible

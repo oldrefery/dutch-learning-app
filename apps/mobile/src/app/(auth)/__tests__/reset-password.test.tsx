@@ -122,14 +122,14 @@ describe('ResetPasswordScreen', () => {
       .spyOn(console, 'log')
       .mockImplementation(() => undefined)
 
-    const { getByTestId } = render(<ResetPasswordScreen />)
+    const { getByTestId } = await render(<ResetPasswordScreen />)
 
-    fireEvent.changeText(getByTestId('reset-password-input'), newPassword)
-    fireEvent.changeText(
+    await fireEvent.changeText(getByTestId('reset-password-input'), newPassword)
+    await fireEvent.changeText(
       getByTestId('reset-confirm-password-input'),
       newPassword
     )
-    fireEvent.press(getByTestId('reset-password-button'))
+    await fireEvent.press(getByTestId('reset-password-button'))
 
     await waitFor(() => {
       expect(resetPassword).toHaveBeenCalledWith(newPassword)

@@ -55,7 +55,7 @@ describe('session routing gate', () => {
 
   it('opens a stored session without waiting for network authorization', async () => {
     getSession.mockResolvedValue(success)
-    const { result } = renderHook(useSessionGate)
+    const { result } = await renderHook(useSessionGate)
     await settle()
     expect(result.current).toMatchObject({
       status: 'signed-in',
@@ -64,7 +64,7 @@ describe('session routing gate', () => {
   })
 
   it('routes a confirmed missing session to sign-in', async () => {
-    const { result } = renderHook(useSessionGate)
+    const { result } = await renderHook(useSessionGate)
     await settle()
     expect(result.current.status).toBe('signed-out')
   })
@@ -77,12 +77,12 @@ describe('session routing gate', () => {
           unavailable as Awaited<ReturnType<typeof supabase.auth.getSession>>
         )
       else getSession.mockRejectedValue(new Error('Offline'))
-      const { result } = renderHook(useSessionGate)
+      const { result } = await renderHook(useSessionGate)
       await settle()
-      act(() => auth('INITIAL_SESSION', null))
+      await act(() => auth('INITIAL_SESSION', null))
       expect(result.current.status).toBe('unavailable')
       getSession.mockResolvedValue(success)
-      act(() => {
+      await act(() => {
         network(false)
         network(true)
       })
@@ -99,15 +99,15 @@ describe('session routing gate', () => {
           finish = resolve
         })
     )
-    const { result } = renderHook(useSessionGate)
-    act(() => auth('INITIAL_SESSION', null))
-    act(() => jest.advanceTimersByTime(SESSION_CHECK_TIMEOUT_MS - 1))
+    const { result } = await renderHook(useSessionGate)
+    await act(() => auth('INITIAL_SESSION', null))
+    await act(() => jest.advanceTimersByTime(SESSION_CHECK_TIMEOUT_MS - 1))
     expect(result.current.status).toBe('checking')
-    act(() => jest.advanceTimersByTime(1))
+    await act(() => jest.advanceTimersByTime(1))
     expect(result.current.status).toBe('unavailable')
-    act(() => result.current.retry())
+    await act(() => result.current.retry())
     expect(getSession).toHaveBeenCalledTimes(1)
-    act(() => jest.advanceTimersByTime(SESSION_CHECK_TIMEOUT_MS))
+    await act(() => jest.advanceTimersByTime(SESSION_CHECK_TIMEOUT_MS))
     expect(result.current.status).toBe('unavailable')
     await act(async () => finish(success))
     expect(result.current.status).toBe('signed-in')
@@ -123,8 +123,8 @@ describe('session routing gate', () => {
             finish = resolve
           })
       )
-      const { result } = renderHook(useSessionGate)
-      act(() =>
+      const { result } = await renderHook(useSessionGate)
+      await act(() =>
         auth(
           event,
           event === 'SIGNED_OUT'
@@ -138,16 +138,16 @@ describe('session routing gate', () => {
           ? { status: 'signed-out', userId: null }
           : { status: 'signed-in', userId: 'new-user' }
       )
-      act(() => jest.advanceTimersByTime(SESSION_CHECK_TIMEOUT_MS))
+      await act(() => jest.advanceTimersByTime(SESSION_CHECK_TIMEOUT_MS))
       expect(result.current.status).not.toBe('unavailable')
     }
   )
 
   it('does not unmount an admitted screen on ordinary reconnection', async () => {
     getSession.mockResolvedValue(success)
-    const { result } = renderHook(useSessionGate)
+    const { result } = await renderHook(useSessionGate)
     await settle()
-    act(() => {
+    await act(() => {
       network(false)
       network(true)
       network(true)
@@ -166,8 +166,8 @@ describe('session routing gate', () => {
           reject = failure
         })
     )
-    const { result, unmount } = renderHook(useSessionGate)
-    unmount()
+    const { result, unmount } = await renderHook(useSessionGate)
+    await unmount()
     await act(async () => {
       reject(new Error('Late failure'))
       auth('SIGNED_IN', session)

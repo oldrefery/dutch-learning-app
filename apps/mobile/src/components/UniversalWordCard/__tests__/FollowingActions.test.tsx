@@ -1,6 +1,8 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react-native'
+import { StyleSheet } from 'react-native'
 import { createMockWord } from '@/__tests__/helpers/factories'
+import { Colors } from '@/constants/Colors'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { ActionsSection } from '../sections/ActionsSection'
 import { HeaderSection } from '../sections/HeaderSection'
@@ -70,10 +72,31 @@ describe.each(['light', 'dark'] as const)('%s following actions', theme => {
   beforeEach(() => {
     jest.mocked(useNormalizedColorScheme).mockReturnValue(theme)
   })
-  it('hides private reanalysis and image changes while keeping learning and the shared image visible', () => {
+
+  it('uses the card background for all learning statistics', async () => {
+    const { getByText } = await render(
+      <ActionsSection
+        word={createMockWord({ easiness_factor: 2.5 })}
+        actions={{ showProgressInfo: true, showStatusInfo: true }}
+      />
+    )
+
+    for (const label of ['Reviews:', 'Ease Factor:', 'Next Review:']) {
+      const row = getByText(label).parent
+      expect(row).toBeTruthy()
+      expect(
+        StyleSheet.flatten(row?.props.style).backgroundColor
+      ).toBeUndefined()
+      expect(row?.parent).toHaveStyle({
+        backgroundColor: Colors[theme].backgroundSecondary,
+      })
+    }
+  })
+
+  it('hides private reanalysis and image changes while keeping learning and the shared image visible', async () => {
     const onReanalyze = jest.fn()
     const onChangeImage = jest.fn()
-    const actions = render(
+    const actions = await render(
       <ActionsSection
         word={sharedWord}
         actions={{
@@ -85,7 +108,7 @@ describe.each(['light', 'dark'] as const)('%s following actions', theme => {
     )
     expect(actions.queryByText('Re-analyze Word')).toBeNull()
     expect(actions.getByText('Reviews:')).toBeTruthy()
-    const image = render(
+    const image = await render(
       <ImageSection
         word={sharedWord}
         config={{ ...defaultConfig, enableImageChange: true }}
@@ -97,26 +120,26 @@ describe.each(['light', 'dark'] as const)('%s following actions', theme => {
     expect(onReanalyze).not.toHaveBeenCalled()
     expect(onChangeImage).not.toHaveBeenCalled()
   })
-  it('retains existing private actions for legacy words', () => {
+  it('retains existing private actions for legacy words', async () => {
     const word = { ...sharedWord, dictionary_content_state: undefined }
     const onReanalyze = jest.fn()
     const onChangeImage = jest.fn()
-    const actions = render(
+    const actions = await render(
       <ActionsSection
         word={word}
         actions={{ showReanalyzeButton: true, onReanalyze }}
       />
     )
-    fireEvent.press(actions.getByText('Re-analyze Word'))
+    await fireEvent.press(actions.getByText('Re-analyze Word'))
     expect(onReanalyze).toHaveBeenCalledTimes(1)
-    const image = render(
+    const image = await render(
       <ImageSection
         word={word}
         config={{ ...defaultConfig, enableImageChange: true }}
         onChangeImage={onChangeImage}
       />
     )
-    fireEvent.press(image.getByText('Change Image'))
+    await fireEvent.press(image.getByText('Change Image'))
     expect(onChangeImage).toHaveBeenCalledTimes(1)
   })
 })
@@ -127,7 +150,7 @@ it.each([
   ['stad', true],
 ] as const)(
   'shows the article badge for an analysis of %s only when appropriate',
-  (lemma, showsArticle) => {
+  async (lemma, showsArticle) => {
     const word = {
       dutch_lemma: lemma,
       part_of_speech: 'noun',
@@ -136,7 +159,7 @@ it.each([
       translations: { en: [lemma] },
       examples: [],
     }
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText } = await render(
       <HeaderSection
         word={word}
         config={defaultConfig}

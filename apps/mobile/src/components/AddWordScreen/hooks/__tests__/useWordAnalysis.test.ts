@@ -57,7 +57,7 @@ describe('useWordAnalysis', () => {
       meta: { source: 'gemini', cache_hit: false },
     })
 
-    const { result } = renderHook(() => useWordAnalysis())
+    const { result } = await renderHook(() => useWordAnalysis())
 
     await act(async () => {
       await result.current.analyzeWord(' Woning ')
@@ -81,7 +81,7 @@ describe('useWordAnalysis', () => {
           examples: [],
         },
       })
-      const { result } = renderHook(() => useWordAnalysis())
+      const { result } = await renderHook(() => useWordAnalysis())
       await act(async () => result.current.analyzeWord('huis'))
       expect(result.current.analysisError).toBeNull()
       expect(result.current.analysisResult?.dutch_lemma).toBe('huis')

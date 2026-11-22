@@ -54,7 +54,7 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const unsubscribeNetworkRef = useRef<(() => void) | null>(null)
   const unsubscribeSyncRef = useRef<(() => void) | null>(null)
-  const appStateRef = useRef<AppStateStatus>(AppState.currentState)
+  const appStateRef = useRef(AppState.currentState)
 
   const initializeSync = useCallback(async () => {
     try {
@@ -184,7 +184,7 @@ export function useSyncManager(options: UseSyncManagerOptions = {}) {
           clearPeriodicSync()
           console.log('[Sync] Paused periodic sync (app backgrounded)')
         } else if (
-          prevState.match(/inactive|background/) &&
+          prevState?.match(/inactive|background/) &&
           nextState === 'active'
         ) {
           // App coming to foreground - resume periodic sync and trigger sync

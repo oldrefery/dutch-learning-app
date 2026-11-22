@@ -120,7 +120,7 @@ describe('useAddWord', () => {
     }))
   })
 
-  it('restores the persisted selection after collections finish loading', () => {
+  it('restores the persisted selection after collections finish loading', async () => {
     const secondCollection = {
       ...collection,
       collection_id: 'collection-2',
@@ -136,13 +136,13 @@ describe('useAddWord', () => {
       lastSelectedCollectionId: secondCollection.collection_id,
     })
     ;(useCollections as jest.Mock).mockReturnValue({ collections: [] })
-    const { result, rerender } = renderHook(() => useAddWord())
+    const { result, rerender } = await renderHook(() => useAddWord())
     expect(result.current.selectedCollection).toBeNull()
     expect(setLastSelectedCollectionId).not.toHaveBeenCalled()
     ;(useCollections as jest.Mock).mockReturnValue({
       collections: [collection, secondCollection],
     })
-    rerender({})
+    await rerender({})
     expect(result.current.selectedCollection).toEqual(secondCollection)
     expect(setLastSelectedCollectionId).not.toHaveBeenCalled()
   })
@@ -154,7 +154,7 @@ describe('useAddWord', () => {
     }
     saveAnalyzedWord.mockResolvedValue(persistedWord)
 
-    const { result } = renderHook(() => useAddWord())
+    const { result } = await renderHook(() => useAddWord())
 
     await waitFor(() => {
       expect(result.current.selectedCollection).toEqual(collection)
@@ -181,7 +181,7 @@ describe('useAddWord', () => {
   it('does not show success when saveAnalyzedWord rejects', async () => {
     saveAnalyzedWord.mockRejectedValue(new Error('Save failed'))
 
-    const { result } = renderHook(() => useAddWord())
+    const { result } = await renderHook(() => useAddWord())
 
     await waitFor(() => {
       expect(result.current.selectedCollection).toEqual(collection)
@@ -210,7 +210,7 @@ describe('useAddWord', () => {
       new Error('Save failed after collection creation')
     )
 
-    const { result } = renderHook(() => useAddWord())
+    const { result } = await renderHook(() => useAddWord())
 
     await act(async () => {
       await expect(result.current.addWord(analysis)).resolves.toBe(false)
@@ -239,7 +239,7 @@ describe('useAddWord', () => {
       new Error('Word "lopen" already exists in your collection')
     )
 
-    const { result } = renderHook(() => useAddWord())
+    const { result } = await renderHook(() => useAddWord())
 
     await waitFor(() => {
       expect(result.current.selectedCollection).toEqual(collection)
@@ -259,7 +259,7 @@ describe('useAddWord', () => {
     process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED = 'true'
     try {
       saveAnalyzedWord.mockResolvedValue(savedWord)
-      const { result } = renderHook(() => useAddWord())
+      const { result } = await renderHook(() => useAddWord())
       await act(async () => {
         await expect(result.current.addWord(analysis)).resolves.toBe(true)
       })

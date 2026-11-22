@@ -39,7 +39,7 @@ interface ReviewSessionCardProps {
   tapGesture: GestureType
   panGesture: GestureType
   lockedGesture: GestureType
-  pronunciationRef: React.RefObject<View | null>
+  pronunciationRef: React.RefObject<React.ComponentRef<typeof View> | null>
   onPlayAudio: (url?: string) => void
   onSelectRecognitionOption: (option: RecognitionOption) => void
   onFlip: () => void
@@ -56,7 +56,7 @@ interface ReviewPromptProps {
   recognitionOptions: RecognitionOption[] | null
   selectedRecognitionOption: RecognitionOption | null
   isPlayingAudio: boolean
-  pronunciationRef: React.RefObject<View | null>
+  pronunciationRef: React.RefObject<React.ComponentRef<typeof View> | null>
   onPlayAudio: (url?: string) => void
   onSelectRecognitionOption: (option: RecognitionOption) => void
 }

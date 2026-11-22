@@ -45,35 +45,41 @@ describe.each(['light', 'dark'] as const)('%s review mode snapshots', theme => {
     mockUseNormalizedColorScheme.mockReturnValue(theme)
   })
 
-  it('renders Recognition', () => {
-    const tree = render(
-      <RecognitionCard
-        word={word}
-        options={options}
-        selectedOptionId={null}
-        isPlayingAudio={false}
-        onPlayPronunciation={noOp}
-        onSelectOption={noOp}
-      />
+  it('renders Recognition', async () => {
+    const tree = (
+      await render(
+        <RecognitionCard
+          word={word}
+          options={options}
+          selectedOptionId={null}
+          isPlayingAudio={false}
+          onPlayPronunciation={noOp}
+          onSelectOption={noOp}
+        />
+      )
     ).toJSON()
 
     expect(tree).toMatchSnapshot()
   })
 
-  it('renders Meaning Recall', () => {
-    const tree = render(
-      <MeaningRecallCard
-        word={word}
-        isPlayingAudio={false}
-        onPlayPronunciation={noOp}
-      />
+  it('renders Meaning Recall', async () => {
+    const tree = (
+      await render(
+        <MeaningRecallCard
+          word={word}
+          isPlayingAudio={false}
+          onPlayPronunciation={noOp}
+        />
+      )
     ).toJSON()
 
     expect(tree).toMatchSnapshot()
   })
 
-  it('renders Dutch Production', () => {
-    const tree = render(<DutchProductionCard prompt={ENGLISH_HOUSE} />).toJSON()
+  it('renders Dutch Production', async () => {
+    const tree = (
+      await render(<DutchProductionCard prompt={ENGLISH_HOUSE} />)
+    ).toJSON()
 
     expect(tree).toMatchSnapshot()
   })
@@ -87,9 +93,9 @@ describe('RecognitionCard', () => {
 
   it.each(['december', 'dinsdag'])(
     'renders %s without its stored article in both review modes',
-    lemma => {
+    async lemma => {
       const calendarWord = createMockWord({ dutch_lemma: lemma, article: 'de' })
-      const { getAllByText, queryByText } = render(
+      const { getAllByText, queryByText } = await render(
         <>
           <RecognitionCard
             word={calendarWord}
@@ -112,10 +118,10 @@ describe('RecognitionCard', () => {
     }
   )
 
-  it('reports a selected option without advancing the session', () => {
+  it('reports a selected option without advancing the session', async () => {
     const onSelectOption = jest.fn()
     const onAssessment = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <RecognitionCard
         word={word}
         options={options}
@@ -126,14 +132,14 @@ describe('RecognitionCard', () => {
       />
     )
 
-    fireEvent.press(getByTestId(FIRST_OPTION_ID))
+    await fireEvent.press(getByTestId(FIRST_OPTION_ID))
 
     expect(onSelectOption).toHaveBeenCalledWith(options[0])
     expect(onAssessment).not.toHaveBeenCalled()
   })
 
-  it('exposes the selected option to assistive technology', () => {
-    const { getByTestId } = render(
+  it('exposes the selected option to assistive technology', async () => {
+    const { getByTestId } = await render(
       <RecognitionCard
         word={word}
         options={options}
@@ -149,7 +155,7 @@ describe('RecognitionCard', () => {
     ).toMatchObject({ selected: true, disabled: false })
   })
 
-  it('shows and announces Russian translations below English options', () => {
+  it('shows and announces Russian translations below English options', async () => {
     const optionsWithRussian: RecognitionOption[] = [
       {
         id: HOUSE_WORD_ID,
@@ -158,7 +164,7 @@ describe('RecognitionCard', () => {
         isCorrect: true,
       },
     ]
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText } = await render(
       <RecognitionCard
         word={word}
         options={optionsWithRussian}
@@ -175,8 +181,8 @@ describe('RecognitionCard', () => {
     )
   })
 
-  it('shows the Russian translation below a Dutch production prompt', () => {
-    const { getByText } = render(
+  it('shows the Russian translation below a Dutch production prompt', async () => {
+    const { getByText } = await render(
       <DutchProductionCard
         prompt={ENGLISH_HOUSE}
         secondaryPrompt={RUSSIAN_HOUSE}
@@ -187,9 +193,9 @@ describe('RecognitionCard', () => {
     expect(getByText(RUSSIAN_HOUSE)).toBeTruthy()
   })
 
-  it('prevents answers while showing read-only history', () => {
+  it('prevents answers while showing read-only history', async () => {
     const onSelectOption = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <RecognitionCard
         word={word}
         options={options}
@@ -200,7 +206,7 @@ describe('RecognitionCard', () => {
         disabled
       />
     )
-    fireEvent.press(getByTestId(FIRST_OPTION_ID))
+    await fireEvent.press(getByTestId(FIRST_OPTION_ID))
     expect(onSelectOption).not.toHaveBeenCalled()
     expect(getByTestId(FIRST_OPTION_ID).props.accessibilityState).toMatchObject(
       { disabled: true }
@@ -209,10 +215,10 @@ describe('RecognitionCard', () => {
 })
 
 describe('ReviewModeSelector', () => {
-  it('selects a mode and starts with the persisted selection', () => {
+  it('selects a mode and starts with the persisted selection', async () => {
     const onSelectMode = jest.fn()
     const onStart = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ReviewModeSelector
         selectedMode={REVIEW_MODE.RECOGNITION}
         onSelectMode={onSelectMode}
@@ -220,16 +226,16 @@ describe('ReviewModeSelector', () => {
       />
     )
 
-    fireEvent.press(getByTestId('review-mode-dutch-production'))
+    await fireEvent.press(getByTestId('review-mode-dutch-production'))
     expect(onSelectMode).toHaveBeenCalledWith(REVIEW_MODE.DUTCH_PRODUCTION)
 
-    fireEvent.press(getByTestId('start-review-button'))
+    await fireEvent.press(getByTestId('start-review-button'))
     expect(onStart).toHaveBeenCalledWith(REVIEW_MODE.RECOGNITION)
   })
 
-  it('offers Adaptive unless it is disabled in settings', () => {
+  it('offers Adaptive unless it is disabled in settings', async () => {
     const callbacks = { onSelectMode: jest.fn(), onStart: jest.fn() }
-    const { getByTestId, queryByTestId, rerender } = render(
+    const { getByTestId, queryByTestId, rerender } = await render(
       <ReviewModeSelector
         selectedMode={REVIEW_SESSION_MODE.ADAPTIVE}
         {...callbacks}
@@ -238,7 +244,7 @@ describe('ReviewModeSelector', () => {
 
     expect(getByTestId('review-mode-adaptive')).toBeTruthy()
 
-    rerender(
+    await rerender(
       <ReviewModeSelector
         selectedMode={REVIEW_SESSION_MODE.ADAPTIVE}
         adaptiveEnabled={false}
@@ -247,13 +253,13 @@ describe('ReviewModeSelector', () => {
     )
 
     expect(queryByTestId('review-mode-adaptive')).toBeNull()
-    fireEvent.press(getByTestId('start-review-button'))
+    await fireEvent.press(getByTestId('start-review-button'))
     expect(callbacks.onStart).toHaveBeenCalledWith(REVIEW_MODE.MEANING_RECALL)
   })
 
-  it('offers Audio Review as a separate accessible session', () => {
+  it('offers Audio Review as a separate accessible session', async () => {
     const onStartAudioReview = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ReviewModeSelector
         selectedMode={REVIEW_MODE.MEANING_RECALL}
         onSelectMode={jest.fn()}
@@ -262,7 +268,7 @@ describe('ReviewModeSelector', () => {
       />
     )
 
-    fireEvent.press(getByTestId('start-audio-review-button'))
+    await fireEvent.press(getByTestId('start-audio-review-button'))
 
     expect(onStartAudioReview).toHaveBeenCalledTimes(1)
     expect(
@@ -270,10 +276,10 @@ describe('ReviewModeSelector', () => {
     ).toBe('Start Audio Review')
   })
 
-  it('shows and dismisses the contextual learning guide introduction', () => {
+  it('shows and dismisses the contextual learning guide introduction', async () => {
     const onOpenLearningGuide = jest.fn()
     const onDismissLearningGuideIntro = jest.fn()
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ReviewModeSelector
         selectedMode={REVIEW_MODE.MEANING_RECALL}
         onSelectMode={jest.fn()}
@@ -284,16 +290,16 @@ describe('ReviewModeSelector', () => {
       />
     )
 
-    fireEvent.press(getByTestId('show-learning-guide-button'))
-    fireEvent.press(getByTestId('dismiss-learning-guide-button'))
+    await fireEvent.press(getByTestId('show-learning-guide-button'))
+    await fireEvent.press(getByTestId('dismiss-learning-guide-button'))
 
     expect(onOpenLearningGuide).toHaveBeenCalledTimes(1)
     expect(onDismissLearningGuideIntro).toHaveBeenCalledTimes(1)
   })
 
-  it('keeps the learning guide available after the introduction is hidden', () => {
+  it('keeps the learning guide available after the introduction is hidden', async () => {
     const onOpenLearningGuide = jest.fn()
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = await render(
       <ReviewModeSelector
         selectedMode={REVIEW_MODE.MEANING_RECALL}
         onSelectMode={jest.fn()}
@@ -303,7 +309,7 @@ describe('ReviewModeSelector', () => {
     )
 
     expect(queryByTestId('learning-guide-introduction')).toBeNull()
-    fireEvent.press(getByTestId('open-learning-guide-button'))
+    await fireEvent.press(getByTestId('open-learning-guide-button'))
 
     expect(onOpenLearningGuide).toHaveBeenCalledTimes(1)
   })
@@ -322,8 +328,8 @@ describe('ReviewAssessmentControls', () => {
     jest.clearAllMocks()
   })
 
-  it('allows only Again continuation after a wrong recognition answer', () => {
-    const { getByTestId, queryByTestId } = render(
+  it('allows only Again continuation after a wrong recognition answer', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ReviewAssessmentControls
         isRevealed
         effectiveMode={REVIEW_MODE.RECOGNITION}
@@ -337,12 +343,12 @@ describe('ReviewAssessmentControls', () => {
     expect(queryByTestId(SRS_GOOD_BUTTON)).toBeNull()
     expect(queryByTestId('srs-easy-button')).toBeNull()
 
-    fireEvent.press(getByTestId('recognition-continue-button'))
+    await fireEvent.press(getByTestId('recognition-continue-button'))
     expect(handlers.onAgain).toHaveBeenCalledTimes(1)
   })
 
-  it('requires an explicit SRS rating after a correct recognition answer', () => {
-    const { getByTestId, queryByTestId } = render(
+  it('requires an explicit SRS rating after a correct recognition answer', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ReviewAssessmentControls
         isRevealed
         effectiveMode={REVIEW_MODE.RECOGNITION}
@@ -355,12 +361,12 @@ describe('ReviewAssessmentControls', () => {
     expect(queryByTestId('srs-again-button')).toBeNull()
     expect(handlers.onGood).not.toHaveBeenCalled()
 
-    fireEvent.press(getByTestId(SRS_GOOD_BUTTON))
+    await fireEvent.press(getByTestId(SRS_GOOD_BUTTON))
     expect(handlers.onGood).toHaveBeenCalledTimes(1)
   })
 
-  it('hides all SRS ratings until a recall answer is revealed', () => {
-    const { getByTestId, queryByTestId } = render(
+  it('hides all SRS ratings until a recall answer is revealed', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ReviewAssessmentControls
         isRevealed={false}
         effectiveMode={REVIEW_MODE.MEANING_RECALL}
@@ -371,7 +377,7 @@ describe('ReviewAssessmentControls', () => {
     )
 
     expect(queryByTestId(SRS_GOOD_BUTTON)).toBeNull()
-    fireEvent.press(getByTestId('reveal-answer-button'))
+    await fireEvent.press(getByTestId('reveal-answer-button'))
     expect(handlers.onReveal).toHaveBeenCalledTimes(1)
   })
 })

@@ -25,9 +25,9 @@ const mockSheet = jest.mocked(CollectionSelectorSheet)
 const mockTheme = jest.mocked(useNormalizedColorScheme)
 const COLLECTION_SELECTOR_TEST_ID = 'collection-selector'
 
-function renderInput() {
+async function renderInput() {
   const onCollectionSelect = jest.fn()
-  const result = render(
+  const result = await render(
     <CompactWordInput
       inputWord=""
       setInputWord={jest.fn()}
@@ -55,7 +55,7 @@ afterEach(() => {
 describe.each(['light', 'dark'] as const)(
   'Android %s collection selection',
   theme => {
-    it('opens the existing sheet and forwards the selected collection', () => {
+    it('opens the existing sheet and forwards the selected collection', async () => {
       Object.defineProperty(Platform, 'OS', {
         value: 'android',
         configurable: true,
@@ -65,9 +65,9 @@ describe.each(['light', 'dark'] as const)(
         ActionSheetIOS,
         'showActionSheetWithOptions'
       )
-      const { getByTestId, onCollectionSelect } = renderInput()
+      const { getByTestId, onCollectionSelect } = await renderInput()
 
-      fireEvent.press(getByTestId(COLLECTION_SELECTOR_TEST_ID))
+      await fireEvent.press(getByTestId(COLLECTION_SELECTOR_TEST_ID))
 
       expect(actionSheet).not.toHaveBeenCalled()
       expect(mockSheet).toHaveBeenLastCalledWith(
@@ -78,34 +78,34 @@ describe.each(['light', 'dark'] as const)(
         }),
         undefined
       )
-      act(() => mockSheet.mock.calls.at(-1)![0].onSelect(collections[1]))
+      await act(() => mockSheet.mock.calls.at(-1)![0].onSelect(collections[1]))
       expect(onCollectionSelect).toHaveBeenCalledWith(collections[1])
 
-      act(() => mockSheet.mock.calls.at(-1)![0].onClose())
+      await act(() => mockSheet.mock.calls.at(-1)![0].onClose())
       expect(mockSheet.mock.calls.at(-1)![0].visible).toBe(false)
     })
   }
 )
 
-it('dismisses the Android sheet without changing the selected collection', () => {
+it('dismisses the Android sheet without changing the selected collection', async () => {
   Object.defineProperty(Platform, 'OS', {
     value: 'android',
     configurable: true,
   })
-  const { getByTestId, onCollectionSelect } = renderInput()
-  fireEvent.press(getByTestId(COLLECTION_SELECTOR_TEST_ID))
-  act(() => mockSheet.mock.calls.at(-1)![0].onClose())
+  const { getByTestId, onCollectionSelect } = await renderInput()
+  await fireEvent.press(getByTestId(COLLECTION_SELECTOR_TEST_ID))
+  await act(() => mockSheet.mock.calls.at(-1)![0].onClose())
   expect(onCollectionSelect).not.toHaveBeenCalled()
   expect(mockSheet.mock.calls.at(-1)![0].visible).toBe(false)
 })
 
-it('preserves the iOS action sheet selection and cancellation', () => {
+it('preserves the iOS action sheet selection and cancellation', async () => {
   Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true })
   const actionSheet = jest
     .spyOn(ActionSheetIOS, 'showActionSheetWithOptions')
     .mockImplementation(() => {})
-  const { getByTestId, onCollectionSelect } = renderInput()
-  fireEvent.press(getByTestId(COLLECTION_SELECTOR_TEST_ID))
+  const { getByTestId, onCollectionSelect } = await renderInput()
+  await fireEvent.press(getByTestId(COLLECTION_SELECTOR_TEST_ID))
   expect(actionSheet).toHaveBeenCalledWith(
     {
       options: ['First', 'Second', 'Cancel'],
@@ -115,10 +115,10 @@ it('preserves the iOS action sheet selection and cancellation', () => {
     expect.any(Function)
   )
   const onSelect = actionSheet.mock.calls[0][1]
-  act(() => onSelect(1))
+  await act(() => onSelect(1))
   expect(onCollectionSelect).toHaveBeenCalledWith(collections[1])
   onCollectionSelect.mockClear()
-  act(() => onSelect(2))
+  await act(() => onSelect(2))
   expect(onCollectionSelect).not.toHaveBeenCalled()
   expect(mockSheet).not.toHaveBeenCalled()
 })

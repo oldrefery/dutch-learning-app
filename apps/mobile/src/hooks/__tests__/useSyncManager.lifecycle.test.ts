@@ -93,7 +93,7 @@ describe('native synchronization lifecycle', () => {
   }
 
   it('starts sync on reconnection, not on a disconnected notification', async () => {
-    const { result } = renderHook(() => useSyncManager(options))
+    const { result } = await renderHook(() => useSyncManager(options))
     await changeNetwork(false)
     expect(syncManager.performSync).not.toHaveBeenCalled()
     await changeNetwork(true)
@@ -106,7 +106,7 @@ describe('native synchronization lifecycle', () => {
   it.each(['background', 'inactive'] as const)(
     'defers reconnection while %s and synchronizes once on foreground',
     async state => {
-      renderHook(() => useSyncManager(options))
+      await renderHook(() => useSyncManager(options))
       await changeAppState(state)
       await changeNetwork(true)
       expect(syncManager.performSync).not.toHaveBeenCalled()
@@ -118,7 +118,7 @@ describe('native synchronization lifecycle', () => {
   )
 
   it('pauses periodic work in the background and resumes a single timer', async () => {
-    renderHook(() => useSyncManager({ ...options, syncIntervalMs: 1000 }))
+    await renderHook(() => useSyncManager({ ...options, syncIntervalMs: 1000 }))
     await act(async () => {
       jest.advanceTimersByTime(1000)
     })
@@ -137,10 +137,10 @@ describe('native synchronization lifecycle', () => {
   })
 
   it('cleans up subscriptions and timers when the screen unmounts', async () => {
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useSyncManager({ ...options, syncIntervalMs: 1000 })
     )
-    unmount()
+    await unmount()
     expect(unsubscribeNetwork).toHaveBeenCalledTimes(1)
     expect(unsubscribeStatus).toHaveBeenCalledTimes(1)
     expect(removeAppStateListener).toHaveBeenCalledTimes(1)
@@ -152,7 +152,7 @@ describe('native synchronization lifecycle', () => {
 
   it('does not synchronize without an authenticated store identity', async () => {
     useApplicationStore.setState({ currentUserId: null })
-    const { result } = renderHook(() => useSyncManager(options))
+    const { result } = await renderHook(() => useSyncManager(options))
     await changeNetwork(true)
     await changeAppState('background')
     await changeAppState('active')
@@ -163,7 +163,7 @@ describe('native synchronization lifecycle', () => {
   })
 
   it('honors the disabled network subscription option', async () => {
-    renderHook(() =>
+    await renderHook(() =>
       useSyncManager({ ...options, autoSyncOnNetworkChange: false })
     )
     await act(async () => {})
@@ -175,7 +175,7 @@ describe('native synchronization lifecycle', () => {
     jest
       .mocked(syncManager.performSync)
       .mockRejectedValueOnce(new Error('Connection lost'))
-    const { result } = renderHook(() => useSyncManager(options))
+    const { result } = await renderHook(() => useSyncManager(options))
     await changeNetwork(true)
     expect(result.current.syncResult).toMatchObject({
       success: false,
@@ -201,7 +201,7 @@ describe('native synchronization lifecycle', () => {
         useApplicationStore.setState({ userAccessLevel: 'full_access' })
       }),
     })
-    const { result } = renderHook(() => useSyncManager(options))
+    const { result } = await renderHook(() => useSyncManager(options))
     await act(async () => {})
     for (let cycle = 0; cycle < 20; cycle++) {
       await changeAppState('background')
@@ -221,7 +221,7 @@ describe('native synchronization lifecycle', () => {
   })
 
   it('rehydrates visible data only for successful sync notifications', async () => {
-    renderHook(() => useSyncManager(options))
+    await renderHook(() => useSyncManager(options))
     const { fetchCollections, fetchWords, fetchUserAccessLevel } =
       useApplicationStore.getState()
     await act(async () => {

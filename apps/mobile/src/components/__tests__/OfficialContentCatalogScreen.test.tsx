@@ -1,11 +1,22 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native'
-import { FlatList } from 'react-native'
 import type { OfficialContentCatalogItem } from '@woordenaar/content/remote'
 import { OfficialContentCatalogScreen } from '../OfficialContentCatalogScreen'
 import { officialContentCatalogService } from '@/services/officialContentCatalogService'
 import { useNormalizedColorScheme } from '@/hooks/useNormalizedColorScheme'
 import { Colors } from '@/constants/Colors'
 
+// Mount all rows so this test can check the complete catalog without a native viewport.
+jest.mock('react-native/Libraries/Lists/FlatList', () => {
+  const FlatList = jest.requireActual(
+    'react-native/Libraries/Lists/FlatList'
+  ).default
+  return {
+    __esModule: true,
+    default: (props: React.ComponentProps<typeof FlatList>) => (
+      <FlatList {...props} initialNumToRender={21} />
+    ),
+  }
+})
 jest.mock('@/services/officialContentCatalogService', () => ({
   officialContentCatalogService: { getCatalog: jest.fn() },
 }))
@@ -70,12 +81,13 @@ describe('OfficialContentCatalogScreen', () => {
         Array.from({ length: 21 }, (_, index) => catalogItem(index + 1))
       )
 
-    const screen = render(<OfficialContentCatalogScreen />)
+    const screen = await render(<OfficialContentCatalogScreen />)
 
     expect(screen.getByText('Dutch A1 Essentials')).toBeTruthy()
     await waitFor(() => expect(screen.getByText('Dutch pack 1')).toBeTruthy())
-    expect(screen.UNSAFE_getByType(FlatList).props.data).toHaveLength(21)
-    screen.unmount()
+    expect(screen.getAllByLabelText(/^Open Dutch pack /)).toHaveLength(21)
+    expect(screen.getByLabelText('Open Dutch pack 21')).toBeTruthy()
+    await screen.unmount()
   })
 
   it('uses dark theme surface tokens for pack cards', async () => {
@@ -84,7 +96,7 @@ describe('OfficialContentCatalogScreen', () => {
       .mocked(officialContentCatalogService.getCatalog)
       .mockResolvedValue([catalogItem(1)])
 
-    const screen = render(<OfficialContentCatalogScreen />)
+    const screen = await render(<OfficialContentCatalogScreen />)
     const card = await screen.findByLabelText('Open Dutch pack 1')
 
     expect(card).toHaveStyle({
@@ -99,11 +111,11 @@ describe('OfficialContentCatalogScreen', () => {
       .mockRejectedValueOnce(new Error('offline'))
       .mockResolvedValueOnce([catalogItem(1)])
 
-    const screen = render(<OfficialContentCatalogScreen />)
+    const screen = await render(<OfficialContentCatalogScreen />)
 
     await screen.findByText(/online catalog is unavailable/i)
     expect(screen.getByText('Dutch A1 Essentials')).toBeTruthy()
-    fireEvent.press(screen.getByText('Try again'))
+    await fireEvent.press(screen.getByText('Try again'))
     await screen.findByText('Dutch pack 1')
   })
 })

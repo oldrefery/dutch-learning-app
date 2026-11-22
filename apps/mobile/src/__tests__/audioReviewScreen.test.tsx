@@ -55,13 +55,13 @@ describe.each(['light', 'dark'] as const)(
         exitSession,
       })
 
-      const screen = render(<AudioReviewScreen />)
+      const screen = await render(<AudioReviewScreen />)
       expect(screen.getByText(state.title)).toBeVisible()
       const exitButton = screen.getByRole('button', { name: EXIT_LABEL })
       expect(exitButton).toHaveStyle({ flex: 0, minHeight: 52 })
 
       await act(async () => {
-        fireEvent.press(exitButton)
+        await fireEvent.press(exitButton)
       })
 
       expect(exitSession).toHaveBeenCalledTimes(1)

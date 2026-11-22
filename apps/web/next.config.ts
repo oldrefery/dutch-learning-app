@@ -43,6 +43,7 @@ export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG ?? 'oldrefery',
   project: process.env.SENTRY_PROJECT ?? 'dutch-learning-app-web',
   silent: !process.env.CI,
+  telemetry: false,
   sourcemaps: {
     deleteSourcemapsAfterUpload: true,
   },

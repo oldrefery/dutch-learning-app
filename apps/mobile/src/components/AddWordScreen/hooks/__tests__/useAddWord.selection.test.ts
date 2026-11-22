@@ -50,11 +50,11 @@ describe('Add Word collection selection with the real settings store', () => {
     jest.restoreAllMocks()
   })
 
-  it('does not overwrite a preference changed by another mounted screen', () => {
-    const { result } = renderHook(() => useAddWord(first.collection_id))
+  it('does not overwrite a preference changed by another mounted screen', async () => {
+    const { result } = await renderHook(() => useAddWord(first.collection_id))
     expect(result.current.selectedCollection).toEqual(first)
 
-    act(() => {
+    await act(() => {
       useSettingsStore
         .getState()
         .setLastSelectedCollectionId(second.collection_id)
@@ -66,31 +66,31 @@ describe('Add Word collection selection with the real settings store', () => {
     )
   })
 
-  it('settles when two mounted selectors have different route destinations', () => {
-    const { result } = renderHook(() => ({
+  it('settles when two mounted selectors have different route destinations', async () => {
+    const { result } = await renderHook(() => ({
       background: useAddWord(first.collection_id),
       foreground: useAddWord(second.collection_id),
     }))
 
     expect(result.current.background.selectedCollection).toEqual(first)
     expect(result.current.foreground.selectedCollection).toEqual(second)
-    act(() => result.current.foreground.selectCollection(first))
+    await act(() => result.current.foreground.selectCollection(first))
     expect(result.current.foreground.selectedCollection).toEqual(first)
     expect(useSettingsStore.getState().lastSelectedCollectionId).toBe(
       first.collection_id
     )
   })
 
-  it('keeps independent retained screens stable while their user selections change', () => {
-    const background = renderHook(() => useAddWord(first.collection_id))
-    const foreground = renderHook(() => useAddWord(second.collection_id))
+  it('keeps independent retained screens stable while their user selections change', async () => {
+    const background = await renderHook(() => useAddWord(first.collection_id))
+    const foreground = await renderHook(() => useAddWord(second.collection_id))
     const changes: (string | null)[] = []
     const unsubscribe = useSettingsStore.subscribe(state => {
       changes.push(state.lastSelectedCollectionId)
     })
     try {
       for (const target of [first, second, first, second]) {
-        act(() => foreground.result.current.selectCollection(target))
+        await act(() => foreground.result.current.selectCollection(target))
         expect(background.result.current.selectedCollection).toEqual(first)
         expect(foreground.result.current.selectedCollection).toEqual(target)
         expect(useSettingsStore.getState().lastSelectedCollectionId).toBe(
@@ -98,8 +98,8 @@ describe('Add Word collection selection with the real settings store', () => {
         )
       }
       expect(changes).toEqual(['first', 'second', 'first', 'second'])
-      foreground.unmount()
-      background.rerender({})
+      await foreground.unmount()
+      await background.rerender({})
       expect(useSettingsStore.getState().lastSelectedCollectionId).toBe(
         'second'
       )
@@ -108,15 +108,15 @@ describe('Add Word collection selection with the real settings store', () => {
     }
   })
 
-  it('remembers the last selection when reopening without a route destination', () => {
-    const screen = renderHook(() => useAddWord())
-    act(() => screen.result.current.selectCollection(second))
-    screen.unmount()
-    const reopened = renderHook(() => useAddWord())
+  it('remembers the last selection when reopening without a route destination', async () => {
+    const screen = await renderHook(() => useAddWord())
+    await act(() => screen.result.current.selectCollection(second))
+    await screen.unmount()
+    const reopened = await renderHook(() => useAddWord())
     expect(reopened.result.current.selectedCollection).toEqual(second)
   })
 
-  it('waits for settings hydration and honors route priority', () => {
+  it('waits for settings hydration and honors route priority', async () => {
     let finishHydration: (() => void) | undefined
     jest.spyOn(useSettingsStore.persist, 'hasHydrated').mockReturnValue(false)
     jest
@@ -126,34 +126,34 @@ describe('Add Word collection selection with the real settings store', () => {
         return jest.fn()
       })
     useSettingsStore.setState({ lastSelectedCollectionId: first.collection_id })
-    const { result } = renderHook(() => useAddWord(second.collection_id))
+    const { result } = await renderHook(() => useAddWord(second.collection_id))
     expect(result.current.selectedCollection).toBeNull()
     expect(useSettingsStore.getState().lastSelectedCollectionId).toBe('first')
     expect(finishHydration).toBeDefined()
-    act(() => finishHydration?.())
+    await act(() => finishHydration?.())
     expect(result.current.selectedCollection).toEqual(second)
     expect(useSettingsStore.getState().lastSelectedCollectionId).toBe('second')
   })
 
-  it('restores a saved choice after delayed collections and persists a deletion fallback', () => {
+  it('restores a saved choice after delayed collections and persists a deletion fallback', async () => {
     useSettingsStore.setState({
       lastSelectedCollectionId: second.collection_id,
     })
     const collections = jest.mocked(useCollections)
     const available = collections()
     collections.mockReturnValue({ ...available, collections: [] })
-    const screen = renderHook(() => useAddWord())
+    const screen = await renderHook(() => useAddWord())
     expect(screen.result.current.selectedCollection).toBeNull()
     expect(useSettingsStore.getState().lastSelectedCollectionId).toBe('second')
     collections.mockReturnValue(available)
-    screen.rerender({})
+    await screen.rerender({})
     expect(screen.result.current.selectedCollection).toEqual(second)
     collections.mockReturnValue({ ...available, collections: [first] })
-    screen.rerender({})
+    await screen.rerender({})
     expect(screen.result.current.selectedCollection).toEqual(first)
     expect(useSettingsStore.getState().lastSelectedCollectionId).toBe('first')
     collections.mockReturnValue({ ...available, collections: [] })
-    screen.rerender({})
+    await screen.rerender({})
     expect(screen.result.current.selectedCollection).toBeNull()
     expect(useSettingsStore.getState().lastSelectedCollectionId).toBeNull()
   })

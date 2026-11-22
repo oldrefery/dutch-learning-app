@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`dark StatsCard opens review insights and matches the theme snapshot 1`] = `
 <View
@@ -43,13 +43,19 @@ exports[`dark StatsCard opens review insights and matches the theme snapshot 1`]
       blurReductionFactor={4}
       intensity={100}
       style={
-        {
-          "bottom": 0,
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-        }
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "borderRadius": 16,
+            "overflow": "hidden",
+          },
+        ]
       }
       tint="dark"
     />
@@ -453,13 +459,19 @@ exports[`light StatsCard opens review insights and matches the theme snapshot 1`
       blurReductionFactor={4}
       intensity={100}
       style={
-        {
-          "bottom": 0,
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-        }
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "borderRadius": 16,
+            "overflow": "hidden",
+          },
+        ]
       }
       tint="light"
     />

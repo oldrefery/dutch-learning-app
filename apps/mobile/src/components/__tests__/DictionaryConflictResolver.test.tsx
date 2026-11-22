@@ -1,6 +1,12 @@
 import { parseDictionaryReadContent } from '@woordenaar/domain'
 import React from 'react'
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native'
+import {
+  act,
+  fireEvent,
+  render,
+  userEvent,
+  waitFor,
+} from '@testing-library/react-native'
 import { DictionaryConflictResolver } from '../DictionaryConflictResolver'
 import {
   dictionaryContentSync,
@@ -128,12 +134,12 @@ beforeEach(() => {
 it.each(['local', 'server'] as const)(
   'requires an explicit %s choice after comparison',
   async choice => {
-    const screen = render(<DictionaryConflictResolver word={word} />)
+    const screen = await render(<DictionaryConflictResolver word={word} />)
     expect(screen.queryByText(KEEP_MY_VERSION)).toBeNull()
-    fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+    await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
     await waitFor(() => expect(screen.getByText(SERVER_VERSION)).toBeTruthy())
     expect(dictionaryContentSync.resolveConflict).not.toHaveBeenCalled()
-    fireEvent.press(
+    await fireEvent.press(
       screen.getByText(
         choice === 'local' ? KEEP_MY_VERSION : 'Use server version'
       )
@@ -153,22 +159,22 @@ it('keeps the decision available after a failed comparison request', async () =>
   jest
     .mocked(dictionaryContentSync.readConflict)
     .mockRejectedValueOnce(new Error('Offline'))
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText('Offline')).toBeTruthy())
   expect(screen.getByText(COMPARE_VERSIONS)).toBeTruthy()
   expect(dictionaryContentSync.resolveConflict).not.toHaveBeenCalled()
 })
 
-it('does not expose another account’s conflict', () => {
-  const screen = render(
+it('does not expose another account’s conflict', async () => {
+  const screen = await render(
     <DictionaryConflictResolver word={{ ...word, user_id: 'other' }} />
   )
   expect(screen.queryByText(COMPARE_VERSIONS)).toBeNull()
 })
 
-it('shows a new conflict even when the open detail has an older word snapshot', () => {
-  const screen = render(
+it('shows a new conflict even when the open detail has an older word snapshot', async () => {
+  const screen = await render(
     <DictionaryConflictResolver
       word={{ ...word, dictionary_content_conflict: false }}
     />
@@ -177,25 +183,25 @@ it('shows a new conflict even when the open detail has an older word snapshot', 
 })
 
 it('allows resolving a second conflict without closing the word details', async () => {
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText(KEEP_MY_VERSION)).toBeTruthy())
-  fireEvent.press(screen.getByText(KEEP_MY_VERSION))
+  await fireEvent.press(screen.getByText(KEEP_MY_VERSION))
   await waitFor(() =>
     expect(useApplicationStore.getState().fetchWords).toHaveBeenCalled()
   )
-  screen.rerender(<DictionaryConflictResolver word={word} />)
+  await screen.rerender(<DictionaryConflictResolver word={word} />)
   expect(screen.queryByText(COMPARE_VERSIONS)).toBeNull()
 
   useApplicationStore.getState().words = [word]
-  screen.rerender(<DictionaryConflictResolver word={word} />)
+  await screen.rerender(<DictionaryConflictResolver word={word} />)
   expect(screen.getByText(COMPARE_VERSIONS)).toBeTruthy()
   expect(screen.queryByText(KEEP_MY_VERSION)).toBeNull()
 })
 
-it('hides a removed word instead of resolving its stale modal snapshot', () => {
+it('hides a removed word instead of resolving its stale modal snapshot', async () => {
   useApplicationStore.getState().words = []
-  const screen = render(<DictionaryConflictResolver word={word} />)
+  const screen = await render(<DictionaryConflictResolver word={word} />)
   expect(screen.queryByText(COMPARE_VERSIONS)).toBeNull()
 })
 
@@ -236,13 +242,13 @@ it('shows a shared-mode comparison with hold only; no private resolution or sync
   jest
     .mocked(dictionaryContentSync.readConflict)
     .mockResolvedValue(modeSnapshot())
-  const screen = render(<DictionaryConflictResolver word={word} />)
+  const screen = await render(<DictionaryConflictResolver word={word} />)
   expect(dictionaryContentSync.readConflict).not.toHaveBeenCalled()
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText(HOLD_FOR_REVIEW)).toBeTruthy())
   expect(screen.queryByText(KEEP_MY_VERSION)).toBeNull()
   expect(screen.queryByText('Use server version')).toBeNull()
-  fireEvent.press(screen.getByText(HOLD_FOR_REVIEW))
+  await fireEvent.press(screen.getByText(HOLD_FOR_REVIEW))
   expect(
     screen.getByText(
       'Your saved content and pending edits are retained for review.'
@@ -260,8 +266,8 @@ it('discards a comparison completed after the word was removed', async () => {
         finish = resolve
       })
   )
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await userEvent.setup().press(screen.getByText(COMPARE_VERSIONS))
   useApplicationStore.getState().words = []
   await act(async () => {
     finish(snapshot)
@@ -271,8 +277,8 @@ it('discards a comparison completed after the word was removed', async () => {
 })
 
 it('latches A -> B -> A across an open comparison', async () => {
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText(SERVER_VERSION)).toBeTruthy())
   const listener = jest.mocked(supabase.auth.onAuthStateChange).mock.calls[0][0]
   await act(async () => {
@@ -282,18 +288,18 @@ it('latches A -> B -> A across an open comparison', async () => {
     >[1])
   })
   expect(screen.queryByText(KEEP_MY_VERSION)).toBeNull()
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   expect(dictionaryContentSync.readConflict).toHaveBeenCalledTimes(1)
   expect(dictionaryContentSync.resolveConflict).not.toHaveBeenCalled()
 })
 
 it('never resolves an old comparison for a replacement word in the same component', async () => {
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText(SERVER_VERSION)).toBeTruthy())
   const replacement = { ...word, word_id: 'replacement' }
   useApplicationStore.getState().words = [replacement]
-  screen.rerender(<DictionaryConflictResolver word={replacement} />)
+  await screen.rerender(<DictionaryConflictResolver word={replacement} />)
   expect(screen.queryByText(KEEP_MY_VERSION)).toBeNull()
   expect(dictionaryContentSync.resolveConflict).not.toHaveBeenCalled()
 })
@@ -305,18 +311,18 @@ it.each(['light', 'dark'] as const)(
     jest
       .mocked(dictionaryContentSync.readConflict)
       .mockResolvedValue(modeSnapshot())
-    const screen = render(<DictionaryConflictResolver word={word} />)
-    fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+    const screen = await render(<DictionaryConflictResolver word={word} />)
+    await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
     await waitFor(() => expect(screen.getByText(HOLD_FOR_REVIEW)).toBeTruthy())
     expect(screen.queryByText(KEEP_MY_VERSION)).toBeNull()
   }
 )
 
-it('adds no Auth subscription for a word without a conflict', () => {
+it('adds no Auth subscription for a word without a conflict', async () => {
   useApplicationStore.getState().words = [
     { ...word, dictionary_content_conflict: false },
   ]
-  render(<DictionaryConflictResolver word={word} />)
+  await render(<DictionaryConflictResolver word={word} />)
   expect(supabase.auth.onAuthStateChange).not.toHaveBeenCalled()
 })
 
@@ -329,14 +335,14 @@ it.each(['light', 'dark'] as const)(
     reviewed.localContent.plural = 'private plural'
     reviewed.remoteContent.plural = 'server plural'
     jest.mocked(dictionaryContentSync.readConflict).mockResolvedValue(reviewed)
-    const screen = render(<DictionaryConflictResolver word={word} />)
+    const screen = await render(<DictionaryConflictResolver word={word} />)
     expect(dictionaryModeReconciliation.apply).not.toHaveBeenCalled()
-    fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+    await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
     await waitFor(() => expect(screen.getByText(LOAD_RETAINED)).toBeTruthy())
     expect(screen.getByText(/plural: "private plural"/)).toBeTruthy()
     expect(screen.getByText(/plural: "server plural"/)).toBeTruthy()
     expect(dictionaryModeReconciliation.apply).not.toHaveBeenCalled()
-    fireEvent.press(screen.getByText(LOAD_RETAINED))
+    await fireEvent.press(screen.getByText(LOAD_RETAINED))
     await waitFor(() =>
       expect(dictionaryModeReconciliation.apply).toHaveBeenCalledWith(
         reviewed,
@@ -354,12 +360,12 @@ it('retains the exact decision after refresh failure and reloads comparison sepa
   jest
     .mocked(useApplicationStore.getState().fetchWords)
     .mockRejectedValueOnce(new Error('Refresh failed'))
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText(LOAD_RETAINED)).toBeTruthy())
-  fireEvent.press(screen.getByText(LOAD_RETAINED))
+  await fireEvent.press(screen.getByText(LOAD_RETAINED))
   await waitFor(() => expect(screen.getByText('Refresh failed')).toBeTruthy())
-  fireEvent.press(screen.getByText(LOAD_RETAINED))
+  await fireEvent.press(screen.getByText(LOAD_RETAINED))
   await waitFor(() =>
     expect(dictionaryModeReconciliation.apply).toHaveBeenCalledTimes(2)
   )
@@ -381,12 +387,12 @@ it('never refreshes another account after an explicit mode load finishes late', 
   jest
     .mocked(dictionaryContentSync.readConflict)
     .mockResolvedValue(modeSnapshot())
-  const screen = render(<DictionaryConflictResolver word={word} />)
-  fireEvent.press(screen.getByText(COMPARE_VERSIONS))
+  const screen = await render(<DictionaryConflictResolver word={word} />)
+  await fireEvent.press(screen.getByText(COMPARE_VERSIONS))
   await waitFor(() => expect(screen.getByText(LOAD_RETAINED)).toBeTruthy())
-  fireEvent.press(screen.getByText(LOAD_RETAINED))
+  await userEvent.setup().press(screen.getByText(LOAD_RETAINED))
   useApplicationStore.getState().currentUserId = 'other'
-  screen.unmount()
+  await screen.unmount()
   await act(async () => finish())
   expect(useApplicationStore.getState().fetchWords).not.toHaveBeenCalled()
 })

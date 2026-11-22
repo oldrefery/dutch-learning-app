@@ -91,11 +91,11 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
       })
   })
   it('dispatches from explicit press only, refreshes shared display and switches to read-only status', async () => {
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(ANALYZE)).toBeTruthy())
     expect(service.submit).not.toHaveBeenCalled()
     expect(service.recover).not.toHaveBeenCalled()
-    fireEvent.press(view.getByText(ANALYZE))
+    await fireEvent.press(view.getByText(ANALYZE))
     await waitFor(() => expect(view.getByText(PUBLISHED)).toBeTruthy())
     expect(service.submit).toHaveBeenCalledTimes(1)
     expect(service.submit).toHaveBeenCalledWith(
@@ -107,32 +107,32 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
       expect.any(Function)
     )
     expect(view.queryByText(ANALYZE)).toBeNull()
-    fireEvent.press(view.getByText(CHECK))
+    await fireEvent.press(view.getByText(CHECK))
     await waitFor(() => expect(service.recover).toHaveBeenCalledTimes(1))
-    view.unmount()
+    await view.unmount()
     expect(unsubscribe).toHaveBeenCalledTimes(1)
   })
   it('hides denied/default-OFF action without starting an analysis', async () => {
     jest.mocked(service.isAvailable).mockResolvedValue(false)
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(service.isAvailable).toHaveBeenCalled())
     expect(view.queryByText('Shared analysis')).toBeNull()
     expect(service.submit).not.toHaveBeenCalled()
     expect(service.recover).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
   it('exposes retained submitted status after permission withdrawal without probing eligibility', async () => {
     jest
       .mocked(service.readSaved)
       .mockResolvedValue({ ...analysisIntent(), submitted: true })
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(CHECK)).toBeTruthy())
     expect(service.isAvailable).not.toHaveBeenCalled()
     expect(service.recover).not.toHaveBeenCalled()
-    fireEvent.press(view.getByText(CHECK))
+    await fireEvent.press(view.getByText(CHECK))
     await waitFor(() => expect(view.getByText(PUBLISHED)).toBeTruthy())
     expect(service.submit).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
   it('ignores late reply after A-to-B-to-A and never applies another owner result', async () => {
     let finish = (_value: ReturnType<typeof operation>) => {}
@@ -142,16 +142,16 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
           finish = resolve
         })
     )
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(ANALYZE)).toBeTruthy())
-    fireEvent.press(view.getByText(ANALYZE))
+    await fireEvent.press(view.getByText(ANALYZE))
     await act(async () => {
       listener('SIGNED_IN', { user: { id: OWNER_B } } as Session)
       listener('SIGNED_IN', { user: { id: OWNER_A } } as Session)
       finish(operation())
     })
     const eligibilityReads = jest.mocked(service.isAvailable).mock.calls.length
-    view.rerender(
+    await view.rerender(
       <DictionaryAnalysisPanel
         word={{
           ...word,
@@ -166,7 +166,7 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
     expect(view.getByText(/session changed/)).toBeTruthy()
     expect(view.queryByText(PUBLISHED)).toBeNull()
     expect(refreshDictionaryAnalysisDisplay).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
   it('does not apply display or report success after unmount', async () => {
     let finish = (_value: ReturnType<typeof operation>) => {}
@@ -176,10 +176,10 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
           finish = resolve
         })
     )
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(ANALYZE)).toBeTruthy())
-    fireEvent.press(view.getByText(ANALYZE))
-    view.unmount()
+    await fireEvent.press(view.getByText(ANALYZE))
+    await view.unmount()
     await act(async () => {
       finish(operation())
     })
@@ -193,15 +193,15 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
     jest
       .mocked(service.nextAttempt)
       .mockResolvedValue({ ...previous, response: analysisReceipt('accepted') })
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(START_NEW)).toBeTruthy())
     expect(service.nextAttempt).not.toHaveBeenCalled()
     expect(service.readHistory).not.toHaveBeenCalled()
-    fireEvent.press(view.getByText('View analysis history'))
+    await fireEvent.press(view.getByText('View analysis history'))
     await waitFor(() =>
       expect(view.getByText('Archived analysis attempts (1)')).toBeTruthy()
     )
-    fireEvent.press(view.getByText(START_NEW))
+    await fireEvent.press(view.getByText(START_NEW))
     await waitFor(() => expect(service.nextAttempt).toHaveBeenCalledTimes(1))
     expect(service.nextAttempt).toHaveBeenCalledWith(
       previous,
@@ -215,21 +215,21 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
       expect.any(Function)
     )
     expect(service.submit).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
   it('keeps quarantined outcomes blocked and shows the reconciliation explanation', async () => {
     jest.mocked(service.readSaved).mockResolvedValue({
       ...operation(),
       response: analysisReceipt('provider-outcome-unknown'),
     })
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() =>
       expect(view.getByText(/until server reconciliation/)).toBeTruthy()
     )
     expect(view.queryByText(START_NEW)).toBeNull()
     expect(service.isAvailable).not.toHaveBeenCalled()
     expect(service.nextAttempt).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
   it('retains published receipt when display update fails and offers only checking', async () => {
     jest
@@ -239,24 +239,24 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
       jest.mocked(service.readSaved).mockResolvedValue(operation())
       return operation()
     })
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(ANALYZE)).toBeTruthy())
-    fireEvent.press(view.getByText(ANALYZE))
+    await fireEvent.press(view.getByText(ANALYZE))
     await waitFor(() =>
       expect(view.getByText(/saved request is retained/)).toBeTruthy()
     )
     expect(view.queryByText(ANALYZE)).toBeNull()
     expect(view.getByText(CHECK)).toBeTruthy()
     expect(service.submit).toHaveBeenCalledTimes(1)
-    view.unmount()
+    await view.unmount()
   })
   it('exposes cache-only loading after remount or hydration failure, without submitting or checking status', async () => {
     jest.mocked(service.readSaved).mockResolvedValue(operation())
     jest.mocked(service.isAvailable).mockResolvedValue(false)
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(LOAD_CONTENT)).toBeTruthy())
     expect(service.loadPublished).not.toHaveBeenCalled()
-    fireEvent.press(view.getByText(LOAD_CONTENT))
+    await fireEvent.press(view.getByText(LOAD_CONTENT))
     await waitFor(() =>
       expect(service.loadPublished).toHaveBeenCalledWith(
         operation(),
@@ -266,7 +266,7 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
     expect(service.submit).not.toHaveBeenCalled()
     expect(service.recover).not.toHaveBeenCalled()
     expect(refreshDictionaryAnalysisDisplay).toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
 
   it('retains cache-only loading after a failed load and never creates a new intent', async () => {
@@ -274,20 +274,20 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
     jest
       .mocked(service.loadPublished)
       .mockRejectedValueOnce(new Error('Offline'))
-    const view = render(<DictionaryAnalysisPanel word={word} />)
+    const view = await render(<DictionaryAnalysisPanel word={word} />)
     await waitFor(() => expect(view.getByText(LOAD_CONTENT)).toBeTruthy())
-    fireEvent.press(view.getByText(LOAD_CONTENT))
+    await fireEvent.press(view.getByText(LOAD_CONTENT))
     await waitFor(() => expect(view.getByRole('alert')).toBeTruthy())
-    fireEvent.press(view.getByText(LOAD_CONTENT))
+    await fireEvent.press(view.getByText(LOAD_CONTENT))
     await waitFor(() => expect(service.loadPublished).toHaveBeenCalledTimes(2))
     expect(service.submit).not.toHaveBeenCalled()
     expect(Crypto.randomUUID).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
 
   it('recognizes already-loaded shared content after a head-driven controller remount', async () => {
     jest.mocked(service.readSaved).mockResolvedValue(operation())
-    const view = render(
+    const view = await render(
       <DictionaryAnalysisPanel
         word={{
           ...word,
@@ -305,6 +305,6 @@ describe.each(['light', 'dark'] as const)('%s shared analysis panel', theme => {
     await waitFor(() => expect(view.getByText(PUBLISHED)).toBeTruthy())
     expect(view.queryByText(LOAD_CONTENT)).toBeNull()
     expect(service.loadPublished).not.toHaveBeenCalled()
-    view.unmount()
+    await view.unmount()
   })
 })

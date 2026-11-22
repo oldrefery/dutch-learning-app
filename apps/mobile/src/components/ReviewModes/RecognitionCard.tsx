@@ -18,7 +18,7 @@ interface RecognitionCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url?: string) => void
   onSelectOption: (option: RecognitionOption) => void
-  pronunciationRef?: React.RefObject<View | null>
+  pronunciationRef?: React.RefObject<React.ComponentRef<typeof View> | null>
 }
 
 export function RecognitionCard({

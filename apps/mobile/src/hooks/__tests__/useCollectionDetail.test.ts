@@ -63,7 +63,7 @@ describe('useCollectionDetail', () => {
     })
     useApplicationStore.setState({ startReviewSession })
 
-    const { result } = renderHook(() => useCollectionDetail(collectionId))
+    const { result } = await renderHook(() => useCollectionDetail(collectionId))
 
     await act(async () => {
       await result.current.handleStartReview()
@@ -89,7 +89,7 @@ describe('useCollectionDetail', () => {
       startReviewSession,
     })
 
-    const { result } = renderHook(() => useCollectionDetail(collectionId))
+    const { result } = await renderHook(() => useCollectionDetail(collectionId))
 
     await act(async () => {
       await result.current.handleStartReview()
@@ -110,8 +110,8 @@ describe('useCollectionDetail', () => {
       dictionary_import_recovery: 'pending' as const,
     }
     useApplicationStore.setState({ words: [word], moveWordToCollection })
-    const { result } = renderHook(() => useCollectionDetail(collectionId))
-    act(() => result.current.handleMoveToCollection(word.word_id))
+    const { result } = await renderHook(() => useCollectionDetail(collectionId))
+    await act(() => result.current.handleMoveToCollection(word.word_id))
     await act(async () => {
       await result.current.handleSelectTargetCollection(createMockCollection())
     })
@@ -124,8 +124,8 @@ describe('useCollectionDetail', () => {
     useApplicationStore.setState({
       moveWordToCollection: jest.fn().mockResolvedValue(null),
     })
-    const { result } = renderHook(() => useCollectionDetail(collectionId))
-    act(() => result.current.handleMoveToCollection(word.word_id))
+    const { result } = await renderHook(() => useCollectionDetail(collectionId))
+    await act(() => result.current.handleMoveToCollection(word.word_id))
     await act(async () => {
       await result.current.handleSelectTargetCollection(createMockCollection())
     })
@@ -139,18 +139,18 @@ describe('useCollectionDetail', () => {
     )
   })
 
-  it('does not rerender a collection for unrelated review state changes', () => {
+  it('does not rerender a collection for unrelated review state changes', async () => {
     let renders = 0
-    const { result } = renderHook(() => {
+    const { result } = await renderHook(() => {
       renders += 1
       return useCollectionDetail(collectionId)
     })
     const initialRenders = renders
     const originalWords = result.current.collectionWords
-    act(() => {
+    await act(() => {
       useApplicationStore.setState({ reviewLoading: true })
     })
-    act(() => {
+    await act(() => {
       useApplicationStore.setState({
         reviewLoading: false,
         reviewSession: createMockReviewSession(),
@@ -160,7 +160,7 @@ describe('useCollectionDetail', () => {
     expect(result.current.collectionWords).toBe(originalWords)
   })
 
-  it('keeps sorted data stable for modal updates and refreshes changed words and collection IDs', () => {
+  it('keeps sorted data stable for modal updates and refreshes changed words and collection IDs', async () => {
     const otherId = 'other-collection'
     const words = [
       createMockWord({
@@ -180,16 +180,16 @@ describe('useCollectionDetail', () => {
       }),
     ]
     useApplicationStore.setState({ words })
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ id }: { id: string }) => useCollectionDetail(id),
       { initialProps: { id: collectionId } }
     )
     const sorted = result.current.collectionWords
     expect(sorted.map(word => word.word_id)).toEqual(['a', 'z'])
     expect(words.map(word => word.word_id)).toEqual(['z', 'a', 'b'])
-    act(() => result.current.handleWordPress(words[0]))
+    await act(() => result.current.handleWordPress(words[0]))
     expect(result.current.collectionWords).toBe(sorted)
-    act(() => {
+    await act(() => {
       useApplicationStore.setState({
         words: words.map(word =>
           word.word_id === 'z' ? { ...word, dutch_lemma: 'aardbei' } : word
@@ -201,11 +201,11 @@ describe('useCollectionDetail', () => {
       'a',
     ])
     expect(result.current.collectionWords).not.toBe(sorted)
-    rerender({ id: otherId })
+    await rerender({ id: otherId })
     expect(result.current.collectionWords.map(word => word.word_id)).toEqual([
       'b',
     ])
-    act(() =>
+    await act(() =>
       useApplicationStore.setState({
         currentUserId: null,
         words: [],

@@ -18,14 +18,14 @@ describe('useReviewSession', () => {
     jest.clearAllMocks()
   })
 
-  it('should return null reviewSession when store has no session', () => {
+  it('should return null reviewSession when store has no session', async () => {
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: null,
       currentWord: null,
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.reviewSession).toBeNull()
     expect(result.current.reviewWords).toEqual([])
@@ -35,7 +35,7 @@ describe('useReviewSession', () => {
     expect(result.current.sessionComplete).toBe(true)
   })
 
-  it('should return correct reviewWords from session', () => {
+  it('should return correct reviewWords from session', async () => {
     const words = [createMockWord(), createMockWord()]
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words, currentIndex: 0, completedCount: 0 },
@@ -43,12 +43,12 @@ describe('useReviewSession', () => {
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.reviewWords).toEqual(words)
   })
 
-  it('should return correct currentIndex from session', () => {
+  it('should return correct currentIndex from session', async () => {
     const words = [createMockWord(), createMockWord()]
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words, currentIndex: 1, completedCount: 0 },
@@ -56,12 +56,12 @@ describe('useReviewSession', () => {
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.currentIndex).toBe(1)
   })
 
-  it('should calculate totalWords as reviewWords length', () => {
+  it('should calculate totalWords as reviewWords length', async () => {
     const words = [createMockWord(), createMockWord(), createMockWord()]
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words, currentIndex: 0, completedCount: 0 },
@@ -69,12 +69,12 @@ describe('useReviewSession', () => {
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.totalWords).toBe(3)
   })
 
-  it('should calculate currentWordNumber as currentIndex + 1', () => {
+  it('should calculate currentWordNumber as currentIndex + 1', async () => {
     const words = [createMockWord(), createMockWord()]
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words, currentIndex: 1, completedCount: 0 },
@@ -82,12 +82,12 @@ describe('useReviewSession', () => {
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.currentWordNumber).toBe(2)
   })
 
-  it('should mark sessionComplete when index >= words length and no currentWord', () => {
+  it('should mark sessionComplete when index >= words length and no currentWord', async () => {
     const words = [createMockWord()]
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words, currentIndex: 1, completedCount: 1 },
@@ -95,12 +95,12 @@ describe('useReviewSession', () => {
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.sessionComplete).toBe(true)
   })
 
-  it('should not mark sessionComplete when there are remaining words', () => {
+  it('should not mark sessionComplete when there are remaining words', async () => {
     const words = [createMockWord(), createMockWord()]
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words, currentIndex: 0, completedCount: 0 },
@@ -108,31 +108,31 @@ describe('useReviewSession', () => {
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.sessionComplete).toBe(false)
   })
 
-  it('should reflect reviewLoading from store', () => {
+  it('should reflect reviewLoading from store', async () => {
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: null,
       currentWord: null,
       reviewLoading: true,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.isLoading).toBe(true)
   })
 
-  it('should handle empty words array', () => {
+  it('should handle empty words array', async () => {
     ;(useApplicationStore as unknown as jest.Mock).mockReturnValue({
       reviewSession: { words: [], currentIndex: 0, completedCount: 0 },
       currentWord: null,
       reviewLoading: false,
     })
 
-    const { result } = renderHook(() => useReviewSession())
+    const { result } = await renderHook(() => useReviewSession())
 
     expect(result.current.reviewWords).toEqual([])
     expect(result.current.totalWords).toBe(0)

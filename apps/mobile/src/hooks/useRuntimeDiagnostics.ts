@@ -17,7 +17,7 @@ export function useRuntimeDiagnostics(): void {
   useEffect(() => {
     if (Platform.OS === 'web') return
     const recorder = createRuntimeDiagnostics(Sentry, {
-      state: AppState.currentState,
+      state: AppState.currentState ?? null,
       segments: initialSegments.current,
       now: () => performance.now(),
     })
@@ -40,7 +40,7 @@ export function useRuntimeDiagnostics(): void {
         recorder.memoryWarning()
       }
     )
-    updateTimer(AppState.currentState)
+    updateTimer(AppState.currentState ?? 'unknown')
     return () => {
       recorder.stop()
       diagnostics.current = null

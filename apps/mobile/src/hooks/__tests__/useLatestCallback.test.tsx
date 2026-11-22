@@ -3,10 +3,10 @@ import { Text } from 'react-native'
 import { act, render, renderHook } from '@testing-library/react-native'
 import { useLatestCallback } from '../useLatestCallback'
 
-it('keeps identity and forwards arguments and return values to the latest commit', () => {
+it('keeps identity and forwards arguments and return values to the latest commit', async () => {
   const first = jest.fn((value: number) => value + 1)
   const second = jest.fn((value: number) => value + 2)
-  const { result, rerender } = renderHook<
+  const { result, rerender } = await renderHook<
     (value: number) => number | undefined,
     { callback: (value: number) => number }
   >(({ callback }) => useLatestCallback(callback), {
@@ -14,13 +14,13 @@ it('keeps identity and forwards arguments and return values to the latest commit
   })
   const retained = result.current
   expect(retained(2)).toBe(3)
-  rerender({ callback: second })
+  await rerender({ callback: second })
   expect(result.current).toBe(retained)
   expect(retained(2)).toBe(4)
   expect(second).toHaveBeenCalledWith(2)
 })
 
-it('does not expose a handler from a suspended, uncommitted render', () => {
+it('does not expose a handler from a suspended, uncommitted render', async () => {
   const never = new Promise<void>(() => {})
   let retained: () => string | undefined = () => 'not mounted'
   const first = () => 'committed'
@@ -44,18 +44,18 @@ it('does not expose a handler from a suspended, uncommitted render', () => {
       <Child callback={callback} suspend={suspend} />
     </Suspense>
   )
-  const { rerender } = render(tree(first, false))
+  const { rerender } = await render(tree(first, false))
   const original = retained
-  rerender(tree(next, true))
+  await rerender(tree(next, true))
   expect(original()).toBe('committed')
-  rerender(tree(next, false))
+  await rerender(tree(next, false))
   expect(retained).toBe(original)
   expect(original()).toBe('next')
 })
 
 it('preserves async return values and failures', async () => {
   const failure = new Error('Synthetic action failure')
-  const { result, rerender } = renderHook<
+  const { result, rerender } = await renderHook<
     () => Promise<number> | undefined,
     { callback: () => Promise<number> }
   >(({ callback }) => useLatestCallback(callback), {
@@ -63,7 +63,7 @@ it('preserves async return values and failures', async () => {
   })
   const retained = result.current
   await expect(retained()).resolves.toBe(1)
-  rerender({
+  await rerender({
     callback: async () => {
       throw failure
     },
@@ -71,11 +71,13 @@ it('preserves async return values and failures', async () => {
   await expect(retained()).rejects.toBe(failure)
 })
 
-it('releases the target and ignores a retained callback after unmount', () => {
+it('releases the target and ignores a retained callback after unmount', async () => {
   const callback = jest.fn(() => 'completed')
-  const { result, unmount } = renderHook(() => useLatestCallback(callback))
+  const { result, unmount } = await renderHook(() =>
+    useLatestCallback(callback)
+  )
   const retained = result.current
-  unmount()
+  await unmount()
   expect(retained()).toBeUndefined()
   expect(callback).not.toHaveBeenCalled()
 })
@@ -86,17 +88,19 @@ it('preserves already-started work but does not start work after unmount', async
     complete = resolve
   })
   const callback = jest.fn(() => pending)
-  const { result, unmount } = renderHook(() => useLatestCallback(callback))
+  const { result, unmount } = await renderHook(() =>
+    useLatestCallback(callback)
+  )
   const retained = result.current
   const started = retained()
-  unmount()
+  await unmount()
   complete(7)
   await expect(started).resolves.toBe(7)
   expect(retained()).toBeUndefined()
   expect(callback).toHaveBeenCalledTimes(1)
 })
 
-it('restores the committed target after effect cleanup and reactivation', () => {
+it('restores the committed target after effect cleanup and reactivation', async () => {
   const callback = jest.fn(() => 9)
   const layouts: React.EffectCallback[] = []
   const passives: React.EffectCallback[] = []
@@ -120,26 +124,29 @@ it('restores the committed target after effect cleanup and reactivation', () => 
       }, deps)
     })
   try {
-    const { result, unmount } = renderHook(() => useLatestCallback(callback), {
-      wrapper: ({ children }) => (
-        <React.StrictMode>{children}</React.StrictMode>
-      ),
-    })
+    const { result, unmount } = await renderHook(
+      () => useLatestCallback(callback),
+      {
+        wrapper: ({ children }) => (
+          <React.StrictMode>{children}</React.StrictMode>
+        ),
+      }
+    )
     const retained = result.current
     expect(cleanups.length).toBeGreaterThan(0)
-    act(() => {
+    await act(() => {
       cleanups.forEach(cleanup => cleanup())
     })
     expect(retained()).toBeUndefined()
     expect(callback).not.toHaveBeenCalled()
-    act(() => {
+    await act(() => {
       layouts.forEach(setup => setup())
       passives.forEach(setup => setup())
     })
     expect(result.current).toBe(retained)
     expect(retained()).toBe(9)
     expect(callback).toHaveBeenCalledTimes(1)
-    unmount()
+    await unmount()
   } finally {
     layoutSpy.mockRestore()
     passiveSpy.mockRestore()

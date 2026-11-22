@@ -14,35 +14,35 @@ import { GlassDefaults } from '@/constants/GlassConstants'
 
 describe('useHeaderGlassProgress', () => {
   describe('progress calculation', () => {
-    it('should return progress 0 when scrollY is 0', () => {
-      const { result } = renderHook(() => useHeaderGlassProgress(0))
+    it('should return progress 0 when scrollY is 0', async () => {
+      const { result } = await renderHook(() => useHeaderGlassProgress(0))
 
       expect(result.current.progress).toBe(0)
       expect(result.current.intensity).toBe(0)
     })
 
-    it('should return progress 1 when scrollY >= endOffset', () => {
-      const { result } = renderHook(() => useHeaderGlassProgress(100))
+    it('should return progress 1 when scrollY >= endOffset', async () => {
+      const { result } = await renderHook(() => useHeaderGlassProgress(100))
 
       expect(result.current.progress).toBe(1)
       // In test env, light mode is used
       expect(result.current.intensity).toBe(GlassDefaults.intensityLight)
     })
 
-    it('should clamp progress below 0 to 0', () => {
-      const { result } = renderHook(() => useHeaderGlassProgress(-50))
+    it('should clamp progress below 0 to 0', async () => {
+      const { result } = await renderHook(() => useHeaderGlassProgress(-50))
 
       expect(result.current.progress).toBe(0)
     })
 
-    it('should clamp progress above 1 to 1', () => {
-      const { result } = renderHook(() => useHeaderGlassProgress(200))
+    it('should clamp progress above 1 to 1', async () => {
+      const { result } = await renderHook(() => useHeaderGlassProgress(200))
 
       expect(result.current.progress).toBe(1)
     })
 
-    it('should respect custom startOffset and endOffset', () => {
-      const { result } = renderHook(() =>
+    it('should respect custom startOffset and endOffset', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(50, {
           startOffset: 0,
           endOffset: 100,
@@ -53,8 +53,8 @@ describe('useHeaderGlassProgress', () => {
       expect(result.current.progress).toBe(0.5)
     })
 
-    it('should return 0 progress when scrollY is below startOffset', () => {
-      const { result } = renderHook(() =>
+    it('should return 0 progress when scrollY is below startOffset', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(10, {
           startOffset: 50,
           endOffset: 100,
@@ -67,16 +67,16 @@ describe('useHeaderGlassProgress', () => {
   })
 
   describe('easing modes', () => {
-    it('should apply linear easing (identity)', () => {
-      const { result } = renderHook(() =>
+    it('should apply linear easing (identity)', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(32, { endOffset: 64, easing: 'linear' })
       )
 
       expect(result.current.progress).toBe(0.5)
     })
 
-    it('should apply easeOut easing (higher than linear for mid-values)', () => {
-      const { result } = renderHook(() =>
+    it('should apply easeOut easing (higher than linear for mid-values)', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(32, { endOffset: 64, easing: 'easeOut' })
       )
 
@@ -84,8 +84,8 @@ describe('useHeaderGlassProgress', () => {
       expect(result.current.progress).toBe(0.875)
     })
 
-    it('should apply easeInOut easing', () => {
-      const { result } = renderHook(() =>
+    it('should apply easeInOut easing', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(32, { endOffset: 64, easing: 'easeInOut' })
       )
 
@@ -93,8 +93,8 @@ describe('useHeaderGlassProgress', () => {
       expect(result.current.progress).toBe(0.5)
     })
 
-    it('should default to easeOut when no easing specified', () => {
-      const { result } = renderHook(() =>
+    it('should default to easeOut when no easing specified', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(32, { endOffset: 64 })
       )
 
@@ -103,8 +103,8 @@ describe('useHeaderGlassProgress', () => {
   })
 
   describe('intensity', () => {
-    it('should calculate intensity as maxIntensity * progress', () => {
-      const { result } = renderHook(() =>
+    it('should calculate intensity as maxIntensity * progress', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(64, { endOffset: 64, easing: 'linear' })
       )
 
@@ -112,14 +112,14 @@ describe('useHeaderGlassProgress', () => {
       expect(result.current.intensity).toBe(GlassDefaults.intensityLight)
     })
 
-    it('should return 0 intensity when progress is 0', () => {
-      const { result } = renderHook(() => useHeaderGlassProgress(0))
+    it('should return 0 intensity when progress is 0', async () => {
+      const { result } = await renderHook(() => useHeaderGlassProgress(0))
 
       expect(result.current.intensity).toBe(0)
     })
 
-    it('should round intensity to integer', () => {
-      const { result } = renderHook(() =>
+    it('should round intensity to integer', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(32, { endOffset: 64, easing: 'linear' })
       )
 
@@ -128,8 +128,8 @@ describe('useHeaderGlassProgress', () => {
   })
 
   describe('edge cases', () => {
-    it('should handle endOffset equal to startOffset without division by zero', () => {
-      const { result } = renderHook(() =>
+    it('should handle endOffset equal to startOffset without division by zero', async () => {
+      const { result } = await renderHook(() =>
         useHeaderGlassProgress(50, {
           startOffset: 50,
           endOffset: 50,

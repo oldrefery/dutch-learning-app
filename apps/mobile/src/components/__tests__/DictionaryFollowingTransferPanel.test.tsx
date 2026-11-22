@@ -206,7 +206,7 @@ describe.each(['light', 'dark'] as const)(
         .mockResolvedValue(target as never)
       jest.mocked(wordRepository.getWordsByUserId).mockResolvedValue([])
     })
-    const show = () =>
+    const show = async () =>
       render(
         <DictionaryFollowingTransferPanel
           ownerId={OWNER_A}
@@ -215,13 +215,13 @@ describe.each(['light', 'dark'] as const)(
           onClose={() => {}}
         />
       )
-    const saved = async (view: ReturnType<typeof render>) => {
+    const saved = async (view: Awaited<ReturnType<typeof render>>) => {
       await waitFor(() =>
         expect(
           view.getByLabelText(SAVE).props.accessibilityState.disabled
         ).toBe(false)
       )
-      fireEvent.press(view.getByLabelText(SAVE))
+      await fireEvent.press(view.getByLabelText(SAVE))
       await waitFor(() => expect(view.getByLabelText(VERIFY)).toBeTruthy())
     }
     it('saves all shared originals with token and source IDs after explicit selection', async () => {
@@ -238,7 +238,7 @@ describe.each(['light', 'dark'] as const)(
       }
       const source = sharedCollectionFollowingSource(OWNER_B, original)
       jest.mocked(prepareSharedFollowingImport).mockResolvedValue(source)
-      const view = render(
+      const view = await render(
         <DictionaryFollowingTransferPanel
           ownerId={OWNER_A}
           sharedSource={{ shareToken: OWNER_B, original }}
@@ -253,14 +253,14 @@ describe.each(['light', 'dark'] as const)(
         ).toBe(false)
       )
       expect(prepareSharedFollowingImport).not.toHaveBeenCalled()
-      fireEvent.press(view.getByLabelText(first))
-      fireEvent.press(view.getByLabelText(SAVE))
+      await fireEvent.press(view.getByLabelText(first))
+      await fireEvent.press(view.getByLabelText(SAVE))
       await waitFor(() => expect(service.prepare).toHaveBeenCalledTimes(1))
       const draft = jest.mocked(service.prepare).mock.calls[0][0]
       expect(draft.shared_collection).toEqual(source.shared_collection)
       expect(draft.document.entries).toHaveLength(4)
       expect(service.queueEntry).not.toHaveBeenCalled()
-      fireEvent.press(view.getByLabelText(VERIFY))
+      await fireEvent.press(view.getByLabelText(VERIFY))
       await waitFor(() => expect(service.resolve).toHaveBeenCalledTimes(1))
       expect(sessions[0].plan?.intents[0].intent.source).toMatchObject({
         kind: 'shared-collection',
@@ -282,7 +282,7 @@ describe.each(['light', 'dark'] as const)(
         ...source,
         document: parseDictionaryCollectionExportV2(source.document),
       })
-      const view = render(
+      const view = await render(
         <DictionaryFollowingTransferPanel
           ownerId={OWNER_A}
           officialManifest={manifest}
@@ -301,8 +301,8 @@ describe.each(['light', 'dark'] as const)(
       )
       expect(prepareOfficialFollowingImport).not.toHaveBeenCalled()
       expect(service.prepare).not.toHaveBeenCalled()
-      fireEvent.press(view.getByLabelText(first))
-      fireEvent.press(view.getByLabelText(SAVE))
+      await fireEvent.press(view.getByLabelText(first))
+      await fireEvent.press(view.getByLabelText(SAVE))
       await waitFor(() => expect(service.prepare).toHaveBeenCalledTimes(1))
       const draft = jest.mocked(service.prepare).mock.calls[0][0]
       expect(draft.document).toEqual(source.document)
@@ -313,7 +313,7 @@ describe.each(['light', 'dark'] as const)(
     })
 
     it('saves originals before explicit verification and imports only exact selected meanings', async () => {
-      const view = show()
+      const view = await show()
       await waitFor(() => expect(service.list).toHaveBeenCalled())
       expect(service.resolve).not.toHaveBeenCalled()
       expect(service.deliverEntry).not.toHaveBeenCalled()
@@ -322,8 +322,8 @@ describe.each(['light', 'dark'] as const)(
           view.getByLabelText(FIRST).props.accessibilityState.disabled
         ).toBe(false)
       )
-      fireEvent.press(view.getByLabelText(FIRST))
-      fireEvent.press(view.getByLabelText('Select huis (2)'))
+      await fireEvent.press(view.getByLabelText(FIRST))
+      await fireEvent.press(view.getByLabelText('Select huis (2)'))
       await saved(view)
       expect(service.prepare).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -331,16 +331,18 @@ describe.each(['light', 'dark'] as const)(
           selected_indexes: [0, 1],
         })
       )
-      fireEvent.press(view.getByLabelText(VERIFY))
+      await fireEvent.press(view.getByLabelText(VERIFY))
       await waitFor(() => expect(view.getByLabelText(IMPORT)).toBeTruthy())
       expect(view.queryByLabelText('Import shared meaning (2)')).toBeNull()
-      fireEvent.press(view.getByLabelText(IMPORT))
-      fireEvent.press(view.getByLabelText(IMPORT))
+      const importButton = view.getByLabelText(IMPORT)
+      await fireEvent.press(importButton)
+      expect(view.queryByLabelText(IMPORT)).toBeNull()
+      await fireEvent.press(importButton)
       await waitFor(() =>
         expect(view.getByText(/Server confirmed the import/)).toBeTruthy()
       )
       expect(loadFollowingImport).not.toHaveBeenCalled()
-      fireEvent.press(view.getByLabelText('Load saved import (1)'))
+      await fireEvent.press(view.getByLabelText('Load saved import (1)'))
       await waitFor(() =>
         expect(view.getByText('Imported card loaded.')).toBeTruthy()
       )
@@ -365,15 +367,15 @@ describe.each(['light', 'dark'] as const)(
         } as FollowingImportOperation,
       ]
       jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
-      const view = show()
+      const view = await show()
       await waitFor(() => expect(view.getByLabelText(OPEN_SAVED)).toBeTruthy())
-      fireEvent.press(view.getByLabelText(OPEN_SAVED))
+      await fireEvent.press(view.getByLabelText(OPEN_SAVED))
       expect(
         view.getByText(/Local dictionary loading is still required/)
       ).toBeTruthy()
       expect(view.queryByLabelText(IMPORT)).toBeNull()
       expect(imports.readState).not.toHaveBeenCalled()
-      fireEvent.press(view.getByLabelText(CHECK))
+      await fireEvent.press(view.getByLabelText(CHECK))
       await waitFor(() =>
         expect(view.getByText(/Current server state: active/)).toBeTruthy()
       )
@@ -391,34 +393,36 @@ describe.each(['light', 'dark'] as const)(
       jest.mocked(isDictionaryFollowingImportsEnabled).mockReturnValue(false)
       jest.mocked(Crypto.randomUUID).mockReturnValue(RECOVERY_ID)
       jest.mocked(imports.deliver).mockRejectedValueOnce(new Error('Offline'))
-      const view = show()
+      const view = await show()
       await waitFor(() => expect(view.getByLabelText(OPEN_SAVED)).toBeTruthy())
-      fireEvent.press(view.getByLabelText(OPEN_SAVED))
+      await fireEvent.press(view.getByLabelText(OPEN_SAVED))
       expect(view.queryByLabelText(RECOVER)).toBeNull()
-      fireEvent.press(view.getByLabelText(CHECK))
+      await fireEvent.press(view.getByLabelText(CHECK))
       await waitFor(() => expect(view.getByLabelText(RECOVER)).toBeTruthy())
       expect(
         view.getByLabelText(RECOVER).props.accessibilityState.disabled
       ).toBe(true)
-      fireEvent.press(view.getByLabelText('Recover into Owned target (1)'))
-      fireEvent.press(view.getByLabelText(RECOVER))
+      await fireEvent.press(
+        view.getByLabelText('Recover into Owned target (1)')
+      )
+      await fireEvent.press(view.getByLabelText(RECOVER))
       await waitFor(() =>
         expect(view.getByLabelText('Retry saved recovery (1)')).toBeTruthy()
       )
       const pending = operations.at(-1)!
       expect(pending.result).toBeNull()
       expect(view.queryByLabelText(IMPORT)).toBeNull()
-      fireEvent.press(view.getByLabelText('Retry saved recovery (1)'))
+      await fireEvent.press(view.getByLabelText('Retry saved recovery (1)'))
       await waitFor(() =>
         expect(view.getByText(/Server confirmed recovery/)).toBeTruthy()
       )
       expect(jest.mocked(imports.deliver).mock.calls[1][0]).toEqual(pending)
       expect(imports.prepare).toHaveBeenCalledTimes(1)
       expect(loadFollowingImport).not.toHaveBeenCalled()
-      fireEvent.press(view.getByLabelText(CHECK))
+      await fireEvent.press(view.getByLabelText(CHECK))
       await waitFor(() => expect(view.getByLabelText(CANCEL)).toBeTruthy())
       jest.mocked(Crypto.randomUUID).mockReturnValue(CANCEL_ID)
-      fireEvent.press(view.getByLabelText(CANCEL))
+      await fireEvent.press(view.getByLabelText(CANCEL))
       await waitFor(() =>
         expect(
           view.getByText(/Further import and recovery are cancelled/)
@@ -440,10 +444,10 @@ describe.each(['light', 'dark'] as const)(
         state: 'unavailable',
         collection_id: null,
       } as never)
-      const view = show()
+      const view = await show()
       await waitFor(() => expect(view.getByLabelText(OPEN_SAVED)).toBeTruthy())
-      fireEvent.press(view.getByLabelText(OPEN_SAVED))
-      fireEvent.press(view.getByLabelText(CHECK))
+      await fireEvent.press(view.getByLabelText(OPEN_SAVED))
+      await fireEvent.press(view.getByLabelText(CHECK))
       await waitFor(() =>
         expect(view.getByText(/Current server state: unavailable/)).toBeTruthy()
       )
@@ -477,21 +481,21 @@ describe.each(['light', 'dark'] as const)(
       jest
         .mocked(loadFollowingExistingCard)
         .mockRejectedValueOnce(new Error('Offline'))
-      const view = show()
+      const view = await show()
       await waitFor(() => expect(view.getByLabelText(OPEN_SAVED)).toBeTruthy())
-      fireEvent.press(view.getByLabelText(OPEN_SAVED))
+      await fireEvent.press(view.getByLabelText(OPEN_SAVED))
       expect(loadFollowingExistingCard).not.toHaveBeenCalled()
       expect(
         view.getByLabelText('Load saved import (1)').props.accessibilityState
           .disabled
       ).toBe(true)
       expect(view.queryByLabelText(IMPORT)).toBeNull()
-      fireEvent.press(view.getByLabelText('Load existing card (1)'))
+      await fireEvent.press(view.getByLabelText('Load existing card (1)'))
       await waitFor(() =>
         expect(view.getByText(/Could not finish this action/)).toBeTruthy()
       )
       expect(operations[0]).toEqual(before)
-      fireEvent.press(view.getByLabelText('Load existing card (1)'))
+      await fireEvent.press(view.getByLabelText('Load existing card (1)'))
       await waitFor(() =>
         expect(
           view.getByText('Existing card loaded. Learning was kept.')
@@ -505,27 +509,27 @@ describe.each(['light', 'dark'] as const)(
       expect(service.deliverEntry).not.toHaveBeenCalled()
     })
     it('stops the dispatch chain after unmount and hides originals after Auth ABA', async () => {
-      const view = show()
+      const view = await show()
       await waitFor(() =>
         expect(
           view.getByLabelText(FIRST).props.accessibilityState.disabled
         ).toBe(false)
       )
-      fireEvent.press(view.getByLabelText(FIRST))
+      await fireEvent.press(view.getByLabelText(FIRST))
       await saved(view)
-      fireEvent.press(view.getByLabelText(VERIFY))
+      await fireEvent.press(view.getByLabelText(VERIFY))
       await waitFor(() => expect(view.getByLabelText(IMPORT)).toBeTruthy())
       const pending = deferred<FollowingImportOperation>()
       jest.mocked(service.queueEntry).mockReturnValueOnce(pending.promise)
-      fireEvent.press(view.getByLabelText(IMPORT))
-      view.unmount()
+      await fireEvent.press(view.getByLabelText(IMPORT))
+      await view.unmount()
       await act(async () => pending.resolve(importOperation()))
       expect(service.deliverEntry).not.toHaveBeenCalled()
-      const restored = show()
+      const restored = await show()
       await waitFor(() =>
         expect(restored.getByLabelText(OPEN_SAVED)).toBeTruthy()
       )
-      fireEvent.press(restored.getByLabelText(OPEN_SAVED))
+      await fireEvent.press(restored.getByLabelText(OPEN_SAVED))
       await act(async () => {
         await auth('SIGNED_IN', { user: { id: OWNER_B } } as Session)
         await auth('SIGNED_IN', { user: { id: OWNER_A } } as Session)
@@ -534,12 +538,12 @@ describe.each(['light', 'dark'] as const)(
       expect(restored.queryByText('Protected original')).toBeNull()
     })
     it('routes schema2 through shared selection without the legacy duplicate/private-copy path', async () => {
-      const view = render(<DictionaryDocumentImportScreen />)
-      fireEvent.changeText(
+      const view = await render(<DictionaryDocumentImportScreen />)
+      await fireEvent.changeText(
         view.getByLabelText('Collection JSON'),
         JSON.stringify(transferSession().document)
       )
-      fireEvent.press(view.getByLabelText('Preview document'))
+      await fireEvent.press(view.getByLabelText('Preview document'))
       await waitFor(() =>
         expect(view.getByText('Shared collection import')).toBeTruthy()
       )

@@ -14,7 +14,7 @@ import { CefrBadge } from '@/components/CefrBadge'
 interface CardFrontProps extends ReviewCardProps {
   isPlayingAudio: boolean
   onPlayPronunciation: (url: string) => void
-  pronunciationRef?: React.RefObject<View | null>
+  pronunciationRef?: React.RefObject<React.ComponentRef<typeof View> | null>
 }
 
 export function CardFront({

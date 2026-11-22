@@ -24,7 +24,7 @@ export function AuthInput({
   ...props
 }: AuthInputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-  const inputRef = useRef<TextInput>(null)
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null)
   const colorScheme = useColorScheme() ?? 'light'
   const toggleTestId =
     isPassword && props.testID ? `${props.testID}-toggle` : undefined

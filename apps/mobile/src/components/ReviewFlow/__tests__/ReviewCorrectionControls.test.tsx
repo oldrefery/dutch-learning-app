@@ -48,7 +48,7 @@ async function setup() {
   return {
     controller,
     transport,
-    screen: render(<Harness controller={controller} />),
+    screen: await render(<Harness controller={controller} />),
   }
 }
 
@@ -62,7 +62,7 @@ describe.each(['light', 'dark'] as const)(
       const { screen, transport } = await setup()
       expect(screen.getByLabelText('Change to good')).toBeDisabled()
       expect(screen.toJSON()).toMatchSnapshot()
-      fireEvent.press(screen.getByLabelText(CHANGE_HARD))
+      await fireEvent.press(screen.getByLabelText(CHANGE_HARD))
       await act(async () => {})
       expect(screen.getByLabelText(CHANGE_HARD)).toBeDisabled()
       expect(screen.getByLabelText('Change to good')).not.toBeDisabled()
@@ -77,18 +77,18 @@ describe.each(['light', 'dark'] as const)(
 it('offers retry after a lost reply even when browsing the pending question', async () => {
   const { screen, controller, transport } = await setup()
   transport.apply.mockRejectedValueOnce(new Error('offline'))
-  fireEvent.press(screen.getByLabelText(CHANGE_HARD))
+  await fireEvent.press(screen.getByLabelText(CHANGE_HARD))
   await act(async () => {})
-  act(() => controller.transition(returnToReviewQuestion))
+  await act(() => controller.transition(returnToReviewQuestion))
   expect(
     screen.getByText(
       'Resolve the pending correction before answering another word.'
     )
   ).toBeTruthy()
-  act(() => controller.setForeground(false))
+  await act(() => controller.setForeground(false))
   expect(screen.getByLabelText(RETRY_CORRECTION)).toBeDisabled()
-  act(() => controller.setForeground(true))
-  fireEvent.press(screen.getByLabelText(RETRY_CORRECTION))
+  await act(() => controller.setForeground(true))
+  await fireEvent.press(screen.getByLabelText(RETRY_CORRECTION))
   await act(async () => {})
   expect(transport.apply.mock.calls[1][0]).toBe(
     transport.apply.mock.calls[0][0]
@@ -99,11 +99,11 @@ it('offers retry after a lost reply even when browsing the pending question', as
 it('requires explicit server refresh after a conflict and removes editing for that event', async () => {
   const { screen, transport } = await setup()
   transport.apply.mockResolvedValue({ kind: 'conflict' })
-  fireEvent.press(screen.getByLabelText('Change to easy'))
+  await fireEvent.press(screen.getByLabelText('Change to easy'))
   await act(async () => {})
   expect(screen.queryByLabelText(CHANGE_HARD)).toBeNull()
   expect(transport.keepServer).not.toHaveBeenCalled()
-  fireEvent.press(screen.getByLabelText('Keep server version'))
+  await fireEvent.press(screen.getByLabelText('Keep server version'))
   await act(async () => {})
   expect(transport.keepServer).toHaveBeenCalledTimes(1)
   expect(screen.queryByLabelText(CHANGE_HARD)).toBeNull()
@@ -114,7 +114,7 @@ it('shows an honest unavailable notice without a production transport', async ()
   controller.selectOption('word-0')
   await controller.submit('good')
   controller.transition(previousReviewWord)
-  const screen = render(<Harness controller={controller} />)
+  const screen = await render(<Harness controller={controller} />)
   expect(
     screen.getByText('Assessment changes are not available in this build yet.')
   ).toBeTruthy()
