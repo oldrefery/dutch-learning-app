@@ -52,7 +52,8 @@
       "distribution": "internal",
       "env": {
         "WOORDENAAR_QA_BUILD": "true",
-        "EXPO_PUBLIC_E2E_TEST_MODE": "true"
+        "EXPO_PUBLIC_E2E_TEST_MODE": "true",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       },
       "ios": {
         "simulator": true,
