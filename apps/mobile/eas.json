@@ -63,6 +63,18 @@
         "buildType": "apk"
       }
     },
+    "store-release": {
+      "extends": "production",
+      "env": {
+        "WOORDENAAR_QA_BUILD": "false",
+        "EXPO_PUBLIC_E2E_TEST_MODE": "false",
+        "EXPO_PUBLIC_DEV_USER_EMAIL": "disabled@example.invalid",
+        "EXPO_PUBLIC_DEV_USER_ID": "00000000-0000-0000-0000-000000000000",
+        "EXPO_PUBLIC_DEV_USER_PASSWORD": "disabled",
+        "SENTRY_AUTH_TOKEN": "disabled",
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
+      }
+    },
     "dictionary-release": {
       "extends": "production",
       "env": {
