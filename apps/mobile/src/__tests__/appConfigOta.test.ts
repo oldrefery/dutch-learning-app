@@ -3,6 +3,7 @@ import path from 'node:path'
 import {
   copyFileSync,
   mkdtempSync,
+  readFileSync,
   rmSync,
   symlinkSync,
   writeFileSync,
@@ -104,6 +105,46 @@ describe('mobile OTA build configuration', () => {
       iosEnabled: false,
       androidEnabled: 'false',
     })
+  })
+
+  it('writes the QA config from the native Expo Constants script', () => {
+    const constantsRoot = path.dirname(
+      require.resolve('expo-constants/package.json')
+    )
+    const output = mkdtempSync(path.join(tmpdir(), 'woordenaar-native-config-'))
+
+    try {
+      const result = spawnSync(
+        process.execPath,
+        [
+          path.join(constantsRoot, 'scripts/getAppConfig.js'),
+          mobileRoot,
+          output,
+          'android',
+          'false',
+          'production',
+        ],
+        {
+          cwd: mobileRoot,
+          encoding: 'utf8',
+          timeout: 15_000,
+          env: {
+            ...process.env,
+            ...easJson.build['e2e-test'].env,
+            EXPO_NO_DOTENV: '1',
+            EAS_BUILD_PROFILE: 'e2e-test',
+          },
+        }
+      )
+
+      expect(result.stderr).toBe('')
+      expect(result.status).toBe(0)
+      expect(
+        JSON.parse(readFileSync(path.join(output, 'app.config'), 'utf8'))
+      ).toMatchObject({ extra: { qaBuild: true }, updates: { enabled: false } })
+    } finally {
+      rmSync(output, { recursive: true, force: true })
+    }
   })
 
   it.each(['preview', 'production'] as const)(
