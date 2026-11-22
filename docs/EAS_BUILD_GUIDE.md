@@ -30,7 +30,22 @@ CLI usage, run the operation only after `verify_eas_identity` succeeds, as below
 - An Expo SDK/native dependency change needs new binaries; an OTA cannot
   upgrade the native runtime. SDK 57 development also needs a rebuilt client.
 
-## Recommended: Cloud Build And Internal Submission
+## Publish Android To Internal Testing
+
+Use the `android-internal` submit profile for Android releases to the existing
+Google Play Internal testing audience. Submit the exact signed EAS store build
+by ID after confirming its version and build number. From the repository root:
+
+```bash
+ANDROID_EAS_BUILD_ID=your-eas-build-id bash -c 'source scripts/verify-eas-identity.sh; verify_eas_identity && cd apps/mobile && npx -y eas-cli@latest submit --platform android --profile android-internal --id "$ANDROID_EAS_BUILD_ID" --non-interactive --wait'
+```
+
+The profile sets Google Play track `internal` and release status `completed`.
+Check the submission result and confirm the exact version code in Internal
+testing before sharing it with testers. If the artifact is already in Play
+Console, use that existing version code when creating the internal release.
+
+## Cloud Build And Draft Submission
 
 After explicit build and submission approval, from the repository root:
 

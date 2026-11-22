@@ -413,6 +413,9 @@ maps upload during bundling using the EAS production `SENTRY_AUTH_TOKEN`; verify
 the upload in each build's logs. Do not re-export a local bundle to repair maps
 for a cloud binary.
 
+Publish Android builds to Google Play Internal testing with the `android-internal`
+EAS Submit profile and the exact build ID. The release guide shows the command.
+
 For compatible JS-only OTA updates, use `npm run update:production -- --message
 "Describe the update"`. It verifies the effective personal EAS account and
 project, publishes to production, and uploads the generated `apps/mobile/dist`

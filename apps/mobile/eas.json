@@ -91,6 +91,12 @@
     }
   },
   "submit": {
+    "android-internal": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "completed"
+      }
+    },
     "production": {
       "ios": {
         "appleTeamId": "7FQ395U52U",
