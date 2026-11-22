@@ -894,6 +894,69 @@ describe('SyncManager', () => {
       expect(networkUtils.setLastSyncTimestamp).not.toHaveBeenCalled()
     })
 
+    it.each([
+      ['synced', 0],
+      [null, 0],
+      ['pending', 1],
+    ])(
+      'handles collection status %s with %i writes during legacy word sync',
+      async (syncStatus, expectedWrites) => {
+        const word = createPendingWord()
+        jest.mocked(dictionaryContentSync.isAvailable).mockResolvedValue(false)
+        ;(wordRepository.getPendingSyncWords as jest.Mock).mockResolvedValue([
+          word,
+        ])
+        ;(
+          collectionRepository.getCollectionsByIds as jest.Mock
+        ).mockResolvedValue([
+          {
+            ...createMockCollection({
+              collection_id: MAIN_COLLECTION_ID,
+              user_id: userId,
+            }),
+            sync_status: syncStatus,
+          },
+        ])
+        const collectionUpsert = createUpsertMock()
+        if (expectedWrites === 0) {
+          collectionUpsert.mockReturnValue({
+            select: jest.fn().mockResolvedValue({
+              data: null,
+              error: {
+                code: '42501',
+                message:
+                  'new row violates row-level security policy for table "collections"',
+              },
+            }),
+          })
+        }
+        const wordsUpsert = createUpsertMock()
+        mockSupabaseFrom(table => {
+          if (table === 'collections') {
+            return {
+              select: jest.fn().mockReturnValue({
+                eq: jest.fn().mockResolvedValue({ data: [], error: null }),
+              }),
+              upsert: collectionUpsert,
+            }
+          }
+          if (table === 'words') {
+            return {
+              select: jest.fn().mockReturnValue(createWordsPullQuery()),
+              upsert: wordsUpsert,
+            }
+          }
+          return createProgressTable()
+        })
+
+        const result = await syncManager.performSync(userId)
+
+        expect(result).toMatchObject({ success: true, wordsSynced: 1 })
+        expect(collectionUpsert).toHaveBeenCalledTimes(expectedWrites)
+        expect(wordsUpsert).toHaveBeenCalledTimes(1)
+      }
+    )
+
     it.each([false, true])(
       'avoids collection INSERT for a delivered target while writing word metadata (word exists: %s)',
       async delivered => {

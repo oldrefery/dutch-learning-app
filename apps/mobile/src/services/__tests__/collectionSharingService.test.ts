@@ -274,11 +274,32 @@ describe('collectionSharingService.unshareCollection', () => {
 })
 
 describe('collectionSharingService.getSharedCollection', () => {
-  const SHARE_TOKEN = 'token-abc'
+  const SHARE_TOKEN = 'a4b5c6d7-12ab-4cde-8f00-123456789abc'
 
   beforeEach(() => {
     jest.restoreAllMocks()
     jest.clearAllMocks()
+  })
+
+  it('rejects a malformed share code before querying Supabase', async () => {
+    const query = {
+      select: jest.fn().mockReturnThis(),
+      eq: jest.fn().mockReturnThis(),
+      maybeSingle: jest.fn().mockResolvedValue({
+        data: null,
+        error: { code: '22P02', message: 'invalid input syntax for type uuid' },
+      }),
+    }
+    ;(supabase.from as jest.Mock).mockReturnValue(query)
+
+    await expect(
+      collectionSharingService.getSharedCollectionWords('TESTCODE')
+    ).resolves.toEqual({
+      success: false,
+      error: CollectionSharingError.NOT_FOUND,
+    })
+    expect(supabase.from).not.toHaveBeenCalled()
+    expect(logSupabaseError).not.toHaveBeenCalled()
   })
 
   it('should return shared collection data with word count', async () => {
@@ -319,7 +340,7 @@ describe('collectionSharingService.getSharedCollection', () => {
     }
   })
 
-  it('should return NOT_FOUND when collection not found', async () => {
+  it('should return NOT_FOUND for a missing collection with a braced UUID', async () => {
     const mockMaybeSingle = jest
       .fn()
       .mockResolvedValue({ data: null, error: null })
@@ -328,8 +349,11 @@ describe('collectionSharingService.getSharedCollection', () => {
     const mockSelect = jest.fn().mockReturnValue({ eq: mockEq1 })
     ;(supabase.from as jest.Mock).mockReturnValue({ select: mockSelect })
 
+    const alternateToken = `{${SHARE_TOKEN.replaceAll('-', '').toUpperCase()}}`
     const result =
-      await collectionSharingService.getSharedCollection(SHARE_TOKEN)
+      await collectionSharingService.getSharedCollection(alternateToken)
+
+    expect(mockEq1).toHaveBeenCalledWith('share_token', alternateToken)
 
     expect(result).toEqual({
       success: false,

@@ -3077,13 +3077,11 @@ export class SyncManager {
       collectionIds,
       userId
     )
-    // Dictionary imports can belong to read-only accounts: an already delivered
-    // target must not require ordinary collection INSERT permission again.
-    const collections = this.dictionaryContentProtected
-      ? localCollections.filter(
-          collection => collection.sync_status !== 'synced'
-        )
-      : localCollections
+    // Only send collections that changed locally. Already synced targets can
+    // belong to accounts without collection INSERT permission.
+    const collections = localCollections.filter(
+      collection => collection.sync_status === 'pending'
+    )
 
     if (collections.length === 0) return
 

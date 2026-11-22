@@ -47,6 +47,9 @@ export interface CollectionShareStatus {
 type Result<T, E = string> =
   { success: true; data: T } | { success: false; error: E }
 
+// PostgreSQL accepts hyphens at four-digit boundaries, with optional braces.
+const SHARE_TOKEN_PATTERN = /^[0-9a-f]{4}(?:-?[0-9a-f]{4}){7}$/i
+
 export enum CollectionSharingError {
   NOT_FOUND = 'COLLECTION_NOT_FOUND',
   NOT_SHARED = 'COLLECTION_NOT_SHARED',
@@ -182,6 +185,14 @@ class CollectionSharingService {
   async getSharedCollection(
     shareToken: string
   ): Promise<Result<SharedCollectionData, CollectionSharingError>> {
+    const tokenBody =
+      shareToken.startsWith('{') && shareToken.endsWith('}')
+        ? shareToken.slice(1, -1)
+        : shareToken
+    if (!SHARE_TOKEN_PATTERN.test(tokenBody)) {
+      return { success: false, error: CollectionSharingError.NOT_FOUND }
+    }
+
     try {
       const { data, error } = await supabase
         .from('collections')
