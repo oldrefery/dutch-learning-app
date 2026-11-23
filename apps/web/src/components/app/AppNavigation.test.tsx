@@ -6,6 +6,7 @@ import { AuthenticatedShell } from './AuthenticatedShell'
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
+  useRouter: () => ({ push: jest.fn() }),
 }))
 
 jest.mock('next/form', () => ({

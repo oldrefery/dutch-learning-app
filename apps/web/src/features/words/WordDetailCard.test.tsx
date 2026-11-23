@@ -19,5 +19,8 @@ it.each([
 
   render(<WordDetailCard word={buildWordDetail(row)} />)
 
+  expect(
+    screen.getByRole('button', { name: `Play ${lemma}` })
+  ).toHaveTextContent('Listen')
   expect(screen.getByRole('heading', { name: heading })).toBeVisible()
 })

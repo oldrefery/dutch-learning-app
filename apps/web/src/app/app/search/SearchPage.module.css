@@ -101,3 +101,21 @@
     grid-row: 1 / span 3;
   }
 }
+
+.pending {
+  align-items: center;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pending svg {
+    animation: rotate 1s linear infinite;
+  }
+}
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

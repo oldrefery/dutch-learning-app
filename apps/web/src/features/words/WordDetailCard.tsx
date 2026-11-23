@@ -270,9 +270,11 @@ export function WordDetailCard({
                 <span className={styles.preposition}> {preposition}</span>
               )}
             </Heading>
-            {word.ttsUrl && (
-              <AudioButton label={word.dutchLemma} source={word.ttsUrl} />
-            )}
+            <AudioButton
+              key={JSON.stringify([word.dutchLemma, word.ttsUrl])}
+              label={word.dutchLemma}
+              source={word.ttsUrl}
+            />
           </div>
 
           <CefrBadge dictionary={word.dictionary} />

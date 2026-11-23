@@ -14,12 +14,11 @@ import {
   Settings,
 } from 'lucide-react'
 import Link from 'next/link'
-import Form from 'next/form'
+import { SearchForm } from '@/features/search/SearchNavigation'
 import { usePathname } from 'next/navigation'
 import { useSyncExternalStore } from 'react'
 import type { AccessLevel } from '@woordenaar/domain'
 import { logout } from '@/app/(auth)/actions'
-import { WORD_SEARCH_PATH } from '@/features/search/routes'
 import styles from './AuthenticatedShell.module.css'
 
 type NavigationIcon = typeof LibraryBig
@@ -271,18 +270,20 @@ export function AppNavigation({
           <span className={styles.contextLine}>{pageContext.context}</span>
         </div>
         <div className={styles.topActions}>
-          <Form action={WORD_SEARCH_PATH} className={styles.search}>
+          <SearchForm className={styles.search}>
             <button aria-label="Search words" type="submit">
               <Search aria-hidden="true" size={16} />
             </button>
             <span className="dw-sr-only">Search your words</span>
             <input
               autoComplete="off"
+              aria-label="Search your words"
+              maxLength={80}
               name="q"
               placeholder="Search your words"
               type="search"
             />
-          </Form>
+          </SearchForm>
           {accessLevel === 'full_access' && (
             <Link
               className={`dw-button dw-button--primary ${styles.topButton}`}

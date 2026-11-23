@@ -6,6 +6,7 @@ import { WordDetailCard } from '@/features/words/WordDetailCard'
 import type { WordDetail } from '@/features/words/word-detail'
 import { getPreferredTranslation } from './review-domain'
 import type { ReviewWorkspaceData } from './types'
+import { ReviewCollectionLabel } from './ReviewCollectionLabel'
 import { useAudioReviewPlayback } from './useAudioReviewPlayback'
 import { useReviewSession } from './useReviewSession'
 
@@ -270,6 +271,10 @@ export function AudioReviewWorkspace({
       </div>
 
       <article className="mt-5 rounded-3xl border border-neutral-200 bg-white p-8 text-center shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+        <ReviewCollectionLabel
+          collections={session.batchCollections ?? data.collections}
+          collectionId={currentWord.collectionId}
+        />
         <p className="text-sm text-neutral-500">
           {playback.isPaused
             ? 'Playback paused'
