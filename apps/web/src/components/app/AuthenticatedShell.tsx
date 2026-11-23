@@ -1,4 +1,6 @@
 import type { AuthContext } from '@/lib/auth/session'
+import { SearchNavigation } from '@/features/search/SearchNavigation'
+import { PendingSearchScreen } from '@/features/search/SearchScreen'
 import { AppNavigation } from './AppNavigation'
 import { ReviewFreshnessProvider } from './ReviewFreshnessProvider'
 import styles from './AuthenticatedShell.module.css'
@@ -21,18 +23,22 @@ export function AuthenticatedShell({
 
   return (
     <ReviewFreshnessProvider key={auth.userId} userId={auth.userId}>
-      <div className={`${styles.shell} dw-app-shell`}>
-        {navigation ?? (
-          <AppNavigation
-            accessLevel={auth.accessLevel}
-            dueCount={dueCount}
-            userLabel={currentUserLabel}
-          />
-        )}
-        <div className={`${styles.workspace} dw-app-workspace`}>
-          <main className={`${styles.main} dw-app-main`}>{children}</main>
+      <SearchNavigation>
+        <div className={`${styles.shell} dw-app-shell`}>
+          {navigation ?? (
+            <AppNavigation
+              accessLevel={auth.accessLevel}
+              dueCount={dueCount}
+              userLabel={currentUserLabel}
+            />
+          )}
+          <div className={`${styles.workspace} dw-app-workspace`}>
+            <main className={`${styles.main} dw-app-main`}>
+              <PendingSearchScreen>{children}</PendingSearchScreen>
+            </main>
+          </div>
         </div>
-      </div>
+      </SearchNavigation>
     </ReviewFreshnessProvider>
   )
 }

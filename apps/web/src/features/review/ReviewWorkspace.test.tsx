@@ -429,6 +429,7 @@ test('wrong answer loads full details and Continue records only Again', async ()
 test('D opens details before answering and Skip does not submit', async () => {
   renderWorkspace()
   await start()
+  expect(screen.getByText('Collection · Test collection')).toBeVisible()
   fireEvent.keyDown(document.body, { key: 'd' })
   await flush()
   expect(screen.getByText(/Answer viewed/)).toBeInTheDocument()

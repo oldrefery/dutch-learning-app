@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReviewWord } from './types'
 
+type PronunciationWord = Pick<ReviewWord, 'dutchLemma' | 'ttsUrl'>
+
 type PlaybackSource = 'audio' | 'speech' | null
 
-const createUtterance = (word: ReviewWord) => {
+const createUtterance = (word: PronunciationWord) => {
   const utterance = new SpeechSynthesisUtterance(word.dutchLemma)
   utterance.lang = 'nl-NL'
   return utterance
@@ -32,31 +34,34 @@ export function useAudioReviewPlayback() {
     setIsPaused(false)
   }, [])
 
-  const playWithSpeech = useCallback((word: ReviewWord, generation: number) => {
-    if (!('speechSynthesis' in window)) {
-      setPlaybackMessage('Pronunciation is unavailable in this browser.')
-      setIsPlaying(false)
-      return
-    }
+  const playWithSpeech = useCallback(
+    (word: PronunciationWord, generation: number) => {
+      if (!('speechSynthesis' in window)) {
+        setPlaybackMessage('Pronunciation is unavailable in this browser.')
+        setIsPlaying(false)
+        return
+      }
 
-    window.speechSynthesis.cancel()
-    const utterance = createUtterance(word)
-    utterance.onend = () => {
-      if (playbackGenerationRef.current === generation) setIsPlaying(false)
-    }
-    utterance.onerror = () => {
-      if (playbackGenerationRef.current !== generation) return
-      setIsPlaying(false)
-      setPlaybackMessage('Pronunciation could not be played. Use Replay.')
-    }
-    sourceRef.current = 'speech'
-    setIsPlaying(true)
-    setIsPaused(false)
-    window.speechSynthesis.speak(utterance)
-  }, [])
+      window.speechSynthesis.cancel()
+      const utterance = createUtterance(word)
+      utterance.onend = () => {
+        if (playbackGenerationRef.current === generation) setIsPlaying(false)
+      }
+      utterance.onerror = () => {
+        if (playbackGenerationRef.current !== generation) return
+        setIsPlaying(false)
+        setPlaybackMessage('Pronunciation could not be played. Use Replay.')
+      }
+      sourceRef.current = 'speech'
+      setIsPlaying(true)
+      setIsPaused(false)
+      window.speechSynthesis.speak(utterance)
+    },
+    []
+  )
 
   const play = useCallback(
-    async (word: ReviewWord) => {
+    async (word: PronunciationWord) => {
       stop()
       const generation = playbackGenerationRef.current
       setPlaybackMessage(null)

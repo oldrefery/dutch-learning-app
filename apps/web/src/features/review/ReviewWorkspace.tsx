@@ -22,6 +22,7 @@ import { ReviewCorrectionControls } from './ReviewCorrectionControls'
 import { ReviewSessionControls } from './ReviewSessionControls'
 import { ReviewSessionNavigation } from './ReviewSessionNavigation'
 import { useReviewKeyboard } from './useReviewKeyboard'
+import { ReviewCollectionLabel } from './ReviewCollectionLabel'
 import { useAudioReviewPlayback } from './useAudioReviewPlayback'
 import { useReviewSession } from './useReviewSession'
 import { ReviewDetailCache } from './review-detail-cache'
@@ -381,6 +382,10 @@ function AccountReviewWorkspace({
       <ReviewContent
         focusKey={`${session.currentWord.id}:${session.flow?.view.kind}`}
       >
+        <ReviewCollectionLabel
+          collections={collections}
+          collectionId={session.currentWord.collectionId}
+        />
         <ReviewSessionNavigation session={session} />
         <ReviewCorrectionControls session={session} />
         {session.historyEntry && (
