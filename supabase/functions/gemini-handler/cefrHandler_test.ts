@@ -685,3 +685,122 @@ Deno.test(
     }
   }
 )
+
+Deno.test(
+  'de eieren keeps the attested plural headword and speech when Gemini returns het ei',
+  async () => {
+    const egg = {
+      ...analysis,
+      dutch_lemma: 'ei',
+      article: 'het',
+      plural: 'eieren',
+      translations: { en: ['eggs'], ru: ['яйца'] },
+      examples: [{ nl: 'De eieren zijn vers.', en: 'The eggs are fresh.' }],
+      analysis_notes: 'Singular: het ei.',
+    }
+    providerOverrides = egg
+    try {
+      const fresh = await request(false, 200, 'de eieren', {
+        resolveVariants: true,
+      })
+      assertEquals(fresh.data.dutch_lemma, 'eieren')
+      assertEquals(fresh.data.dutch_original, 'de eieren')
+      assertEquals(fresh.data.article, 'de')
+      assertEquals(fresh.data.plural, null)
+      assertEquals(fresh.data.translations, egg.translations)
+      assertEquals(fresh.data.examples, egg.examples)
+      assertEquals(new URL(fresh.data.tts_url).searchParams.get('q'), 'eieren')
+      assert(
+        calls.some(call =>
+          JSON.stringify(call.body).includes('plural translations and examples')
+        )
+      )
+      const write = calls.find(
+        call =>
+          call.path === '/rest/v1/word_analysis_cache' && call.method === 'POST'
+      )
+      assert(write)
+      assertEquals(write.body.dutch_lemma, 'eieren')
+      assertEquals(write.body.article, 'de')
+
+      cached = [write.body]
+      const hit = await request(false, 200, 'de eieren', {
+        resolveVariants: true,
+      })
+      assertEquals(hit.meta.source, 'cache')
+      assertEquals(hit.data.dutch_lemma, 'eieren')
+
+      const refresh = await request(false, 200, 'de eieren', {
+        resolveVariants: true,
+        forceRefresh: true,
+        selectedVariant: {
+          lemma: 'eieren',
+          partOfSpeech: 'noun',
+          article: 'de',
+        },
+      })
+      assertEquals(refresh.data.dutch_lemma, 'eieren')
+
+      await request(false, 500, 'de ei', { resolveVariants: true })
+      assert(
+        !calls.some(
+          call =>
+            call.path === '/rest/v1/word_analysis_cache' &&
+            call.method === 'POST'
+        )
+      )
+
+      providerOverrides = {
+        ...egg,
+        translations: { en: ['egg'], ru: ['яйцо'] },
+      }
+      const singular = await request(false, 200, 'het ei', {
+        resolveVariants: true,
+      })
+      assertEquals(singular.data.dutch_lemma, 'ei')
+      assertEquals(singular.data.article, 'het')
+      assertEquals(singular.data.plural, 'eieren')
+    } finally {
+      providerOverrides = {}
+      cached = []
+    }
+  }
+)
+
+Deno.test(
+  'de nouns bypass a cached singular alias when the typed form is its plural',
+  async () => {
+    const singular = {
+      ...analysis,
+      dutch_lemma: 'stoel',
+      article: 'de',
+      plural: 'stoelen',
+      translations: { en: ['chair'], ru: ['стул'] },
+    }
+    cached = [{ ...singular, dutch_original: 'stoelen', cache_version: 3 }]
+    providerOverrides = {
+      ...singular,
+      dutch_lemma: 'stoelen',
+      plural: null,
+      translations: { en: ['chairs'], ru: ['стулья'] },
+    }
+    try {
+      const plural = await request(false, 200, 'de stoelen', {
+        resolveVariants: true,
+      })
+      assertEquals(plural.meta.source, 'gemini')
+      assertEquals(plural.data.dutch_lemma, 'stoelen')
+      assertEquals(plural.data.translations.en, ['chairs'])
+
+      const exact = await request(false, 200, 'de stoel', {
+        resolveVariants: true,
+      })
+      assertEquals(exact.meta.source, 'cache')
+      assertEquals(exact.data.dutch_lemma, 'stoel')
+      assertEquals(exact.data.plural, 'stoelen')
+    } finally {
+      providerOverrides = {}
+      cached = []
+    }
+  }
+)
