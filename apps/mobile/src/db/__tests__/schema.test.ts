@@ -74,12 +74,12 @@ describe('usage notes schema', () => {
     )
   })
 
-  it('keeps usage notes in legacy cache version 2 and verifies canonical variant entries with version 3', () => {
+  it('isolates whole phrases from legacy analyses and canonical single-word variants', () => {
     expect(cacheUtils).toContain('LEGACY_ANALYSIS_CACHE_VERSION = 2')
     expect(cacheUtils).toContain('CURRENT_ANALYSIS_CACHE_VERSION = 3')
-    expect(cacheUtils).toContain(
-      ".eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)"
-    )
+    expect(cacheUtils).toContain('PHRASE_ANALYSIS_CACHE_VERSION = 4')
+    expect(cacheUtils).toContain('version = CURRENT_ANALYSIS_CACHE_VERSION')
+    expect(cacheUtils).toContain(".eq('cache_version', version)")
     expect(cacheUtils).toMatch(
       /cache_version:\s*analysisData\.cache_version \?\? LEGACY_ANALYSIS_CACHE_VERSION/
     )
