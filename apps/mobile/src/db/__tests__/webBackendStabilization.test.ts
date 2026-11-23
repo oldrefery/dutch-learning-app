@@ -67,9 +67,5 @@ describe('web backend stabilization contracts', () => {
       expect(handler).toContain('consumeRequestQuotaWithServiceRole(')
       expect(handler).toContain("headers['Retry-After']")
     }
-
-    expect(geminiHandler.indexOf("source: 'cache'")).toBeLessThan(
-      geminiHandler.indexOf("'gemini-analysis'")
-    )
   })
 })

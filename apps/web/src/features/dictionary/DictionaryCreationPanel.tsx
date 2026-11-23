@@ -1,5 +1,6 @@
 'use client'
 
+import { parseWordVariantInput } from '@woordenaar/domain'
 import {
   useEffect,
   useMemo,
@@ -74,7 +75,13 @@ export function DictionaryCreationPanel({
     action.getSnapshot,
     action.getServerSnapshot
   )
-  const [hint, setHint] = useState('')
+  const [hint, setHint] = useState(() => {
+    const requested = parseWordVariantInput(originalQuery)
+    if (requested.error || !requested.partOfSpeech) return ''
+    return requested.article
+      ? `${requested.article} ${requested.word} (noun)`
+      : `${requested.word} (${requested.partOfSpeech})`
+  })
   const [target, setTarget] = useState(collections[0]?.id ?? '')
   const [page, setPage] = useState(0)
   useEffect(

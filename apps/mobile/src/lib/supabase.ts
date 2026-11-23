@@ -1,3 +1,4 @@
+import type { WordVariant } from '@woordenaar/domain'
 import 'react-native-url-polyfill/auto'
 import { supabase } from './supabaseClient'
 import { isDictionaryContentEnabled } from '@/constants/dictionaryContent'
@@ -364,7 +365,14 @@ function classifyAndThrowImportError(
 
 export const wordService = {
   // Analyze word using Gemini AI with retry logic
-  async analyzeWord(word: string, options?: { forceRefresh?: boolean }) {
+  async analyzeWord(
+    word: string,
+    options?: {
+      forceRefresh?: boolean
+      resolveVariants?: boolean
+      selectedVariant?: WordVariant
+    }
+  ) {
     // Add breadcrumb for tracking
     Sentry.addBreadcrumb({
       category: WORD_ANALYSIS_CATEGORY,
@@ -391,6 +399,12 @@ export const wordService = {
                 word,
                 userId: getDevUserId(),
                 forceRefresh: options?.forceRefresh || false,
+                ...(options?.resolveVariants
+                  ? {
+                      resolveVariants: true,
+                      selectedVariant: options.selectedVariant,
+                    }
+                  : {}),
               },
             }
           )

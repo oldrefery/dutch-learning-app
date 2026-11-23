@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261119190000_monthly_shared_analysis_budget.sql.
+// Generated from local migrations through 20261123120000_cache_word_variant_choices.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -977,6 +977,24 @@ export type Database = {
             referencedColumns: ['word_id', 'user_id']
           },
         ]
+      }
+      word_variant_choices_cache: {
+        Row: {
+          choices: Json
+          lookup_form: string
+          updated_at: string
+        }
+        Insert: {
+          choices: Json
+          lookup_form: string
+          updated_at?: string
+        }
+        Update: {
+          choices?: Json
+          lookup_form?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       words: {
         Row: {

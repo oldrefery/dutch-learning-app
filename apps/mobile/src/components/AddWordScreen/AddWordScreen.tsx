@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native'
+import {
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import {
+  wordVariantChoiceLabel,
+  wordVariantInputLabel,
+} from '@woordenaar/domain'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useFocusEffect } from 'expo-router/react-navigation'
 import { type Href, useRouter } from 'expo-router'
@@ -301,6 +311,7 @@ export function LegacyAddWordScreen({
   const { isPlayingAudio, playPronunciation } = useAudioPlayer()
   const {
     isAnalyzing,
+    choices,
     analysisResult,
     analysisMetadata,
     analysisError,
@@ -625,7 +636,12 @@ export function LegacyAddWordScreen({
         >
           <CompactWordInput
             inputWord={inputWord}
-            setInputWord={setInputWord}
+            setInputWord={value => {
+              setInputWord(value)
+              clearAnalysis()
+              setIsAlreadyInCollection(false)
+              setDuplicateWordInfo(null)
+            }}
             onAnalyze={handleAnalyze}
             isAnalyzing={isAnalyzing}
             isCheckingDuplicate={isCheckingDuplicate}
@@ -635,6 +651,7 @@ export function LegacyAddWordScreen({
             onCancel={handleCancel}
             variant="glass"
           />
+          <TextThemed>{wordVariantInputLabel(inputWord)}</TextThemed>
           {isAlreadyInCollection && duplicateWordInfo && (
             <DuplicateBanner
               duplicateWord={duplicateWordInfo}
@@ -684,7 +701,27 @@ export function LegacyAddWordScreen({
         />
       </View>
 
-      {!analysisResult && !isAnalyzing && (
+      {choices.length > 0 && (
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={variantStyles.list}
+        >
+          <TextThemed accessibilityRole="header">Choose a meaning</TextThemed>
+          {choices.map(choice => (
+            <TouchableOpacity
+              key={wordVariantChoiceLabel(choice, 'en')}
+              accessibilityRole="button"
+              disabled={isAnalyzing}
+              style={variantStyles.choice}
+              onPress={() => void analyzeWord(inputWord, false, choice)}
+            >
+              <TextThemed>{wordVariantChoiceLabel(choice, 'en')}</TextThemed>
+              <TextThemed>{choice.translations.ru}</TextThemed>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
+      {!analysisResult && !isAnalyzing && choices.length === 0 && (
         <AnalysisEmptyState
           onOpenBatchCapture={() => router.push(BATCH_CAPTURE_ROUTE)}
         />
@@ -792,4 +829,9 @@ const batchReviewStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
+})
+
+const variantStyles = StyleSheet.create({
+  list: { padding: 16, gap: 8 },
+  choice: { paddingVertical: 10 },
 })

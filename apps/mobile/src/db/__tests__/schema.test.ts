@@ -74,13 +74,14 @@ describe('usage notes schema', () => {
     )
   })
 
-  it('invalidates legacy shared analyses and writes cache version 2', () => {
-    expect(cacheUtils).toContain('CURRENT_ANALYSIS_CACHE_VERSION = 2')
+  it('keeps usage notes in legacy cache version 2 and verifies canonical variant entries with version 3', () => {
+    expect(cacheUtils).toContain('LEGACY_ANALYSIS_CACHE_VERSION = 2')
+    expect(cacheUtils).toContain('CURRENT_ANALYSIS_CACHE_VERSION = 3')
     expect(cacheUtils).toContain(
       ".eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)"
     )
-    expect(cacheUtils).toContain(
-      'cache_version: CURRENT_ANALYSIS_CACHE_VERSION'
+    expect(cacheUtils).toMatch(
+      /cache_version:\s*analysisData\.cache_version \?\? LEGACY_ANALYSIS_CACHE_VERSION/
     )
   })
 })

@@ -55,3 +55,5 @@ export * from './dictionary-creation-sdk'
 export * from './dictionary-creation-action'
 
 export * from './dictionary-creation-adoption'
+
+export * from './word-variant'

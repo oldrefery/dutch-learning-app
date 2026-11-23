@@ -83,7 +83,7 @@ export interface InputValidationResult {
 const MAX_INPUT_LENGTH = 120
 const MAX_TEXT_LENGTH = 500
 const DUTCH_INPUT_PATTERN =
-  /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-'!?.,;:]+$/
+  /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-'!?.,;:()]+$/
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)

@@ -5,6 +5,7 @@
     "../../../packages/domain/src/dictionary-read-content": "../../../packages/domain/src/dictionary-read-content.ts",
     "../../../packages/domain/src/dictionary-following-import": "../../../packages/domain/src/dictionary-following-import.ts",
     "../../../packages/domain/src/dictionary-meaning-lookup": "../../../packages/domain/src/dictionary-meaning-lookup.ts",
+    "../../../packages/domain/src/word-variant": "../../../packages/domain/src/word-variant.ts",
     "../../../packages/domain/src/dictionary-analysis-client": "../../../packages/domain/src/dictionary-analysis-client.ts",
     "../../../packages/domain/src/dictionary-following-transfer-revisions": "../../../packages/domain/src/dictionary-following-transfer-revisions.ts",
     "../../../packages/domain/src/dictionary-following-transfer-journal": "../../../packages/domain/src/dictionary-following-transfer-journal.ts",

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { PublishedMeaningAddWord } from './PublishedMeaningAddWord'
 import { AddWordWorkflow } from './AddWordWorkflow'
 import GlobalAddWordPage from '@/app/app/add/page'
-import { analyzeWordWithAi } from './analysis-client'
+import { analyzeWordVariant } from './analysis-client'
 import { saveWordToCollection } from './actions'
 import AddWordPage from '@/app/app/collections/[collectionId]/words/new/page'
 import { DictionaryFollowingTransferPanel } from '@/features/sharing/DictionaryFollowingTransferPanel'
@@ -36,7 +36,7 @@ jest.mock('./actions', () => ({
   saveAnalyzedWord: jest.fn(),
 }))
 jest.mock('./analysis-client', () => ({
-  analyzeWordWithAi: jest.fn(),
+  analyzeWordVariant: jest.fn(),
   findWordImages: jest.fn(),
   getNextImageOffset: jest.fn(),
 }))
@@ -163,7 +163,7 @@ it('routes read-only adoption to shared lookup with owner remount and no legacy 
   )
   expect(screen.getByText('Shared vocabulary')).toBeInTheDocument()
   expect(screen.getByText(RETAINED)).toBeInTheDocument()
-  expect(analyzeWordWithAi).not.toHaveBeenCalled()
+  expect(analyzeWordVariant).not.toHaveBeenCalled()
   fireEvent.change(screen.getByLabelText(INPUT), {
     target: { value: 'changed' },
   })
@@ -194,7 +194,7 @@ it('uses the requested destination as the first owned target while preserving ev
     }),
     undefined
   )
-  expect(analyzeWordWithAi).not.toHaveBeenCalled()
+  expect(analyzeWordVariant).not.toHaveBeenCalled()
 })
 it('keeps the legacy access restriction when following is OFF', async () => {
   jest.mocked(isDictionaryFollowingEnabled).mockReturnValue(false)
@@ -218,7 +218,7 @@ it('opens retained shared sessions on the global add route for a read-only owner
     expect.objectContaining({ collections: [], ownerId: TRANSFER_OWNER }),
     undefined
   )
-  expect(analyzeWordWithAi).not.toHaveBeenCalled()
+  expect(analyzeWordVariant).not.toHaveBeenCalled()
 })
 it('honors a stored owned target on the global route without overriding an explicitly requested collection', () => {
   jest.mocked(useWebSettings).mockReturnValue({
@@ -270,10 +270,12 @@ it('offers Analyze and Add a list to full-access users, previews the published w
     'href',
     '/app/batch-capture'
   )
-  fireEvent.change(screen.getByLabelText(INPUT), { target: { value: 'huis' } })
+  fireEvent.change(screen.getByLabelText(INPUT), {
+    target: { value: 'huis (het)' },
+  })
   fireEvent.click(screen.getByRole('button', { name: 'Analyze' }))
   const save = await screen.findByRole('button', { name: 'Save personal copy' })
-  expect(analyzeWordWithAi).not.toHaveBeenCalled()
+  expect(analyzeWordVariant).not.toHaveBeenCalled()
   expect(saveWordToCollection).not.toHaveBeenCalled()
   fireEvent.click(save)
   await waitFor(() =>
@@ -283,4 +285,52 @@ it('offers Analyze and Add a list to full-access users, previews the published w
       JSON.stringify(candidate.content)
     )
   )
+})
+
+it('lets full-access users choose a verb or adjective before opening a full analysis', async () => {
+  const adjective = {
+    lemma: 'overleden',
+    partOfSpeech: 'adjective',
+    translations: { en: 'deceased', ru: 'покойный' },
+  }
+  const verb = {
+    lemma: 'overlijden',
+    partOfSpeech: 'verb',
+    translations: { en: 'to pass away', ru: 'скончаться' },
+  }
+  const analyze = jest.mocked(analyzeWordVariant)
+  analyze
+    .mockResolvedValueOnce({ kind: 'choices', choices: [adjective, verb] })
+    .mockRejectedValueOnce(new Error('Try again'))
+  render(
+    <AddWordWorkflow
+      userId={TRANSFER_OWNER}
+      initialCollectionId={TRANSFER_OTHER}
+      collections={collections}
+      canAnalyze
+    />
+  )
+  fireEvent.change(screen.getByLabelText(INPUT), {
+    target: { value: 'overleden' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Analyze' }))
+
+  const select = await screen.findByRole('button', {
+    name: /overleden · adjective · deceased/,
+  })
+  expect(
+    screen.getByRole('button', { name: /overlijden · verb · to pass away/ })
+  ).toBeVisible()
+  expect(saveWordToCollection).not.toHaveBeenCalled()
+  fireEvent.click(select)
+  await screen.findByRole('alert')
+  expect(analyze).toHaveBeenLastCalledWith(
+    TRANSFER_OWNER,
+    'overleden',
+    false,
+    adjective
+  )
+  expect(
+    screen.getByRole('button', { name: /overleden · adjective · deceased/ })
+  ).toBeEnabled()
 })
