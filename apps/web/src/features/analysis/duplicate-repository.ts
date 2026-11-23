@@ -50,7 +50,7 @@ const listOwnedLemmaCandidates = async (
     .select('article, collection_id, dutch_lemma, part_of_speech, word_id')
     .eq('user_id', userId)
     .is('deleted_at', null)
-    .ilike('dutch_lemma', dutchLemma.trim())
+    .ilike('dutch_lemma', dutchLemma.trim().replace(/[\\%_]/g, '\\$&'))
 
   if (error) throw new Error('Could not check for duplicate words.')
   return data ?? []

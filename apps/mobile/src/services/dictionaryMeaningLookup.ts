@@ -14,12 +14,13 @@ import { withDictionaryImportOwner } from './dictionaryImportOwner'
 export const lookupPublishedMeanings = (
   userId: string,
   input: string,
-  assertCurrent: () => void
+  assertCurrent: () => void,
+  previewOnly = false
 ) =>
-  withDictionaryImportOwner(userId, owner => {
+  withDictionaryImportOwner(userId, async owner => {
     const client =
       supabase as unknown as SupabaseClient<DictionaryMeaningLookupDatabase>
-    return findPublishedDictionaryMeanings(input, {
+    const lookup = findPublishedDictionaryMeanings(input, {
       owner: {
         assert: () => {
           owner.assert()
@@ -27,7 +28,8 @@ export const lookupPublishedMeanings = (
         },
         check: owner.check,
       },
-      enabled: isDictionaryFollowingImportsEnabled,
+      previewOnly,
+      enabled: () => previewOnly || isDictionaryFollowingImportsEnabled(),
       capability: () => client.rpc('dictionary_content_capability_v2'),
       entries: query =>
         client
@@ -50,4 +52,20 @@ export const lookupPublishedMeanings = (
           .in('revision_id', ids)
           .eq('review_status', 'published'),
     })
+    if (!previewOnly) return lookup
+    try {
+      return await lookup
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'Published meaning lookup is unavailable'
+      ) {
+        return {
+          schema_version: 2 as const,
+          collection: { name: input },
+          entries: [],
+        }
+      }
+      throw error
+    }
   })

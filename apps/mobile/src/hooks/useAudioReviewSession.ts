@@ -1,3 +1,4 @@
+import { phraseAudioUrl } from '@woordenaar/domain'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AccessibilityInfo, AppState, type AppStateStatus } from 'react-native'
 import * as Haptics from 'expo-haptics'
@@ -59,7 +60,9 @@ export function useAudioReviewSession() {
     : null
 
   const dutchLemma = currentWord?.dutch_lemma
-  const ttsUrl = currentWord?.tts_url
+  const ttsUrl =
+    currentWord &&
+    (currentWord.tts_url || phraseAudioUrl(currentWord.dutch_lemma))
   const playCurrentWord = useCallback(async () => {
     if (!dutchLemma) return
     await playWord(dutchLemma, ttsUrl)

@@ -64,6 +64,18 @@ export function parseWordVariantInput(input: string) {
   }
 }
 
+export function exactPhraseInput(input: string): string | null {
+  const { word, partOfSpeech, error } = parseWordVariantInput(input)
+  return !error && !partOfSpeech && word.includes(' ') ? word : null
+}
+
+export function phraseAudioUrl(lemma: string): string | null {
+  const phrase = exactPhraseInput(lemma)
+  return phrase
+    ? `https://translate.google.com/translate_tts?ie=UTF-8&tl=nl&client=tw-ob&q=${encodeURIComponent(phrase)}`
+    : null
+}
+
 export const WORD_VARIANT_INPUT_TIP = 'Try “overleden adj” or “idee (het)”.'
 
 export function wordVariantInputLabel(input: string) {

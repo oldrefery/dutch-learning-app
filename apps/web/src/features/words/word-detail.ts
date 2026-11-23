@@ -1,3 +1,4 @@
+import { phraseAudioUrl } from '@woordenaar/domain'
 import type { Database, Json } from '@woordenaar/supabase-contracts'
 import type {
   DictionaryCardMetadata,
@@ -214,7 +215,7 @@ export const buildWordDetail = (row: WordDetailRow): WordDetail => ({
   usageNotes: parseUsageNotes(row.usage_notes),
   analysisNotes: row.analysis_notes,
   imageUrl: toHttpsUrl(row.image_url),
-  ttsUrl: toHttpsUrl(row.tts_url),
+  ttsUrl: toHttpsUrl(row.tts_url) ?? phraseAudioUrl(row.dutch_lemma),
   intervalDays: row.interval_days,
   repetitionCount: row.repetition_count,
   easinessFactor: row.easiness_factor,

@@ -20,8 +20,9 @@ import WordContextMenu from '@/components/WordContextMenu'
 import { DictionaryExportButton } from '@/components/DictionaryExportButton'
 
 export default function CollectionDetailScreen() {
-  const { id, highlightWordId } = useLocalSearchParams<{
+  const { id, highlightWordId, openWordId } = useLocalSearchParams<{
     id: string
+    openWordId?: string
     highlightWordId?: string
   }>()
   const colorScheme = useColorScheme() ?? 'light'
@@ -63,6 +64,16 @@ export default function CollectionDetailScreen() {
     isReanalyzing,
     userAccessLevel,
   } = useCollectionDetail(id!)
+
+  const opened = React.useRef<string | undefined>(undefined)
+  React.useEffect(() => {
+    if (!openWordId || opened.current === openWordId) return
+    const card = collectionWords.find(word => word.word_id === openWordId)
+    if (card) {
+      opened.current = openWordId
+      handleWordPress(card)
+    }
+  }, [collectionWords, handleWordPress, openWordId])
 
   const { showImageSelector, openImageSelector, closeImageSelector } =
     useImageSelector()

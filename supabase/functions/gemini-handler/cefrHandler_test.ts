@@ -804,3 +804,50 @@ Deno.test(
     }
   }
 )
+
+Deno.test(
+  'exact phrases keep the complete utterance for translations, cache and speech',
+  async () => {
+    const phrase = 'ik heb er zin in'
+    cached = [
+      {
+        ...analysis,
+        cache_version: 3,
+        dutch_original: phrase,
+        dutch_lemma: 'zin hebben in',
+      },
+    ]
+    providerOverrides = {
+      ...analysis,
+      dutch_lemma: phrase,
+      part_of_speech: 'expression',
+      article: null,
+      preposition: 'in',
+      translations: { en: ["I'm looking forward to it"], ru: ['Я этого жду'] },
+    }
+    try {
+      const fresh = await request(false, 200, 'Ik  heb er zin in', {
+        resolveVariants: true,
+      })
+      assertEquals(fresh.data.dutch_lemma, phrase)
+      assertEquals(fresh.data.preposition, null)
+      assertEquals(new URL(fresh.data.tts_url).searchParams.get('q'), phrase)
+      const write = calls.find(
+        c => c.path === '/rest/v1/word_analysis_cache' && c.method === 'POST'
+      )
+      assert(write)
+      assertEquals(write.body.cache_version, 4)
+      cached = [write.body]
+      const hit = await request(false, 200, phrase, { resolveVariants: true })
+      assertEquals(hit.meta.source, 'cache')
+      providerOverrides = { ...providerOverrides, dutch_lemma: 'zin hebben in' }
+      await request(true, 500, phrase, {
+        resolveVariants: true,
+        forceRefresh: true,
+      })
+    } finally {
+      providerOverrides = {}
+      cached = []
+    }
+  }
+)

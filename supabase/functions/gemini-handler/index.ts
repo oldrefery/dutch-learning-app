@@ -1,4 +1,5 @@
 import {
+  exactPhraseInput,
   matchesWordVariant,
   parseWordVariantInput,
   readWordVariant,
@@ -9,6 +10,7 @@ import {
   isPluralOfAnalyzedNoun,
   wordVariantInstruction,
 } from './wordVariants.ts'
+import { additionalPreposition } from '../../../packages/domain/src/dutch-headword.ts'
 import { assertRussianScript } from '../_shared/russianText.ts'
 // Edge Function for secure Gemini AI integration
 import { CORS_HEADERS } from './constants.ts'
@@ -34,6 +36,7 @@ import { EDGE_QUOTA_CONFIG } from '../_shared/constants.ts'
 import { consumeRequestQuotaWithServiceRole } from '../_shared/requestQuota.ts'
 import {
   CURRENT_ANALYSIS_CACHE_VERSION,
+  PHRASE_ANALYSIS_CACHE_VERSION,
   getCachedAnalysis,
   getCachedVariants,
   getCachedWordChoices,
@@ -143,6 +146,13 @@ Deno.serve(async (req: Request) => {
       partOfSpeech: variantInput?.partOfSpeech,
       article: variantInput?.article,
     }
+    const phrase =
+      resolveVariants && (!selected || selected.lemma === normalizeWord(word))
+        ? exactPhraseInput(input)
+        : null
+    if (phrase) {
+      requested = { ...requested, lemma: normalizeWord(phrase) }
+    }
     const parsedInput = variantInput
       ? {
           dutch_lemma: word,
@@ -186,10 +196,20 @@ Deno.serve(async (req: Request) => {
             )
         )
       const exact = match(
-        await getCachedVariants(target.lemma ?? normalizedLemma, true)
+        await getCachedVariants(
+          target.lemma ?? normalizedLemma,
+          true,
+          false,
+          phrase
+            ? PHRASE_ANALYSIS_CACHE_VERSION
+            : CURRENT_ANALYSIS_CACHE_VERSION
+        )
       )
       return (
-        exact ?? match(await getCachedVariants(normalizedLemma, true, true))
+        exact ??
+        (phrase
+          ? undefined
+          : match(await getCachedVariants(normalizedLemma, true, true)))
       )
     }
 
@@ -310,7 +330,10 @@ Deno.serve(async (req: Request) => {
         antonyms: cachedAnalysis.antonyms || [],
         plural: cachedAnalysis.plural,
         conjugation: cachedAnalysis.conjugation,
-        preposition: cachedAnalysis.preposition,
+        preposition: additionalPreposition(
+          cachedAnalysis.dutch_lemma,
+          cachedAnalysis.preposition
+        ),
         analysis_notes: cachedAnalysis.analysis_notes || '',
         usage_notes: cachedAnalysis.usage_notes || null,
         ...(cefrEnabled
@@ -356,12 +379,19 @@ Deno.serve(async (req: Request) => {
         },
         deNounForm
       ) +
+      (phrase
+        ? '\nAnalyze the whole supplied phrase exactly as entered. Keep every word in dutch_lemma. Translate the complete utterance into natural English and Russian, preserving its person, tense, negation and mood. Do not replace it with an infinitive construction.\n'
+        : '') +
       (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
     meta.source = 'gemini'
     const geminiResponse = await callGeminiAPI(prompt, cefrEnabled)
     if (typeof geminiResponse?.modelVersion === 'string')
       meta.model = geminiResponse.modelVersion
     const analysis = parseGeminiResponse(geminiResponse)
+    analysis.preposition = additionalPreposition(
+      analysis.dutch_lemma || word,
+      analysis.preposition
+    )
     if (deNounForm && isPluralOfAnalyzedNoun(deNounForm, analysis)) {
       analysis.dutch_lemma = deNounForm
       analysis.article = 'de'
@@ -448,7 +478,11 @@ Deno.serve(async (req: Request) => {
         ? normalizeWord(result.dutch_lemma)
         : normalizedLemma,
       ...(resolveVariants
-        ? { cache_version: CURRENT_ANALYSIS_CACHE_VERSION }
+        ? {
+            cache_version: phrase
+              ? PHRASE_ANALYSIS_CACHE_VERSION
+              : CURRENT_ANALYSIS_CACHE_VERSION,
+          }
         : {}),
       part_of_speech:
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),

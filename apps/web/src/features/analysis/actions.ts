@@ -1,5 +1,6 @@
 'use server'
 
+import { exactPhraseInput } from '@woordenaar/domain'
 import { isDictionaryFollowingEnabled } from '@/features/dictionary/repository'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -7,7 +8,10 @@ import { isUuid } from '@/features/words/word-detail'
 import { requireAuthContext } from '@/lib/auth/session'
 import { parseSerializedWordAnalysis } from './analysis-contract'
 import type { WordAnalysis } from './analysis-contract'
-import { getOwnedSemanticDuplicate } from './duplicate-repository'
+import {
+  getOwnedLemmaDuplicate,
+  getOwnedSemanticDuplicate,
+} from './duplicate-repository'
 import type { AddWordActionState, DuplicateWordResult } from './form-state'
 import { persistAnalyzedWord } from './persistence-repository'
 
@@ -25,6 +29,14 @@ export async function requireWordAnalysisAccess(
     throw new Error('Your account changed. Analyze the word again.')
   if (auth.accessLevel !== 'full_access')
     throw new Error('Full access is required to analyze words.')
+}
+
+export async function findOwnedPhrase(ownerId: string, input: string) {
+  const { userId } = await requireAuthContext()
+  if (userId !== ownerId) throw new Error('Your account changed. Search again.')
+  const phrase = exactPhraseInput(input)
+  if (!phrase || phrase.length > 120) return null
+  return getOwnedLemmaDuplicate(userId, phrase)
 }
 
 export async function findOwnedSemanticDuplicate(

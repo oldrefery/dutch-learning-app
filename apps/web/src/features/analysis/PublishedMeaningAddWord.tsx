@@ -1,6 +1,9 @@
 'use client'
 
-import { wordVariantInputLabel } from '@woordenaar/domain'
+import { OwnedPhraseCard } from './OwnedPhraseCard'
+import { findOwnedPhrase } from './actions'
+import type { DuplicateWordResult } from './form-state'
+import { exactPhraseInput, wordVariantInputLabel } from '@woordenaar/domain'
 import { useEffect, useRef, useState } from 'react'
 import type { DictionaryCollectionExportV2 } from '@woordenaar/domain'
 import { Button } from '@/components/ui/Button'
@@ -21,6 +24,8 @@ export function PublishedMeaningAddWord({
 }) {
   const [input, setInput] = useState('')
   const [document, setDocument] = useState<DictionaryCollectionExportV2>()
+  const [owned, setOwned] = useState<DuplicateWordResult | null>(null)
+  const [targetId, setTargetId] = useState(collections[0]?.id ?? '')
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [previewEpoch, setPreviewEpoch] = useState(0)
@@ -38,6 +43,7 @@ export function PublishedMeaningAddWord({
     pending.current = false
     setBusy(false)
     setInput(value)
+    setOwned(null)
     setDocument(undefined)
     setError(null)
   }
@@ -51,9 +57,18 @@ export function PublishedMeaningAddWord({
       if (started !== epoch.current) throw new Error('Word input changed')
     }
     setBusy(true)
+    setOwned(null)
     setDocument(undefined)
     setError(null)
     try {
+      if (exactPhraseInput(input)) {
+        const match = await findOwnedPhrase(ownerId, input)
+        assert()
+        if (match) {
+          setOwned(match)
+          return
+        }
+      }
       const result = await lookupPublishedMeanings(
         ownerId,
         input,
@@ -97,6 +112,25 @@ export function PublishedMeaningAddWord({
           {busy ? 'Finding meanings…' : 'Find published meanings'}
         </Button>
       </form>
+      {owned && (
+        <>
+          <label>
+            Collection
+            <select
+              className="dw-field"
+              value={targetId}
+              onChange={event => setTargetId(event.target.value)}
+            >
+              {collections.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <OwnedPhraseCard word={owned} phrase={input} targetId={targetId} />
+        </>
+      )}
       {error && <p role="alert">{error}</p>}
       {document?.entries.length === 0 && (
         <p role="status">

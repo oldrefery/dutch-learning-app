@@ -21,6 +21,7 @@ type WordRegister = 'formal' | 'informal' | 'neutral'
 
 const LEGACY_ANALYSIS_CACHE_VERSION = 2
 export const CURRENT_ANALYSIS_CACHE_VERSION = 3
+export const PHRASE_ANALYSIS_CACHE_VERSION = 4
 
 const ANALYSIS_CACHE_TTL_MS = 5 * 365 * 24 * 60 * 60 * 1000
 
@@ -196,7 +197,8 @@ export async function getCachedAnalysis(
 export async function getCachedVariants(
   normalizedWord: string,
   verifiedOnly = false,
-  byOriginal = false
+  byOriginal = false,
+  version = CURRENT_ANALYSIS_CACHE_VERSION
 ): Promise<CacheEntry[]> {
   try {
     const query = supabase
@@ -206,7 +208,7 @@ export async function getCachedVariants(
       .gte('last_used_at', cacheCutoff())
       .order('usage_count', { ascending: false })
     const { data, error } = await (verifiedOnly
-      ? query.eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
+      ? query.eq('cache_version', version)
       : query.in('cache_version', [
           CURRENT_ANALYSIS_CACHE_VERSION,
           LEGACY_ANALYSIS_CACHE_VERSION,

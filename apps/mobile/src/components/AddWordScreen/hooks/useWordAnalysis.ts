@@ -1,11 +1,15 @@
 import { useRef, useState } from 'react'
 import {
+  exactPhraseInput,
   parseWordVariantInput,
   readWordVariant,
   readWordVariantChoices,
   type WordVariant,
   type WordVariantChoice,
 } from '@woordenaar/domain'
+import { lookupPublishedMeanings } from '@/services/dictionaryMeaningLookup'
+import { publishedPhraseAnalysis } from '../publishedPhraseAnalysis'
+import { findOwnedPhrase, type OwnedPhrase } from '@/services/ownedPhrase'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { wordService } from '@/lib/supabase'
@@ -77,7 +81,8 @@ const applyAnalysisMetadata = (
   ToastService.show('Word analyzed with fresh AI', ToastType.SUCCESS)
 }
 
-export const useWordAnalysis = () => {
+export const useWordAnalysis = (ownerId?: string | null) => {
+  const [ownedPhrase, setOwnedPhrase] = useState<OwnedPhrase | null>(null)
   const requestId = useRef(0)
   const [choices, setChoices] = useState<WordVariantChoice[]>([])
   const [selectedVariant, setSelectedVariant] = useState<WordVariant>()
@@ -88,6 +93,38 @@ export const useWordAnalysis = () => {
   const [analysisMetadata, setAnalysisMetadata] =
     useState<AnalysisMetadata | null>(null)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
+  const showExistingPhrase = async (
+    input: string,
+    current: number,
+    forceRefresh: boolean,
+    selected?: WordVariant
+  ) => {
+    if (forceRefresh || selected) return false
+    const phrase = exactPhraseInput(input)
+    if (!phrase || !ownerId) return false
+    const owned = await findOwnedPhrase(ownerId, phrase)
+    if (current !== requestId.current) return true
+    if (owned) {
+      setChoices([])
+      setOwnedPhrase(owned)
+      return true
+    }
+    const published = await lookupPublishedMeanings(
+      ownerId,
+      phrase,
+      () => {
+        if (current !== requestId.current) throw new Error('Word input changed')
+      },
+      true
+    )
+    if (current !== requestId.current) return true
+    if (published.entries.length !== 1) return false
+    const result = publishedPhraseAnalysis(published.entries[0].content)
+    setChoices([])
+    setAnalysisResult(result)
+    useHistoryStore.getState().addAnalyzedWord(phrase, result.dutch_lemma)
+    return true
+  }
   const analyzeWord = async (
     inputWord: string,
     forceRefresh = false,
@@ -98,7 +135,8 @@ export const useWordAnalysis = () => {
       return
     }
 
-    const normalizedWord = inputWord.trim().toLowerCase()
+    const normalizedWord =
+      exactPhraseInput(inputWord) ?? inputWord.trim().toLowerCase()
     const requested = parseWordVariantInput(normalizedWord)
     if (requested.error) {
       setAnalysisError(handleWordAnalysisError(new Error(requested.error)))
@@ -115,9 +153,19 @@ export const useWordAnalysis = () => {
     setAnalysisMetadata(null)
     setAnalysisError(null)
 
+    setOwnedPhrase(null)
     setIsAnalyzing(true)
 
     try {
+      if (
+        await showExistingPhrase(
+          inputWord,
+          currentRequest,
+          forceRefresh,
+          selected
+        )
+      )
+        return
       // Analyze the word - now with retry logic and proper error handling
       const response = await wordService.analyzeWord(normalizedWord, {
         forceRefresh,
@@ -201,6 +249,7 @@ export const useWordAnalysis = () => {
   }
 
   const clearAnalysis = () => {
+    setOwnedPhrase(null)
     requestId.current += 1
     setIsAnalyzing(false)
     setChoices([])
@@ -224,6 +273,7 @@ export const useWordAnalysis = () => {
   }
 
   return {
+    ownedPhrase,
     isAnalyzing,
     choices,
     analysisResult,
