@@ -1,3 +1,4 @@
+import { parseWordVariantInput } from './word-variant'
 import type { DictionaryAnalysisClientOwner } from './dictionary-analysis-client'
 import { parseDictionaryFollowingCapability } from './dictionary-following'
 import type { DictionaryCollectionExportV2 } from './dictionary-following-import'
@@ -86,7 +87,9 @@ export async function findPublishedDictionaryMeanings(
   input: string,
   ports: DictionaryMeaningLookupPorts
 ): Promise<DictionaryCollectionExportV2> {
-  const query = normalizeDictionaryMeaningQuery(input)
+  const requested = parseWordVariantInput(input)
+  if (requested.error) throw new Error(requested.error)
+  const query = normalizeDictionaryMeaningQuery(requested.word)
   const assert = () => {
     ports.owner.assert()
     if (!ports.enabled())
@@ -159,5 +162,13 @@ export async function findPublishedDictionaryMeanings(
     }
   })
   assert()
-  return document
+  return {
+    ...document,
+    entries: document.entries.filter(
+      ({ content }) =>
+        (!requested.partOfSpeech ||
+          content.part_of_speech === requested.partOfSpeech) &&
+        (!requested.article || content.article === requested.article)
+    ),
+  }
 }

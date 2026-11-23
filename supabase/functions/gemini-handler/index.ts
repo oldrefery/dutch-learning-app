@@ -1,3 +1,10 @@
+import {
+  matchesWordVariant,
+  parseWordVariantInput,
+  readWordVariant,
+  type WordVariant,
+} from '../../../packages/domain/src/word-variant.ts'
+import { discoverWordVariants, wordVariantInstruction } from './wordVariants.ts'
 import { assertRussianScript } from '../_shared/russianText.ts'
 // Edge Function for secure Gemini AI integration
 import { CORS_HEADERS } from './constants.ts'
@@ -22,8 +29,11 @@ import { authorizeFullAccessRequest } from '../_shared/authorizeFullAccess.ts'
 import { EDGE_QUOTA_CONFIG } from '../_shared/constants.ts'
 import { consumeRequestQuotaWithServiceRole } from '../_shared/requestQuota.ts'
 import {
+  CURRENT_ANALYSIS_CACHE_VERSION,
   getCachedAnalysis,
   getCachedVariants,
+  getCachedWordChoices,
+  saveWordChoices,
   getCacheDictionaryReference,
   saveToCache,
   normalizeWord,
@@ -70,13 +80,16 @@ Deno.serve(async (req: Request) => {
     const requestBody = parsedBody as {
       word?: unknown
       forceRefresh?: unknown
+      resolveVariants?: unknown
+      selectedVariant?: unknown
     }
-    const { word } = requestBody
+    const { word: input } = requestBody
+    const resolveVariants = requestBody.resolveVariants === true
     const forceRefresh = requestBody.forceRefresh === true
     const cefrEnabled = Deno.env.get('CEFR_ANALYSIS_ENABLED') === 'true'
 
     // This function only analyzes strings - objects should use save-word endpoint
-    if (typeof word !== 'string') {
+    if (typeof input !== 'string') {
       return new Response(
         JSON.stringify({
           success: false,
@@ -90,12 +103,30 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    // Validate input
-    if (!validateWordInput(word)) {
+    const variantInput = resolveVariants ? parseWordVariantInput(input) : null
+    const word = variantInput?.word ?? input
+    const selected = readWordVariant(requestBody.selectedVariant)
+    let requested: Partial<WordVariant> = variantInput ?? {}
+    const inputError =
+      variantInput?.error ??
+      (requestBody.selectedVariant != null &&
+      (!resolveVariants ||
+        !selected ||
+        !validateWordInput(selected.lemma) ||
+        !matchesWordVariant(selected, requested))
+        ? 'The selected variant does not match the word hint.'
+        : null)
+    if (
+      inputError ||
+      (resolveVariants && input.length > 120) ||
+      !validateWordInput(word)
+    ) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Invalid word input. Please provide a valid Dutch word.',
+          error:
+            inputError ??
+            'Invalid word input. Please provide a valid Dutch word.',
         }),
         {
           status: 400,
@@ -104,9 +135,50 @@ Deno.serve(async (req: Request) => {
       )
     }
 
-    // Parse input to detect article and determine search strategy
-    const parsedInput = parseWordInput(word)
+    requested = selected ?? {
+      partOfSpeech: variantInput?.partOfSpeech,
+      article: variantInput?.article,
+    }
+    const parsedInput = variantInput
+      ? {
+          dutch_lemma: word,
+          article: variantInput.article,
+          part_of_speech: variantInput.partOfSpeech,
+        }
+      : parseWordInput(word)
+    const originalWord =
+      parsedInput.article && resolveVariants
+        ? `${parsedInput.article} ${word}`
+        : word
     const normalizedLemma = normalizeWord(parsedInput.dutch_lemma)
+    const findChoices =
+      resolveVariants &&
+      !selected &&
+      !requested.article &&
+      (!requested.partOfSpeech || requested.partOfSpeech === 'noun') &&
+      !normalizedLemma.includes(' ')
+    const findVariantCache = async (target: Partial<WordVariant>) => {
+      const match = (entries: Awaited<ReturnType<typeof getCachedVariants>>) =>
+        entries.find(entry =>
+          matchesWordVariant(
+            {
+              lemma: entry.dutch_lemma,
+              partOfSpeech: entry.part_of_speech,
+              article:
+                entry.article === 'de' || entry.article === 'het'
+                  ? entry.article
+                  : undefined,
+            },
+            target
+          )
+        )
+      const exact = match(
+        await getCachedVariants(target.lemma ?? normalizedLemma, true)
+      )
+      return (
+        exact ?? match(await getCachedVariants(normalizedLemma, true, true))
+      )
+    }
 
     console.log('📋 Cache lookup:', {
       originalWord: word,
@@ -119,8 +191,13 @@ Deno.serve(async (req: Request) => {
     let cachedAnalysis = null
     let cacheStrategy = 'miss'
 
-    if (!forceRefresh) {
-      if (parsedInput.article && parsedInput.part_of_speech) {
+    if (!forceRefresh && !findChoices) {
+      if (resolveVariants) {
+        cachedAnalysis = await findVariantCache(requested)
+        cacheStrategy = cachedAnalysis
+          ? 'selected_variant_hit'
+          : 'selected_variant_miss'
+      } else if (parsedInput.article && parsedInput.part_of_speech) {
         // User provided article (e.g., "het haar") - exact semantic search
         cachedAnalysis = await getCachedAnalysis(
           normalizedLemma,
@@ -143,81 +220,22 @@ Deno.serve(async (req: Request) => {
           cacheStrategy = 'variant_miss'
         }
       }
-
-      if (cachedAnalysis) {
-        meta.source = 'cache'
-        // Build result from the cache
-        const result = {
-          dutch_original: word,
-          dutch_lemma: cachedAnalysis.dutch_lemma,
-          part_of_speech: cachedAnalysis.part_of_speech,
-          translations: cachedAnalysis.translations,
-          examples: cachedAnalysis.examples || [],
-          image_url: cachedAnalysis.image_url || '',
-          is_expression: cachedAnalysis.is_expression,
-          is_irregular: cachedAnalysis.is_irregular,
-          is_reflexive: cachedAnalysis.is_reflexive,
-          is_separable: cachedAnalysis.is_separable,
-          prefix_part: cachedAnalysis.prefix_part,
-          root_verb: cachedAnalysis.root_verb,
-          article: cachedAnalysis.article,
-          register: cachedAnalysis.register,
-          expression_type: cachedAnalysis.expression_type,
-          tts_url: cachedAnalysis.tts_url,
-          synonyms: cachedAnalysis.synonyms || [],
-          antonyms: cachedAnalysis.antonyms || [],
-          plural: cachedAnalysis.plural,
-          conjugation: cachedAnalysis.conjugation,
-          preposition: cachedAnalysis.preposition,
-          analysis_notes: cachedAnalysis.analysis_notes || '',
-          usage_notes: cachedAnalysis.usage_notes || null,
-          ...(cefrEnabled
-            ? {
-                cefr: await readAnalysisCefrEstimate(
-                  cachedAnalysis.cefr_estimate,
-                  cachedAnalysis
-                ),
-              }
-            : {}),
-        }
-
-        return new Response(
-          JSON.stringify({
-            success: true,
-            data: result,
-            meta: {
-              source: 'cache',
-              cache_strategy: cacheStrategy,
-              cached_at: cachedAnalysis.created_at,
-              usage_count: cachedAnalysis.usage_count,
-              cache_hit: true,
-              canonical_reference: getCacheDictionaryReference(cachedAnalysis),
-            },
-          }),
-          {
-            status: 200,
-            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-          }
-        )
-      }
     }
 
-    // Cache miss or force refresh - call Gemini API
-    const quota = await consumeRequestQuotaWithServiceRole(
-      authorization.userId,
-      'gemini-analysis',
-      EDGE_QUOTA_CONFIG.GEMINI_ANALYSIS_LIMIT,
-      EDGE_QUOTA_CONFIG.WINDOW_SECONDS
-    )
-    if (!quota.ok) {
+    const useAnalysisQuota = async () => {
+      const quota = await consumeRequestQuotaWithServiceRole(
+        authorization.userId,
+        'gemini-analysis',
+        EDGE_QUOTA_CONFIG.GEMINI_ANALYSIS_LIMIT,
+        EDGE_QUOTA_CONFIG.WINDOW_SECONDS
+      )
+      if (quota.ok) return null
       const headers: Record<string, string> = {
         ...CORS_HEADERS,
         'Content-Type': 'application/json',
       }
-      if (quota.retryAfterSeconds) {
+      if (quota.retryAfterSeconds)
         headers['Retry-After'] = String(quota.retryAfterSeconds)
-      }
-
       return new Response(
         JSON.stringify({
           success: false,
@@ -228,13 +246,122 @@ Deno.serve(async (req: Request) => {
       )
     }
 
+    if (findChoices) {
+      let candidates = await getCachedWordChoices(normalizedLemma)
+      if (candidates === null) {
+        const denied = await useAnalysisQuota()
+        if (denied) return denied
+        candidates = await discoverWordVariants(word)
+        await saveWordChoices(normalizedLemma, candidates)
+      }
+      const choices = candidates.filter(choice =>
+        matchesWordVariant(choice, requested)
+      )
+      if (choices.length > 1) {
+        return new Response(JSON.stringify({ success: true, choices }), {
+          headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+        })
+      }
+      if (choices.length === 1) {
+        requested = choices[0]
+        if (!forceRefresh) {
+          cachedAnalysis = await findVariantCache(requested)
+          cacheStrategy = cachedAnalysis
+            ? 'selected_variant_hit'
+            : 'selected_variant_miss'
+        }
+      }
+    }
+
+    if (cachedAnalysis) {
+      meta.source = 'cache'
+      // Build result from the cache
+      const result = {
+        dutch_original: originalWord,
+        dutch_lemma: cachedAnalysis.dutch_lemma,
+        part_of_speech: cachedAnalysis.part_of_speech,
+        translations: cachedAnalysis.translations,
+        examples: cachedAnalysis.examples || [],
+        image_url: cachedAnalysis.image_url || '',
+        is_expression: cachedAnalysis.is_expression,
+        is_irregular: cachedAnalysis.is_irregular,
+        is_reflexive: cachedAnalysis.is_reflexive,
+        is_separable: cachedAnalysis.is_separable,
+        prefix_part: cachedAnalysis.prefix_part,
+        root_verb: cachedAnalysis.root_verb,
+        article: cachedAnalysis.article,
+        register: cachedAnalysis.register,
+        expression_type: cachedAnalysis.expression_type,
+        tts_url: cachedAnalysis.tts_url,
+        synonyms: cachedAnalysis.synonyms || [],
+        antonyms: cachedAnalysis.antonyms || [],
+        plural: cachedAnalysis.plural,
+        conjugation: cachedAnalysis.conjugation,
+        preposition: cachedAnalysis.preposition,
+        analysis_notes: cachedAnalysis.analysis_notes || '',
+        usage_notes: cachedAnalysis.usage_notes || null,
+        ...(cefrEnabled
+          ? {
+              cefr: await readAnalysisCefrEstimate(
+                cachedAnalysis.cefr_estimate,
+                cachedAnalysis
+              ),
+            }
+          : {}),
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: result,
+          meta: {
+            source: 'cache',
+            cache_strategy: cacheStrategy,
+            cached_at: cachedAnalysis.created_at,
+            usage_count: cachedAnalysis.usage_count,
+            cache_hit: true,
+            canonical_reference: getCacheDictionaryReference(cachedAnalysis),
+          },
+        }),
+        {
+          status: 200,
+          headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    const denied = await useAnalysisQuota()
+    if (denied) return denied
+
     const prompt =
-      formatWordAnalysisPrompt(word) + (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
+      formatWordAnalysisPrompt(word) +
+      wordVariantInstruction({
+        lemma: requested.lemma,
+        article: requested.article,
+        partOfSpeech: requested.partOfSpeech,
+      }) +
+      (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
     meta.source = 'gemini'
     const geminiResponse = await callGeminiAPI(prompt, cefrEnabled)
     if (typeof geminiResponse?.modelVersion === 'string')
       meta.model = geminiResponse.modelVersion
     const analysis = parseGeminiResponse(geminiResponse)
+    if (
+      resolveVariants &&
+      (typeof analysis.dutch_lemma !== 'string' ||
+        !analysis.dutch_lemma.trim() ||
+        !matchesWordVariant(
+          {
+            lemma: analysis.dutch_lemma,
+            partOfSpeech: analysis.part_of_speech,
+            article: analysis.article,
+          },
+          requested
+        ))
+    )
+      throw new Error(
+        'Could not analyze the requested word variant. Please try again.'
+      )
     assertEnglishTranslation(analysis?.translations)
     assertRussianScript(analysis)
 
@@ -262,7 +389,7 @@ Deno.serve(async (req: Request) => {
 
     // Build final result
     const result = {
-      dutch_original: word,
+      dutch_original: originalWord,
       dutch_lemma: analysis.dutch_lemma || word,
       part_of_speech:
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
@@ -292,11 +419,16 @@ Deno.serve(async (req: Request) => {
       ? await createGeminiCefrEstimate(analysis.cefr, result)
       : null
 
-    // Save to cache for future use (async, don't wait for completion)
+    // Save the analysis under its canonical lemma for variant-aware requests.
     const cacheData = {
       ...(cefrEnabled ? { cefr_estimate: cefr } : {}),
-      dutch_original: word,
-      dutch_lemma: normalizedLemma, // Use parsed and normalized lemma as a cache key
+      dutch_original: resolveVariants ? normalizedLemma : word,
+      dutch_lemma: resolveVariants
+        ? normalizeWord(result.dutch_lemma)
+        : normalizedLemma,
+      ...(resolveVariants
+        ? { cache_version: CURRENT_ANALYSIS_CACHE_VERSION }
+        : {}),
       part_of_speech:
         analysis.part_of_speech || (analysis.is_separable ? 'verb' : null),
       is_irregular: analysis.is_irregular || false,
@@ -327,7 +459,7 @@ Deno.serve(async (req: Request) => {
       article: cacheData.article,
     })
 
-    saveToCache(cacheData).catch(err => {
+    await saveToCache(cacheData).catch(err => {
       console.error('❌ Cache save failed:', err)
     })
 

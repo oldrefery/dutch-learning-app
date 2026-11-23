@@ -1,5 +1,6 @@
 'use client'
 
+import { wordVariantInputLabel } from '@woordenaar/domain'
 import { useEffect, useRef, useState } from 'react'
 import type { DictionaryCollectionExportV2 } from '@woordenaar/domain'
 import { Button } from '@/components/ui/Button'
@@ -91,6 +92,7 @@ export function PublishedMeaningAddWord({
             className="dw-field mt-2"
           />
         </label>
+        <p>{wordVariantInputLabel(input)}</p>
         <Button type="submit" disabled={busy} className="mt-4">
           {busy ? 'Finding meanings…' : 'Find published meanings'}
         </Button>

@@ -9,7 +9,8 @@ import type {
 // Helper function to call Gemini API
 export async function callGeminiAPI(
   prompt: string,
-  includeCefr: boolean
+  includeCefr: boolean,
+  candidateSchema?: Record<string, unknown>
 ): Promise<any> {
   const apiKey = Deno.env.get('GEMINI_API_KEY')!
 
@@ -23,7 +24,19 @@ export async function callGeminiAPI(
       'Content-Type': 'application/json',
       'x-goog-api-key': apiKey,
     },
-    body: JSON.stringify(wordAnalysisRequest(prompt, includeCefr)),
+    body: JSON.stringify(
+      candidateSchema
+        ? {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: {
+              thinkingConfig: { thinkingLevel: 'low' },
+              maxOutputTokens: 2048,
+              responseMimeType: 'application/json',
+              responseJsonSchema: candidateSchema,
+            },
+          }
+        : wordAnalysisRequest(prompt, includeCefr)
+    ),
   })
 
   if (!response.ok) {
@@ -79,7 +92,7 @@ export function validateWordInput(word: string): boolean {
 
   // Check for valid Dutch characters, including punctuation for interjections
   const dutchPattern =
-    /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-'!?.,;:]+$/
+    /^[a-zA-ZàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞß\s\-'!?.,;:()]+$/
   return dutchPattern.test(trimmedWord)
 }
 

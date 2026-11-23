@@ -26,6 +26,8 @@ let providerCefr: unknown = analysis.cefr
 let providerArticle: string | null = 'het'
 let providerOverrides: Record<string, unknown> = {}
 let duplicate = false
+let providerChoices: unknown[] = []
+let cachedChoices: unknown[] | null = null
 for (const [key, value] of Object.entries({
   SUPABASE_URL: 'http://127.0.0.1:54321',
   SUPABASE_ANON_KEY: 'synthetic-anon-key',
@@ -59,12 +61,16 @@ globalThis.fetch = async (input, init) => {
           content: {
             parts: [
               {
-                text: JSON.stringify({
-                  ...analysis,
-                  article: providerArticle,
-                  cefr: providerCefr,
-                  ...providerOverrides,
-                }),
+                text: JSON.stringify(
+                  JSON.stringify(body.generationConfig).includes('"choices"')
+                    ? { choices: providerChoices }
+                    : {
+                        ...analysis,
+                        article: providerArticle,
+                        cefr: providerCefr,
+                        ...providerOverrides,
+                      }
+                ),
               },
             ],
           },
@@ -82,16 +88,33 @@ globalThis.fetch = async (input, init) => {
     return reply([{ allowed: true, remaining: 5, retry_after_seconds: 0 }])
   if (url.pathname === '/rest/v1/rpc/increment_cache_usage')
     return new Response(null, { status: 204 })
+  if (url.pathname === '/rest/v1/word_variant_choices_cache') {
+    return req.method === 'GET'
+      ? reply(cachedChoices === null ? [] : [{ choices: cachedChoices }])
+      : new Response(null, { status: 201 })
+  }
   if (url.pathname === '/rest/v1/word_analysis_cache') {
     if (req.method === 'GET') {
       const cutoff = url.searchParams.get('last_used_at')?.replace(/^gte\./, '')
       return reply(
-        cached.filter(
-          row =>
-            !cutoff ||
-            typeof row.last_used_at !== 'string' ||
-            row.last_used_at >= cutoff
-        )
+        cached.filter(row => {
+          const version = url.searchParams.get('cache_version')
+          const lemma = url.searchParams
+            .get('dutch_lemma')
+            ?.replace(/^eq\./, '')
+          const original = url.searchParams
+            .get('dutch_original')
+            ?.replace(/^eq\./, '')
+          return (
+            (!version?.startsWith('eq.') ||
+              version === `eq.${row.cache_version}`) &&
+            (!lemma || row.dutch_lemma === lemma) &&
+            (!original || row.dutch_original === original) &&
+            (!cutoff ||
+              typeof row.last_used_at !== 'string' ||
+              row.last_used_at >= cutoff)
+          )
+        })
       )
     }
     if (req.method === 'POST' && duplicate)
@@ -119,7 +142,8 @@ await new Promise(resolve => setTimeout(resolve, 0))
 const request = async (
   enabled: boolean,
   expectedStatus = 200,
-  word = 'het huis'
+  word = 'het huis',
+  options: Record<string, unknown> = {}
 ) => {
   calls.length = 0
   if (enabled) Deno.env.set('CEFR_ANALYSIS_ENABLED', 'true')
@@ -131,13 +155,11 @@ const request = async (
         authorization: 'Bearer synthetic-user-token',
         'content-type': 'application/json',
       },
-      body: JSON.stringify({ word }),
+      body: JSON.stringify({ word, ...options }),
     })
   )
   assertEquals(response.status, expectedStatus)
   const data = await response.json()
-  // The existing cache write is asynchronous; give its fake transport one turn.
-  await new Promise(resolve => setTimeout(resolve, 0))
   return data
 }
 
@@ -233,7 +255,10 @@ Deno.test(
       const result = await request(true)
       const write = calls.find(x => x.method === 'PATCH')
       assert(write)
-      assertEquals(new URLSearchParams(write.query).get('article'), 'is.null')
+      assertEquals(
+        new URLSearchParams(write.query).get('or'),
+        '(article.is.null,article.eq.)'
+      )
       assertEquals(write.body.cefr_estimate, result.data.cefr)
     } finally {
       providerArticle = 'het'
@@ -546,6 +571,112 @@ Deno.test(
       }
     } finally {
       cached = []
+    }
+  }
+)
+
+Deno.test(
+  'variant discovery returns only choices and reuses a saved shortlist',
+  async () => {
+    const choices = [
+      {
+        lemma: 'idee',
+        partOfSpeech: 'noun',
+        article: 'het',
+        translations: { en: 'idea', ru: 'идея' },
+      },
+      {
+        lemma: 'idee',
+        partOfSpeech: 'noun',
+        article: 'de',
+        translations: { en: 'concept', ru: 'понятие' },
+      },
+    ]
+    providerChoices = choices
+    try {
+      const fresh = await request(false, 200, 'idee noun', {
+        resolveVariants: true,
+      })
+      assertEquals(fresh.choices, choices)
+      assertEquals(calls.filter(x => x.path.includes('/models/')).length, 1)
+      assertEquals(
+        calls.find(
+          x => x.path === '/rest/v1/word_analysis_cache' && x.method === 'POST'
+        ),
+        undefined
+      )
+
+      cachedChoices = choices
+      const hit = await request(false, 200, 'idee', { resolveVariants: true })
+      assertEquals(hit, fresh)
+      assertEquals(calls.filter(x => x.path.includes('/models/')).length, 0)
+      await request(false, 400, 'de idee (het)', { resolveVariants: true })
+      assertEquals(calls.filter(x => x.path.includes('/models/')).length, 0)
+    } finally {
+      providerChoices = []
+      cachedChoices = null
+    }
+  }
+)
+
+Deno.test(
+  'selected variant ignores legacy alias and writes the canonical lemma',
+  async () => {
+    const verb = {
+      ...analysis,
+      dutch_lemma: 'overlijden',
+      part_of_speech: 'verb',
+      article: null,
+      translations: { en: ['to pass away'], ru: ['скончаться'] },
+    }
+    cached = [{ ...verb, dutch_lemma: 'overleden', cache_version: 2 }]
+    providerOverrides = verb
+    try {
+      const selectedVariant = { lemma: 'overlijden', partOfSpeech: 'verb' }
+      const result = await request(false, 200, 'overleden v', {
+        resolveVariants: true,
+        selectedVariant,
+      })
+      assertEquals(result.data.dutch_lemma, 'overlijden')
+      assertEquals(result.data.dutch_original, 'overleden')
+      const write = calls.find(
+        x => x.path === '/rest/v1/word_analysis_cache' && x.method === 'POST'
+      )
+      assert(write)
+      assertEquals(write.body.dutch_lemma, 'overlijden')
+      assertEquals(write.body.dutch_original, 'overleden')
+      assertEquals(write.body.cache_version, 3)
+
+      cached = [{ ...verb, ...write.body }]
+      const hit = await request(false, 200, 'overleden (verb)', {
+        resolveVariants: true,
+      })
+      assertEquals(hit.data.dutch_lemma, 'overlijden')
+      assertEquals(hit.meta.cache_hit, true)
+
+      await request(false, 500, 'overleden adj', { resolveVariants: true })
+      assertEquals(
+        calls.find(
+          x => x.path === '/rest/v1/word_analysis_cache' && x.method === 'POST'
+        ),
+        undefined
+      )
+
+      providerOverrides = {
+        ...verb,
+        dutch_lemma: 'overleden',
+        part_of_speech: 'adjective',
+        translations: { en: ['deceased'], ru: ['покойный'] },
+      }
+      const adjective = await request(false, 200, 'overleden (adjective)', {
+        resolveVariants: true,
+        forceRefresh: true,
+      })
+      assertEquals(adjective.data.dutch_lemma, 'overleden')
+      assertEquals(adjective.data.part_of_speech, 'adjective')
+    } finally {
+      cached = []
+      providerOverrides = {}
     }
   }
 )

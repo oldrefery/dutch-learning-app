@@ -2,8 +2,17 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import type { DictionaryCollectionExportV2 } from '@woordenaar/domain'
-import { analyzeForCollection } from './analyze-for-collection'
+import {
+  matchesWordVariant,
+  parseWordVariantInput,
+  readWordVariant,
+  wordVariantChoiceLabel,
+  wordVariantInputLabel,
+  type DictionaryCollectionExportV2,
+  type WordVariant,
+  type WordVariantChoice,
+} from '@woordenaar/domain'
+import { lookupPublishedMeanings } from './dictionary-meaning-lookup'
 import { PublishedWordReview } from './PublishedWordReview'
 import { useActionState, useMemo, useState, useSyncExternalStore } from 'react'
 import { Badge } from '@/components/ui/Badge'
@@ -13,7 +22,7 @@ import type { CollectionOption } from '@/features/words/repository'
 import { useWebSettings } from '@/features/settings/useWebSettings'
 import { findOwnedSemanticDuplicate, saveAnalyzedWord } from './actions'
 import {
-  analyzeWordWithAi,
+  analyzeWordVariant,
   findWordImages,
   getNextImageOffset,
 } from './analysis-client'
@@ -33,6 +42,24 @@ import { INITIAL_ADD_WORD_ACTION_STATE } from './form-state'
 import { ImageOptionGrid } from './ImageOptionGrid'
 import styles from './AddWordWorkflow.module.css'
 import { PublishedMeaningAddWord } from './PublishedMeaningAddWord'
+
+const matchingPublishedEntries = (
+  document: DictionaryCollectionExportV2,
+  selected: WordVariant
+) =>
+  document.entries.filter(({ content }) =>
+    matchesWordVariant(
+      {
+        lemma: content.dutch_lemma,
+        partOfSpeech: content.part_of_speech ?? '',
+        article:
+          content.article === 'de' || content.article === 'het'
+            ? content.article
+            : undefined,
+      },
+      selected
+    )
+  )
 
 const subscribeToConnectivity = (listener: () => void) => {
   window.addEventListener('online', listener)
@@ -169,6 +196,8 @@ function AnalyzeWordWorkflow({
   const [published, setPublished] =
     useState<DictionaryCollectionExportV2 | null>(null)
   const [inputWord, setInputWord] = useState('')
+  const [choices, setChoices] = useState<WordVariantChoice[]>([])
+  const [selectedVariant, setSelectedVariant] = useState<WordVariant>()
   const [analysis, setAnalysis] = useState<WordAnalysis | null>(null)
   const [metadata, setMetadata] = useState<AnalysisMetadata | null>(null)
   const [duplicate, setDuplicate] = useState<DuplicateWordResult | null>(null)
@@ -221,37 +250,81 @@ function AnalyzeWordWorkflow({
     }
   }
 
-  const runAnalysis = async (forceRefresh: boolean) => {
-    const validation = normalizeDutchInput(inputWord)
-    if (validation.error) {
-      setAnalysisError(validation.error)
+  const runAnalysis = async (forceRefresh: boolean, choice?: WordVariant) => {
+    const requested = parseWordVariantInput(inputWord)
+    const validation = normalizeDutchInput(requested.word)
+    if (requested.error || validation.error) {
+      setAnalysisError(requested.error ?? validation.error)
       return
     }
 
-    setInputWord(validation.value)
+    const selected = choice ?? selectedVariant
+    if (choice) setSelectedVariant(choice)
     setIsAnalyzing(true)
     setAnalysisError(null)
     setImageError(null)
     setImages([])
     setImageOffset(0)
     setDuplicateError(null)
-    if (!forceRefresh) {
-      setPublished(null)
-      setAnalysis(null)
-      setMetadata(null)
-      setDuplicate(null)
-    }
+    setPublished(null)
+    setAnalysis(null)
+    setMetadata(null)
+    setDuplicate(null)
 
     try {
-      const result = forceRefresh
-        ? {
-            kind: 'analysis' as const,
-            ...(await analyzeWordWithAi(userId, validation.value, true)),
-          }
-        : await analyzeForCollection(userId, validation.value, followingEnabled)
-      if (result.kind === 'published') {
-        setPublished(result.document)
+      const lookup = (word: string) =>
+        lookupPublishedMeanings(userId, word, true, () => {}, true)
+      if (
+        !forceRefresh &&
+        followingEnabled &&
+        (selected || requested.partOfSpeech)
+      ) {
+        const document = await lookup(selected?.lemma ?? inputWord)
+        const entries = selected
+          ? matchingPublishedEntries(document, selected)
+          : document.entries
+        if (
+          entries.length &&
+          (selected ||
+            requested.partOfSpeech !== 'noun' ||
+            requested.article ||
+            entries.length > 1)
+        ) {
+          setChoices([])
+          setPublished({ ...document, entries })
+          return
+        }
+      }
+      const result = await analyzeWordVariant(
+        userId,
+        inputWord,
+        forceRefresh,
+        selected
+      )
+      if (result.kind === 'choices') {
+        setChoices(result.choices)
         return
+      }
+      const resolved = readWordVariant({
+        lemma: result.analysis.dutchLemma,
+        partOfSpeech: result.analysis.partOfSpeech,
+        article: result.analysis.article,
+      })
+      setSelectedVariant(resolved ?? selected)
+      setChoices([])
+      if (
+        !forceRefresh &&
+        followingEnabled &&
+        !requested.partOfSpeech &&
+        !selected &&
+        resolved
+      ) {
+        const document = await lookup(resolved.lemma)
+        const entries = matchingPublishedEntries(document, resolved)
+        if (entries.length) {
+          setPublished({ ...document, entries })
+          return
+        }
       }
       setAnalysis(result.analysis)
       setMetadata(result.metadata)
@@ -291,6 +364,8 @@ function AnalyzeWordWorkflow({
   const startOver = () => {
     setPublished(null)
     setInputWord('')
+    setChoices([])
+    setSelectedVariant(undefined)
     setAnalysis(null)
     setMetadata(null)
     setDuplicate(null)
@@ -362,9 +437,7 @@ function AnalyzeWordWorkflow({
             <Link href="/app/starter-pack">Use starter pack</Link>
           </div>
         </div>
-        <p className={styles.hint}>
-          Linguistic analysis can take several seconds after a cache miss.
-        </p>
+        <p className={styles.hint}>{wordVariantInputLabel(inputWord)}</p>
         {isAnalyzing && (
           <div aria-live="polite" className={styles.analyzing}>
             <div className="dw-progress">
@@ -384,6 +457,26 @@ function AnalyzeWordWorkflow({
           </p>
         )}
       </form>
+
+      {choices.length > 0 && (
+        <section
+          aria-label="Choose a meaning"
+          className={styles.variantChoices}
+        >
+          <h2>Choose a meaning</h2>
+          {choices.map(choice => (
+            <Button
+              key={wordVariantChoiceLabel(choice, 'en')}
+              type="button"
+              variant="secondary"
+              disabled={isAnalyzing || !isOnline}
+              onClick={() => void runAnalysis(false, choice)}
+            >
+              {wordVariantChoiceLabel(choice, 'en')} / {choice.translations.ru}
+            </Button>
+          ))}
+        </section>
+      )}
 
       {published && (
         <PublishedWordReview

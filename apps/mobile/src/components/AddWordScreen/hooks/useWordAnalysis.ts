@@ -1,4 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import {
+  parseWordVariantInput,
+  readWordVariant,
+  readWordVariantChoices,
+  type WordVariant,
+  type WordVariantChoice,
+} from '@woordenaar/domain'
 import { ToastService } from '@/components/AppToast'
 import { ToastType } from '@/constants/ToastConstants'
 import { wordService } from '@/lib/supabase'
@@ -71,6 +78,9 @@ const applyAnalysisMetadata = (
 }
 
 export const useWordAnalysis = () => {
+  const requestId = useRef(0)
+  const [choices, setChoices] = useState<WordVariantChoice[]>([])
+  const [selectedVariant, setSelectedVariant] = useState<WordVariant>()
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(
     null
@@ -80,7 +90,8 @@ export const useWordAnalysis = () => {
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const analyzeWord = async (
     inputWord: string,
-    forceRefresh: boolean = false
+    forceRefresh = false,
+    choice?: WordVariant
   ) => {
     if (!inputWord.trim()) {
       ToastService.show('Please enter a Dutch word', ToastType.ERROR)
@@ -88,6 +99,15 @@ export const useWordAnalysis = () => {
     }
 
     const normalizedWord = inputWord.trim().toLowerCase()
+    const requested = parseWordVariantInput(normalizedWord)
+    if (requested.error) {
+      setAnalysisError(handleWordAnalysisError(new Error(requested.error)))
+      return
+    }
+
+    const selected = choice ?? (forceRefresh ? selectedVariant : undefined)
+    if (choice) setSelectedVariant(choice)
+    const currentRequest = ++requestId.current
 
     // Clear previous results before starting new analysis
     // This prevents useEffect from triggering duplicate check prematurely
@@ -101,7 +121,17 @@ export const useWordAnalysis = () => {
       // Analyze the word - now with retry logic and proper error handling
       const response = await wordService.analyzeWord(normalizedWord, {
         forceRefresh,
+        resolveVariants: true,
+        selectedVariant: selected,
       })
+      if (currentRequest !== requestId.current) return
+      if (response?.choices !== undefined) {
+        const nextChoices = readWordVariantChoices(response.choices)
+        if (nextChoices.length < 2)
+          throw new Error('The word choices were incomplete. Please try again.')
+        setChoices(nextChoices)
+        return
+      }
 
       // Validate response structure
       if (!response || !response.data) {
@@ -144,24 +174,37 @@ export const useWordAnalysis = () => {
         usage_notes: analysis.usage_notes || null,
       }
 
+      setChoices([])
+      setSelectedVariant(
+        readWordVariant({
+          lemma: result.dutch_lemma,
+          partOfSpeech: result.part_of_speech,
+          article: result.article,
+        }) ?? selected
+      )
       setAnalysisResult(result)
 
       // Add to word analysis history (not added yet)
       useHistoryStore.getState().addAnalyzedWord(
-        normalizedWord,
+        requested.word,
         result.dutch_lemma
         // No collection name - word was only analyzed, not added
       )
 
       applyAnalysisMetadata(response.meta, setAnalysisMetadata)
     } catch (error: unknown) {
-      setAnalysisError(handleWordAnalysisError(error))
+      if (currentRequest === requestId.current)
+        setAnalysisError(handleWordAnalysisError(error))
     } finally {
-      setIsAnalyzing(false)
+      if (currentRequest === requestId.current) setIsAnalyzing(false)
     }
   }
 
   const clearAnalysis = () => {
+    requestId.current += 1
+    setIsAnalyzing(false)
+    setChoices([])
+    setSelectedVariant(undefined)
     setAnalysisResult(null)
     setAnalysisMetadata(null)
     setAnalysisError(null)
@@ -182,6 +225,7 @@ export const useWordAnalysis = () => {
 
   return {
     isAnalyzing,
+    choices,
     analysisResult,
     analysisMetadata,
     analysisError,

@@ -1,3 +1,4 @@
+import { wordVariantInputLabel } from '@woordenaar/domain'
 import { useEffect, useRef, useState } from 'react'
 import { TextInput, TouchableOpacity } from 'react-native'
 import type {
@@ -97,6 +98,7 @@ export function PublishedMeaningAddWord({
           autoCapitalize="none"
           style={[styles.button, { color: colors.text }]}
         />
+        <TextThemed>{wordVariantInputLabel(input)}</TextThemed>
         <TouchableOpacity
           accessibilityRole="button"
           accessibilityLabel="Find published meanings"

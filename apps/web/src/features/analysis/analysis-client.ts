@@ -1,5 +1,10 @@
 'use client'
 
+import {
+  readWordVariantChoices,
+  type WordVariant,
+  type WordVariantChoice,
+} from '@woordenaar/domain'
 import { requireWordAnalysisAccess, requireLegacyWordAnalysis } from './actions'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -20,12 +25,13 @@ import { recordAnalysisHistory } from '@/features/history/analysis-history'
 
 const IMAGE_PAGE_SIZE = 6
 
-export const analyzeWordWithAi = async (
+const invokeWordAnalysis = async (
   userId: string,
   word: string,
   forceRefresh = false,
-  mode: AnalysisMode = 'single'
-): Promise<WordAnalysisResult> => {
+  mode: AnalysisMode = 'single',
+  variantRequest?: { resolveVariants: true; selectedVariant?: WordVariant }
+): Promise<unknown> => {
   await requireWordAnalysisAccess(userId)
   const supabase = createClient()
   let data: unknown
@@ -33,7 +39,7 @@ export const analyzeWordWithAi = async (
     const response = await supabase.functions.invoke<unknown>(
       'gemini-handler',
       {
-        body: { word, forceRefresh },
+        body: { word, forceRefresh, ...variantRequest },
       }
     )
     if (response.error) throw response.error
@@ -48,6 +54,15 @@ export const analyzeWordWithAi = async (
     throw failure
   }
 
+  return data
+}
+
+const readAnalysis = (
+  userId: string,
+  word: string,
+  mode: AnalysisMode,
+  data: unknown
+): WordAnalysisResult => {
   let result: WordAnalysisResult
   try {
     result = parseAnalysisFunctionResponse(data)
@@ -61,6 +76,41 @@ export const analyzeWordWithAi = async (
   }
   recordAnalysisHistory(userId, word, result)
   return result
+}
+
+export const analyzeWordWithAi = async (
+  userId: string,
+  word: string,
+  forceRefresh = false,
+  mode: AnalysisMode = 'single'
+): Promise<WordAnalysisResult> =>
+  readAnalysis(
+    userId,
+    word,
+    mode,
+    await invokeWordAnalysis(userId, word, forceRefresh, mode)
+  )
+
+export const analyzeWordVariant = async (
+  userId: string,
+  word: string,
+  forceRefresh: boolean,
+  selectedVariant?: WordVariant
+): Promise<
+  | ({ kind: 'analysis' } & WordAnalysisResult)
+  | { kind: 'choices'; choices: WordVariantChoice[] }
+> => {
+  const data = await invokeWordAnalysis(userId, word, forceRefresh, 'single', {
+    resolveVariants: true,
+    selectedVariant,
+  })
+  if (typeof data === 'object' && data !== null && 'choices' in data) {
+    const choices = readWordVariantChoices(data.choices)
+    if (choices.length < 2)
+      throw new Error('The word choices were incomplete. Please try again.')
+    return { kind: 'choices', choices }
+  }
+  return { kind: 'analysis', ...readAnalysis(userId, word, 'single', data) }
 }
 
 export const findWordImages = async (

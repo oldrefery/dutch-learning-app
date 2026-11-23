@@ -6,6 +6,10 @@ import {
   invalidRussianFields,
   assertRussianScript,
 } from '../_shared/russianText.ts'
+import {
+  readWordVariantChoices,
+  type WordVariantChoice,
+} from '../../../packages/domain/src/word-variant.ts'
 import { createClient } from '@supabase/supabase-js'
 import type { WordAnalysisResult } from './types.ts'
 import type { WordUsageNotes } from './types.ts'
@@ -15,7 +19,8 @@ type WordTranslations = WordAnalysisResult['translations']
 type WordExample = WordAnalysisResult['examples'][number]
 type WordRegister = 'formal' | 'informal' | 'neutral'
 
-export const CURRENT_ANALYSIS_CACHE_VERSION = 2
+const LEGACY_ANALYSIS_CACHE_VERSION = 2
+export const CURRENT_ANALYSIS_CACHE_VERSION = 3
 
 const ANALYSIS_CACHE_TTL_MS = 5 * 365 * 24 * 60 * 60 * 1000
 
@@ -27,6 +32,34 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+const VARIANT_CHOICES_TTL_MS = 30 * 24 * 60 * 60 * 1000
+
+export async function getCachedWordChoices(word: string) {
+  const { data, error } = await supabase
+    .from('word_variant_choices_cache')
+    .select('choices')
+    .eq('lookup_form', word)
+    .gte(
+      'updated_at',
+      new Date(Date.now() - VARIANT_CHOICES_TTL_MS).toISOString()
+    )
+    .maybeSingle()
+  if (error || !Array.isArray(data?.choices)) return null
+  return readWordVariantChoices(data.choices)
+}
+
+export async function saveWordChoices(
+  word: string,
+  choices: WordVariantChoice[]
+) {
+  const { error } = await supabase.from('word_variant_choices_cache').upsert({
+    lookup_form: word,
+    choices,
+    updated_at: new Date().toISOString(),
+  })
+  if (error) console.warn('Could not cache word variant choices', error.code)
+}
 
 export interface CacheEntry {
   cefr_estimate?: unknown
@@ -79,6 +112,7 @@ export const getCacheDictionaryReference = (
 
 export interface WordAnalysisData {
   cefr_estimate?: AnalysisCefrEstimate | null
+  cache_version?: number
   dutch_original: string
   dutch_lemma: string
   part_of_speech: string
@@ -116,18 +150,23 @@ export async function getCachedAnalysis(
   try {
     // For semantic cache lookup, we need to check the specific combination
     const normalizedPartOfSpeech = partOfSpeech || 'unknown'
-    const normalizedArticle = article || ''
 
-    const { data, error } = await supabase
+    const query = supabase
       .from('word_analysis_cache')
       .select('*')
       .eq('dutch_lemma', normalizedWord)
       .eq('part_of_speech', normalizedPartOfSpeech)
-      .eq('article', normalizedArticle)
-      .eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
+      .in('cache_version', [
+        CURRENT_ANALYSIS_CACHE_VERSION,
+        LEGACY_ANALYSIS_CACHE_VERSION,
+      ])
       .gte('last_used_at', cacheCutoff())
+      .order('cache_version', { ascending: false })
       .order('last_used_at', { ascending: false })
       .limit(1)
+    const { data, error } = await (article
+      ? query.eq('article', article)
+      : query.is('article', null))
 
     if (error) {
       return null
@@ -155,16 +194,23 @@ export async function getCachedAnalysis(
  * when the user inputs a word without an article
  */
 export async function getCachedVariants(
-  normalizedWord: string
+  normalizedWord: string,
+  verifiedOnly = false,
+  byOriginal = false
 ): Promise<CacheEntry[]> {
   try {
-    const { data, error } = await supabase
+    const query = supabase
       .from('word_analysis_cache')
       .select('*')
-      .eq('dutch_lemma', normalizedWord)
-      .eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
+      .eq(byOriginal ? 'dutch_original' : 'dutch_lemma', normalizedWord)
       .gte('last_used_at', cacheCutoff())
       .order('usage_count', { ascending: false })
+    const { data, error } = await (verifiedOnly
+      ? query.eq('cache_version', CURRENT_ANALYSIS_CACHE_VERSION)
+      : query.in('cache_version', [
+          CURRENT_ANALYSIS_CACHE_VERSION,
+          LEGACY_ANALYSIS_CACHE_VERSION,
+        ]))
 
     if (error) {
       console.error('❌ getCachedVariants error:', error)
@@ -263,7 +309,8 @@ export async function saveToCache(
         preposition: analysisData.preposition || null,
         analysis_notes: analysisData.analysis_notes,
         usage_notes: analysisData.usage_notes,
-        cache_version: CURRENT_ANALYSIS_CACHE_VERSION,
+        cache_version:
+          analysisData.cache_version ?? LEGACY_ANALYSIS_CACHE_VERSION,
         // Cache management fields
         usage_count: 1,
         last_used_at: new Date().toISOString(),
@@ -303,15 +350,19 @@ export async function saveToCache(
           preposition: analysisData.preposition || null,
           analysis_notes: analysisData.analysis_notes,
           usage_notes: analysisData.usage_notes,
-          cache_version: CURRENT_ANALYSIS_CACHE_VERSION,
+          cache_version:
+            analysisData.cache_version ?? LEGACY_ANALYSIS_CACHE_VERSION,
           last_used_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
         .eq('dutch_lemma', analysisData.dutch_lemma)
         .eq('part_of_speech', analysisData.part_of_speech)
+      const compatibleUpdate = analysisData.cache_version
+        ? update
+        : update.eq('cache_version', LEGACY_ANALYSIS_CACHE_VERSION)
       const { error: updateError } = await (analysisData.article
-        ? update.eq('article', analysisData.article)
-        : update.is('article', null))
+        ? compatibleUpdate.eq('article', analysisData.article)
+        : compatibleUpdate.or('article.is.null,article.eq.'))
 
       if (updateError) {
         console.error('❌ saveToCache update error:', updateError)

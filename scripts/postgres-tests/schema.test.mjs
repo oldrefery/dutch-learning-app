@@ -45,3 +45,27 @@ test('repair migration preserves an existing deployed column and its contents', 
     'Keep existing notes'
   )
 })
+
+test('word variant choices are writable by the service role and private to clients', async () => {
+  await db.sql(`
+    SET ROLE service_role;
+    INSERT INTO public.word_variant_choices_cache (lookup_form, choices)
+    VALUES ('idee', '[{"lemma":"idee","article":"het"},{"lemma":"idee","article":"de"}]');
+    UPDATE public.word_variant_choices_cache SET updated_at = now() WHERE lookup_form = 'idee';
+    RESET ROLE;
+  `)
+  assert.equal(
+    await db.sql(
+      `SELECT jsonb_array_length(choices) FROM public.word_variant_choices_cache WHERE lookup_form = 'idee';`
+    ),
+    '2'
+  )
+  for (const role of ['anon', 'authenticated']) {
+    await assert.rejects(
+      db.sql(
+        `SET ROLE ${role}; SELECT choices FROM public.word_variant_choices_cache;`
+      ),
+      /permission denied/
+    )
+  }
+})

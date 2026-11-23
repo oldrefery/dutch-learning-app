@@ -65,6 +65,7 @@ describe('useWordAnalysis', () => {
 
     expect(wordService.analyzeWord).toHaveBeenCalledWith('woning', {
       forceRefresh: false,
+      resolveVariants: true,
     })
     expect(result.current.analysisResult?.usage_notes).toEqual(usageNotes)
   })
@@ -87,11 +88,53 @@ describe('useWordAnalysis', () => {
       expect(result.current.analysisResult?.dutch_lemma).toBe('huis')
       expect(wordService.analyzeWord).toHaveBeenCalledWith('huis', {
         forceRefresh: false,
+        resolveVariants: true,
       })
       expect(addAnalyzedWord).toHaveBeenCalledWith('huis', 'huis')
     } finally {
       delete process.env.EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED
       delete process.env.EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED
     }
+  })
+  it('previews variants without saving analysis history and refreshes the selected adjective', async () => {
+    const adjective = {
+      lemma: 'overleden',
+      partOfSpeech: 'adjective',
+      translations: { en: 'deceased', ru: 'покойный' },
+    }
+    const verb = {
+      lemma: 'overlijden',
+      partOfSpeech: 'verb',
+      translations: { en: 'to pass away', ru: 'скончаться' },
+    }
+    const response = {
+      success: true,
+      data: {
+        dutch_lemma: 'overleden',
+        part_of_speech: 'adjective',
+        translations: { en: ['deceased'], ru: ['покойный'] },
+      },
+    }
+    const service = jest.mocked(wordService.analyzeWord)
+    service
+      .mockResolvedValueOnce({ success: true, choices: [adjective, verb] })
+      .mockResolvedValueOnce(response)
+      .mockResolvedValueOnce(response)
+    const { result } = await renderHook(() => useWordAnalysis())
+    await act(async () => result.current.analyzeWord('overleden'))
+    expect(result.current.choices).toEqual([adjective, verb])
+    expect(addAnalyzedWord).not.toHaveBeenCalled()
+
+    await act(async () =>
+      result.current.analyzeWord('overleden', false, adjective)
+    )
+    expect(result.current.analysisResult?.part_of_speech).toBe('adjective')
+    expect(result.current.choices).toEqual([])
+    await act(async () => result.current.forceRefreshAnalysis('overleden'))
+    expect(service).toHaveBeenLastCalledWith('overleden', {
+      forceRefresh: true,
+      resolveVariants: true,
+      selectedVariant: { lemma: 'overleden', partOfSpeech: 'adjective' },
+    })
   })
 })
