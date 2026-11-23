@@ -93,7 +93,13 @@ export const useWordAnalysis = (ownerId?: string | null) => {
   const [analysisMetadata, setAnalysisMetadata] =
     useState<AnalysisMetadata | null>(null)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
-  const showExistingPhrase = async (input: string, current: number) => {
+  const showExistingPhrase = async (
+    input: string,
+    current: number,
+    forceRefresh: boolean,
+    selected?: WordVariant
+  ) => {
+    if (forceRefresh || selected) return false
     const phrase = exactPhraseInput(input)
     if (!phrase || !ownerId) return false
     const owned = await findOwnedPhrase(ownerId, phrase)
@@ -152,9 +158,12 @@ export const useWordAnalysis = (ownerId?: string | null) => {
 
     try {
       if (
-        !forceRefresh &&
-        !selected &&
-        (await showExistingPhrase(inputWord, currentRequest))
+        await showExistingPhrase(
+          inputWord,
+          currentRequest,
+          forceRefresh,
+          selected
+        )
       )
         return
       // Analyze the word - now with retry logic and proper error handling
