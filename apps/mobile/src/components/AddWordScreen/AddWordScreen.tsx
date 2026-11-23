@@ -19,6 +19,7 @@ import { usePreferReducedTransparency } from '@/hooks/usePreferReducedTransparen
 import ImageSelector from '@/components/ImageSelector'
 import { FloatingActionButton } from '@/components/FloatingActionButton'
 import { CompactWordInput } from './components/CompactWordInput'
+import { OwnedPhraseCard } from './components/OwnedPhraseCard'
 import { DuplicateBanner } from './components/DuplicateBanner'
 import { AnalysisEmptyState } from './components/AnalysisEmptyState'
 import {
@@ -312,6 +313,7 @@ export function LegacyAddWordScreen({
   const {
     isAnalyzing,
     choices,
+    ownedPhrase,
     analysisResult,
     analysisMetadata,
     analysisError,
@@ -319,7 +321,7 @@ export function LegacyAddWordScreen({
     clearAnalysis,
     forceRefreshAnalysis,
     updateImageUrl,
-  } = useWordAnalysis()
+  } = useWordAnalysis(currentUserId)
   const {
     isAdding,
     selectedCollection,
@@ -456,10 +458,7 @@ export function LegacyAddWordScreen({
 
   const handleAnalyze = async () => {
     // Normalize input: trim, remove periods, replace multiple spaces with a single space
-    const normalizedWord = inputWord
-      .trim()
-      .replace(/\./g, '')
-      .replace(/\s+/g, ' ')
+    const normalizedWord = inputWord.trim().replace(/\s+/g, ' ')
 
     if (!normalizedWord) {
       return
@@ -555,10 +554,7 @@ export function LegacyAddWordScreen({
   }
 
   const handleForceRefresh = async () => {
-    const normalizedWord = inputWord
-      .trim()
-      .replace(/\./g, '')
-      .replace(/\s+/g, ' ')
+    const normalizedWord = inputWord.trim().replace(/\s+/g, ' ')
 
     if (!normalizedWord) return
 
@@ -652,6 +648,15 @@ export function LegacyAddWordScreen({
             variant="glass"
           />
           <TextThemed>{wordVariantInputLabel(inputWord)}</TextThemed>
+          {ownedPhrase && currentUserId && (
+            <OwnedPhraseCard
+              key={ownedPhrase.word_id}
+              word={ownedPhrase}
+              collections={collections}
+              targetId={selectedCollection?.collection_id}
+              ownerId={currentUserId}
+            />
+          )}
           {isAlreadyInCollection && duplicateWordInfo && (
             <DuplicateBanner
               duplicateWord={duplicateWordInfo}
@@ -721,11 +726,14 @@ export function LegacyAddWordScreen({
           ))}
         </ScrollView>
       )}
-      {!analysisResult && !isAnalyzing && choices.length === 0 && (
-        <AnalysisEmptyState
-          onOpenBatchCapture={() => router.push(BATCH_CAPTURE_ROUTE)}
-        />
-      )}
+      {!ownedPhrase &&
+        !analysisResult &&
+        !isAnalyzing &&
+        choices.length === 0 && (
+          <AnalysisEmptyState
+            onOpenBatchCapture={() => router.push(BATCH_CAPTURE_ROUTE)}
+          />
+        )}
 
       {analysisResult && (
         <ViewThemed style={{ flex: 1 }}>

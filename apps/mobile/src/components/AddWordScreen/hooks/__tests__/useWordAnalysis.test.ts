@@ -1,7 +1,14 @@
 import { act, renderHook } from '@testing-library/react-native'
+import { findOwnedPhrase } from '@/services/ownedPhrase'
+import { lookupPublishedMeanings } from '@/services/dictionaryMeaningLookup'
 import { wordService } from '@/lib/supabase'
 import { useHistoryStore } from '@/stores/useHistoryStore'
 import { useWordAnalysis } from '../useWordAnalysis'
+
+jest.mock('@/services/ownedPhrase', () => ({ findOwnedPhrase: jest.fn() }))
+jest.mock('@/services/dictionaryMeaningLookup', () => ({
+  lookupPublishedMeanings: jest.fn(),
+}))
 
 jest.mock('@/components/AppToast', () => ({
   ToastService: {
@@ -137,4 +144,19 @@ describe('useWordAnalysis', () => {
       selectedVariant: { lemma: 'overleden', partOfSpeech: 'adjective' },
     })
   })
+})
+
+it('returns the existing phrase card before any shared lookup or provider request', async () => {
+  const phrase = {
+    word_id: 'word',
+    collection_id: 'lesson-one',
+    dutch_lemma: 'ik heb er zin in',
+  }
+  jest.clearAllMocks()
+  jest.mocked(findOwnedPhrase).mockResolvedValueOnce(phrase)
+  const { result } = await renderHook(() => useWordAnalysis('owner'))
+  await act(async () => result.current.analyzeWord('Ik  heb er zin in'))
+  expect(result.current.ownedPhrase).toEqual(phrase)
+  expect(lookupPublishedMeanings).not.toHaveBeenCalled()
+  expect(wordService.analyzeWord).not.toHaveBeenCalled()
 })

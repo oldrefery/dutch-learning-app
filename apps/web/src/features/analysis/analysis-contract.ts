@@ -1,3 +1,4 @@
+import { exactPhraseInput } from '@woordenaar/domain'
 import type { Json } from '@woordenaar/supabase-contracts'
 import {
   parseAnalysisCefrEstimate,
@@ -216,7 +217,9 @@ export const normalizeDutchInput = (
     return { value: '', error: 'Enter a Dutch word or expression.' }
   }
 
-  const normalized = value.trim().replace(/\./g, '').replace(/\s+/g, ' ')
+  const normalized =
+    exactPhraseInput(value) ??
+    value.trim().replace(/\./g, '').replace(/\s+/g, ' ')
   if (!normalized) {
     return { value: '', error: 'Enter a Dutch word or expression.' }
   }

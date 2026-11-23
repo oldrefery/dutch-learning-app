@@ -1,5 +1,6 @@
 'use client'
 
+import { exactPhraseInput } from '@woordenaar/domain'
 import {
   readWordVariantChoices,
   type WordVariant,
@@ -88,7 +89,13 @@ export const analyzeWordWithAi = async (
     userId,
     word,
     mode,
-    await invokeWordAnalysis(userId, word, forceRefresh, mode)
+    await invokeWordAnalysis(
+      userId,
+      word,
+      forceRefresh,
+      mode,
+      exactPhraseInput(word) ? { resolveVariants: true } : undefined
+    )
   )
 
 export const analyzeWordVariant = async (

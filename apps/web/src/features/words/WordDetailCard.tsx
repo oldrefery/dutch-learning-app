@@ -1,3 +1,4 @@
+import { additionalPreposition } from '@woordenaar/domain'
 import { CefrBadge } from '@/features/dictionary/CefrBadge'
 import Image from 'next/image'
 import {
@@ -243,13 +244,14 @@ export function WordDetailCard({
 }) {
   const Heading = headingLevel
   const article = getHeadwordArticle(word.dutchLemma, word.article)
+  const preposition = additionalPreposition(word.dutchLemma, word.preposition)
   const grammarBadges = [
     word.partOfSpeech,
     word.isReflexive ? 'Reflexive' : null,
     word.isSeparable && word.prefixPart && word.rootVerb
       ? `Separable · ${word.prefixPart} + ${word.rootVerb}`
       : null,
-    word.preposition ? `Fixed prep · ${word.preposition}` : null,
+    preposition ? `Fixed prep · ${preposition}` : null,
     word.register ? `${word.register} register` : null,
     word.isIrregular ? 'Irregular' : null,
     word.isExpression ? (word.expressionType ?? 'Expression') : null,
@@ -264,8 +266,8 @@ export function WordDetailCard({
             <Heading className={styles.lemma}>
               {article && <span className={styles.article}>{article} </span>}
               {word.dutchLemma}
-              {word.preposition && (
-                <span className={styles.preposition}> {word.preposition}</span>
+              {preposition && (
+                <span className={styles.preposition}> {preposition}</span>
               )}
             </Heading>
             {word.ttsUrl && (

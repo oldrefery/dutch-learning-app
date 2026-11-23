@@ -1,4 +1,7 @@
-import { wordVariantInputLabel } from '@woordenaar/domain'
+import { OwnedPhraseCard } from '@/components/AddWordScreen/components/OwnedPhraseCard'
+import { findOwnedPhrase, type OwnedPhrase } from '@/services/ownedPhrase'
+import { ImportCollectionSelector } from '@/components/ImportCollectionSelector'
+import { exactPhraseInput, wordVariantInputLabel } from '@woordenaar/domain'
 import { useEffect, useRef, useState } from 'react'
 import { TextInput, TouchableOpacity } from 'react-native'
 import type {
@@ -34,6 +37,8 @@ export function PublishedMeaningAddWord({
   const colors = Colors[useNormalizedColorScheme()]
   const [input, setInput] = useState(initialWord)
   const [document, setDocument] = useState<DictionaryCollectionExportV2>()
+  const [owned, setOwned] = useState<OwnedPhrase | null>(null)
+  const [target, setTarget] = useState(collections[0]?.collection_id)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [previewEpoch, setPreviewEpoch] = useState(0)
@@ -52,6 +57,7 @@ export function PublishedMeaningAddWord({
     setBusy(false)
     setInput(value)
     setDocument(undefined)
+    setOwned(null)
     setError(null)
   }
   const lookup = async () => {
@@ -65,8 +71,18 @@ export function PublishedMeaningAddWord({
     }
     setBusy(true)
     setDocument(undefined)
+    setOwned(null)
     setError(null)
     try {
+      const phrase = exactPhraseInput(input)
+      if (phrase) {
+        const match = await findOwnedPhrase(ownerId, phrase)
+        assert()
+        if (match) {
+          setOwned(match)
+          return
+        }
+      }
       const result = await lookupPublishedMeanings(ownerId, input, assert)
       assert()
       setDocument(result)
@@ -112,6 +128,22 @@ export function PublishedMeaningAddWord({
             {busy ? 'Finding meanings…' : 'Find published meanings'}
           </TextThemed>
         </TouchableOpacity>
+        {owned && (
+          <>
+            <ImportCollectionSelector
+              collections={collections}
+              targetCollectionId={target ?? null}
+              onSelectCollection={setTarget}
+            />
+            <OwnedPhraseCard
+              key={owned.word_id}
+              word={owned}
+              collections={collections}
+              targetId={target}
+              ownerId={ownerId}
+            />
+          </>
+        )}
         {error && <TextThemed accessibilityRole="alert">{error}</TextThemed>}
         {document?.entries.length === 0 && (
           <TextThemed>

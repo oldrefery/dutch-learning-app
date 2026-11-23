@@ -1,5 +1,7 @@
+import { additionalPreposition } from '../../../packages/domain/src/dutch-headword.ts'
 import { assertEquals } from '@std/assert'
 import {
+  exactPhraseInput,
   matchesWordVariant,
   parseWordVariantInput,
   readWordVariantChoices,
@@ -82,3 +84,16 @@ Deno.test('choices distinguish articles and reject unrelated analyses', () => {
     true
   )
 })
+
+Deno.test(
+  'whole phrases and headword prepositions respect word boundaries',
+  () => {
+    assertEquals(exactPhraseInput('  Ik   heb er zin in '), 'Ik heb er zin in')
+    assertEquals(exactPhraseInput('de eieren'), null)
+    assertEquals(exactPhraseInput('overleden adj'), null)
+    assertEquals(additionalPreposition('zin hebben in', 'in'), null)
+    assertEquals(additionalPreposition('Ik heb er zin in!', 'in'), null)
+    assertEquals(additionalPreposition('wachten', 'op'), 'op')
+    assertEquals(additionalPreposition('zin', 'in'), 'in')
+  }
+)

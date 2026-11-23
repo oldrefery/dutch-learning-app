@@ -1,5 +1,9 @@
+import {
+  additionalPreposition,
+  getHeadwordArticle,
+  phraseAudioUrl,
+} from '@woordenaar/domain'
 import React from 'react'
-import { getHeadwordArticle } from '@woordenaar/domain'
 import { TextThemed, ViewThemed } from '@/components/Themed'
 import { CopyButton } from '@/components/CopyButton'
 import { GlassIconButton } from '@/components/glass/buttons/GlassIconButton'
@@ -49,9 +53,10 @@ export function HeaderSection({
 }: WordSectionProps) {
   const getTTSUrl = (): string | null => {
     if ('tts_url' in word && word.tts_url) return word.tts_url
-    return null
+    return phraseAudioUrl(word.dutch_lemma)
   }
 
+  const preposition = additionalPreposition(word.dutch_lemma, word.preposition)
   const article = getHeadwordArticle(word.dutch_lemma, word.article)
   const ttsUrl = getTTSUrl()
   const canPlayAudio =
@@ -186,10 +191,10 @@ export function HeaderSection({
             </ViewThemed>
           )}
 
-          {'preposition' in word && word.preposition && (
+          {preposition && (
             <ViewThemed style={styles.grammarTag}>
               <TextThemed style={styles.grammarTagText} selectable>
-                + {word.preposition}
+                + {preposition}
               </TextThemed>
             </ViewThemed>
           )}

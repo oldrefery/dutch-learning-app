@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
+  exactPhraseInput,
   matchesWordVariant,
   parseWordVariantInput,
   readWordVariant,
@@ -20,7 +21,12 @@ import { Button } from '@/components/ui/Button'
 import { WordDetailCard } from '@/features/words/WordDetailCard'
 import type { CollectionOption } from '@/features/words/repository'
 import { useWebSettings } from '@/features/settings/useWebSettings'
-import { findOwnedSemanticDuplicate, saveAnalyzedWord } from './actions'
+import { OwnedPhraseCard } from './OwnedPhraseCard'
+import {
+  findOwnedPhrase,
+  findOwnedSemanticDuplicate,
+  saveAnalyzedWord,
+} from './actions'
 import {
   analyzeWordVariant,
   findWordImages,
@@ -272,6 +278,29 @@ function AnalyzeWordWorkflow({
     setDuplicate(null)
 
     try {
+      const phrase = exactPhraseInput(inputWord)
+      if (phrase && !forceRefresh && !selected) {
+        const owned = await findOwnedPhrase(userId, phrase)
+        if (owned) {
+          setDuplicate(owned)
+          setChoices([])
+          return
+        }
+        if (followingEnabled) {
+          const document = await lookupPublishedMeanings(
+            userId,
+            phrase,
+            true,
+            () => {},
+            true
+          )
+          if (document.entries.length) {
+            setPublished(document)
+            setChoices([])
+            return
+          }
+        }
+      }
       const lookup = (word: string) =>
         lookupPublishedMeanings(userId, word, true, () => {}, true)
       if (
@@ -478,6 +507,14 @@ function AnalyzeWordWorkflow({
         </section>
       )}
 
+      {duplicate && !analysis && (
+        <OwnedPhraseCard
+          key={duplicate.wordId}
+          phrase={inputWord}
+          word={duplicate}
+          targetId={selectedCollectionId}
+        />
+      )}
       {published && (
         <PublishedWordReview
           key={published.entries

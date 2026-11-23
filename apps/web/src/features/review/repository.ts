@@ -1,3 +1,4 @@
+import { phraseAudioUrl } from '@woordenaar/domain'
 import 'server-only'
 
 import {
@@ -83,7 +84,7 @@ const mapWord = (row: WordRow): ReviewWord => ({
   partOfSpeech: row.part_of_speech,
   repetitionCount: row.repetition_count,
   translations: row.translations,
-  ttsUrl: row.tts_url || null,
+  ttsUrl: row.tts_url || phraseAudioUrl(row.dutch_lemma),
 })
 
 const mapEvent = (row: ReviewEventRow): ReviewEventEvidence | null => {
@@ -161,7 +162,7 @@ const mapSnapshotWord = (
     partOfSpeech: content.part_of_speech,
     repetitionCount: value.repetition_count,
     translations: content.translations as ReviewWord['translations'],
-    ttsUrl: content.tts_url || null,
+    ttsUrl: content.tts_url || phraseAudioUrl(content.dutch_lemma),
   }
 }
 

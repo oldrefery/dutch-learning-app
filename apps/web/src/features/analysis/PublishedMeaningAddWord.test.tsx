@@ -3,7 +3,7 @@ import { PublishedMeaningAddWord } from './PublishedMeaningAddWord'
 import { AddWordWorkflow } from './AddWordWorkflow'
 import GlobalAddWordPage from '@/app/app/add/page'
 import { analyzeWordVariant } from './analysis-client'
-import { saveWordToCollection } from './actions'
+import { findOwnedPhrase, saveWordToCollection } from './actions'
 import AddWordPage from '@/app/app/collections/[collectionId]/words/new/page'
 import { DictionaryFollowingTransferPanel } from '@/features/sharing/DictionaryFollowingTransferPanel'
 import { lookupPublishedMeanings } from './dictionary-meaning-lookup'
@@ -30,7 +30,9 @@ jest.mock('./dictionary-meaning-lookup', () => ({
 }))
 jest.mock('@/features/words/AudioButton', () => ({ AudioButton: () => null }))
 jest.mock('next/navigation', () => ({ useRouter: () => ({ push: jest.fn() }) }))
+jest.mock('@/features/words/actions', () => ({ moveWord: jest.fn() }))
 jest.mock('./actions', () => ({
+  findOwnedPhrase: jest.fn(),
   saveWordToCollection: jest.fn(),
   findOwnedSemanticDuplicate: jest.fn(),
   saveAnalyzedWord: jest.fn(),
@@ -333,4 +335,66 @@ it('lets full-access users choose a verb or adjective before opening a full anal
   expect(
     screen.getByRole('button', { name: /overleden · adjective · deceased/ })
   ).toBeEnabled()
+})
+
+it('offers to move the existing exact phrase before looking up published meanings or calling AI', async () => {
+  jest.mocked(findOwnedPhrase).mockResolvedValueOnce({
+    wordId: 'phrase-id',
+    collectionId: TRANSFER_OWNER,
+    collectionName: 'Lesson 1',
+  })
+  render(
+    <AddWordWorkflow
+      userId={TRANSFER_OWNER}
+      collections={collections}
+      initialCollectionId={TRANSFER_OTHER}
+      canAnalyze
+      followingEnabled
+    />
+  )
+  fireEvent.change(screen.getByLabelText(INPUT), {
+    target: { value: 'Ik  heb er zin in' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Analyze' }))
+  expect(
+    await screen.findByRole('button', { name: 'Move to selected collection' })
+  ).toBeInTheDocument()
+  expect(screen.getByRole('link', { name: 'Open card' })).toHaveAttribute(
+    'href',
+    `/app/collections/${TRANSFER_OWNER}/words/phrase-id`
+  )
+  expect(findOwnedPhrase).toHaveBeenCalledWith(
+    TRANSFER_OWNER,
+    'Ik heb er zin in'
+  )
+  expect(lookupPublishedMeanings).not.toHaveBeenCalled()
+  expect(analyzeWordVariant).not.toHaveBeenCalled()
+})
+it('opens an exact published phrase without resolving an infinitive first', async () => {
+  jest.mocked(findOwnedPhrase).mockResolvedValueOnce(null)
+  jest
+    .mocked(lookupPublishedMeanings)
+    .mockResolvedValueOnce({ ...document, entries: [document.entries[0]] })
+  render(
+    <AddWordWorkflow
+      userId={TRANSFER_OWNER}
+      collections={collections}
+      initialCollectionId={TRANSFER_OTHER}
+      canAnalyze
+      followingEnabled
+    />
+  )
+  fireEvent.change(screen.getByLabelText(INPUT), {
+    target: { value: 'Ik heb er zin in' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Analyze' }))
+  expect(await screen.findByText('Published meaning')).toBeInTheDocument()
+  expect(lookupPublishedMeanings).toHaveBeenCalledWith(
+    TRANSFER_OWNER,
+    'Ik heb er zin in',
+    true,
+    expect.any(Function),
+    true
+  )
+  expect(analyzeWordVariant).not.toHaveBeenCalled()
 })
