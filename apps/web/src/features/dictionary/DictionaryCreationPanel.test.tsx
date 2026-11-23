@@ -21,6 +21,8 @@ import { DictionaryCreationPanel } from './DictionaryCreationPanel'
 import { PublishedMeaningAddWord } from '@/features/analysis/PublishedMeaningAddWord'
 import { lookupPublishedMeanings } from '@/features/analysis/dictionary-meaning-lookup'
 
+jest.mock('@/features/words/actions', () => ({ moveWord: jest.fn() }))
+jest.mock('@/features/analysis/actions', () => ({ findOwnedPhrase: jest.fn() }))
 jest.mock('@/features/analysis/dictionary-meaning-lookup', () => ({
   lookupPublishedMeanings: jest.fn(),
 }))
