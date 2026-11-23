@@ -653,6 +653,11 @@ Deno.test(
       })
       assertEquals(hit.data.dutch_lemma, 'overlijden')
       assertEquals(hit.meta.cache_hit, true)
+      assertEquals(
+        calls.filter(x => x.path.endsWith('/consume_edge_function_quota'))
+          .length,
+        0
+      )
 
       await request(false, 500, 'overleden adj', { resolveVariants: true })
       assertEquals(
