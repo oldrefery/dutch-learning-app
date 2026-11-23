@@ -4,7 +4,11 @@ import {
   readWordVariant,
   type WordVariant,
 } from '../../../packages/domain/src/word-variant.ts'
-import { discoverWordVariants, wordVariantInstruction } from './wordVariants.ts'
+import {
+  discoverWordVariants,
+  isPluralOfAnalyzedNoun,
+  wordVariantInstruction,
+} from './wordVariants.ts'
 import { assertRussianScript } from '../_shared/russianText.ts'
 // Edge Function for secure Gemini AI integration
 import { CORS_HEADERS } from './constants.ts'
@@ -151,6 +155,13 @@ Deno.serve(async (req: Request) => {
         ? `${parsedInput.article} ${word}`
         : word
     const normalizedLemma = normalizeWord(parsedInput.dutch_lemma)
+    const deNounForm =
+      resolveVariants &&
+      requested.article === 'de' &&
+      requested.partOfSpeech === 'noun' &&
+      (!selected || selected.lemma === normalizedLemma)
+        ? normalizedLemma
+        : undefined
     const findChoices =
       resolveVariants &&
       !selected &&
@@ -159,18 +170,20 @@ Deno.serve(async (req: Request) => {
       !normalizedLemma.includes(' ')
     const findVariantCache = async (target: Partial<WordVariant>) => {
       const match = (entries: Awaited<ReturnType<typeof getCachedVariants>>) =>
-        entries.find(entry =>
-          matchesWordVariant(
-            {
-              lemma: entry.dutch_lemma,
-              partOfSpeech: entry.part_of_speech,
-              article:
-                entry.article === 'de' || entry.article === 'het'
-                  ? entry.article
-                  : undefined,
-            },
-            target
-          )
+        entries.find(
+          entry =>
+            (!deNounForm || !isPluralOfAnalyzedNoun(deNounForm, entry)) &&
+            matchesWordVariant(
+              {
+                lemma: entry.dutch_lemma,
+                partOfSpeech: entry.part_of_speech,
+                article:
+                  entry.article === 'de' || entry.article === 'het'
+                    ? entry.article
+                    : undefined,
+              },
+              target
+            )
         )
       const exact = match(
         await getCachedVariants(target.lemma ?? normalizedLemma, true)
@@ -335,17 +348,25 @@ Deno.serve(async (req: Request) => {
 
     const prompt =
       formatWordAnalysisPrompt(word) +
-      wordVariantInstruction({
-        lemma: requested.lemma,
-        article: requested.article,
-        partOfSpeech: requested.partOfSpeech,
-      }) +
+      wordVariantInstruction(
+        {
+          lemma: requested.lemma,
+          article: requested.article,
+          partOfSpeech: requested.partOfSpeech,
+        },
+        deNounForm
+      ) +
       (cefrEnabled ? ANALYSIS_CEFR_PROMPT : '')
     meta.source = 'gemini'
     const geminiResponse = await callGeminiAPI(prompt, cefrEnabled)
     if (typeof geminiResponse?.modelVersion === 'string')
       meta.model = geminiResponse.modelVersion
     const analysis = parseGeminiResponse(geminiResponse)
+    if (deNounForm && isPluralOfAnalyzedNoun(deNounForm, analysis)) {
+      analysis.dutch_lemma = deNounForm
+      analysis.article = 'de'
+      analysis.plural = null
+    }
     if (
       resolveVariants &&
       (typeof analysis.dutch_lemma !== 'string' ||
