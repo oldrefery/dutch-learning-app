@@ -1,3 +1,7 @@
+## 2026-11-24 — Mobile shared card on store build 95
+
+Active branch: `feature/mobile-shared-card-build`. Base main `689aef5`. The profile fix is committed at `1d476ae`. Resume this branch for the current incident. The local working checkout under the project directory is `.worktrees/active`. See the [current stage and remaining checks](steps/mobile-shared-card-95.md). Public distribution and physical acceptance of the fix are pending. GPT-6.2 Sol / High.
+
 **2026-10-25 — Android inventory correction; source repair unchanged.**
 
 The test Huawei is connected. Earlier absence claims in this session's summaries

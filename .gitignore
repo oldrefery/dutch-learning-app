@@ -87,3 +87,6 @@ debug-*.png
 
 # Local browser verification artifacts
 /.playwright-cli/
+
+# Local working checkouts
+/.worktrees/
