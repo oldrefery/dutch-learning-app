@@ -1,3 +1,5 @@
+import easConfig from '../../../eas.json'
+import { isDictionarySharedAnalysisEnabled } from '@/constants/dictionaryContent'
 import { parseDictionaryReadContent } from '@woordenaar/domain'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -30,6 +32,7 @@ jest.mock('../initDB')
 const flags = [
   'EXPO_PUBLIC_DICTIONARY_CONTENT_ENABLED',
   'EXPO_PUBLIC_DICTIONARY_FOLLOWING_ENABLED',
+  'EXPO_PUBLIC_DICTIONARY_SHARED_ANALYSIS_ENABLED',
 ] as const
 const savedFlags = flags.map(key => process.env[key])
 const ids = [WORD_A, WORD_A2]
@@ -112,6 +115,23 @@ describe('bounded dictionary display projection on real SQLite', () => {
     ])
     return actual
   }
+  it('opens a sparse following card and enables shared reanalysis in a store build', async () => {
+    await hydrate('follow')
+    const profile: Record<string, string> = easConfig.build['store-release'].env
+    for (const flag of flags) {
+      if (profile[flag] === undefined) delete process.env[flag]
+      else process.env[flag] = profile[flag]
+    }
+    const personal = { ...input()[0], translations: { en: [], ru: [] } }
+    const [card] = await getDictionaryWordProjections(OWNER_A, [personal])
+    expect(card).toMatchObject({
+      word_id: personal.word_id,
+      interval_days: personal.interval_days,
+      dictionary_content_state: { mode: 'follow' },
+      translations: { en: ['house'], ru: ['дом'] },
+    })
+    expect(isDictionarySharedAnalysisEnabled()).toBe(true)
+  })
   it('queues a new personal card while preserving existing following content and learning', async () => {
     await hydrate('follow')
     const before = await getDictionaryWordProjections(OWNER_A, input())
