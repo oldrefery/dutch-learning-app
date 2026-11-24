@@ -7434,3 +7434,5 @@ Same22approvedpaths; correction commit/push and actual final-head CI remain next
 PR125head a1cf002/3commits currently, Lightweightgreen/Qualityrunning; superseded
 checks cannot qualify a laterhead. No merge/apply/flags/provider/store/device/8.5.
 Primaryaccounts untouched, QAoff/USD0.56held;3fixedsteps+6later remain; Astra/High.
+
+2026-11-24 — Store build 95 shared-card display regression reproduced and fixed locally at `1d476ae`. Continue on `feature/mobile-shared-card-build`. Locked-dependency CI and physical device acceptance remain pending.

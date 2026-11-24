@@ -1631,3 +1631,20 @@ The source delta is not published or committed; prior packet remains historical.
 startup pass. Actual versions remain2.4.0(85); new store allocation and final artifacts
 are pending. D13A.8 stays3/6 complete with3 fixed steps remaining and7 broad milestones
 including current. No new paid/build/release authority; D13A.9 observation has not begun.
+
+## November 20 follow-up — Move words when deleting a collection
+
+Status: planned for web and mobile.
+
+- When deleting a non-empty collection, show its word count and offer to move
+  all words to another collection before deleting the original. Let the user
+  select an eligible destination they own, cancel, or explicitly delete the
+  collection with its words. Keep the existing confirmation for an empty
+  collection. Explain when there is no eligible destination.
+- Preserve each moved card's ID, translations, dictionary linkage, and review
+  progress. Delete the source only after all words have moved. If the move
+  fails or a destination conflict would discard a card, leave the source and
+  its words intact and explain what happened.
+- Check the same flow on web and mobile, including the no-destination case,
+  cancellation, a conflicting destination, and recovery after a failed move.
+  Verify that mobile sync preserves the move across retries and reconnects.

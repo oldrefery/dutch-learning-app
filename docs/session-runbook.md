@@ -17,6 +17,15 @@ for the distinction between project instructions and registered skills.
 Only follow this workflow when the user asks to resume, inspect, or pause it.
 Do not infer permission to resume from unrelated work in the same checkout.
 
+## One active feature branch
+
+Use one working checkout and one feature branch for the current task. Record the
+branch and checkout in the active handoff. Resume that same branch for fixes,
+tests and follow-ups until its PR is merged or the owner changes the task.
+Commit completed checkpoints there. Keep private QA material outside Git.
+After merge, synchronize with main before creating the next feature branch.
+Treat historical checkouts as archives. Inspect unique changes before retiring one.
+
 ## Durable sources of truth
 
 | File                         | Responsibility                                                                                          |
@@ -84,6 +93,26 @@ span multiple sessions; do not force it into one context window.
 - If the last session crashed, reconcile the recorded intent against git diff,
   files, logs and external job status. Mark uncertain work `unverified`; do not
   mark it done or delete it simply because its tool session no longer exists.
+
+## Physical iOS diagnostics and restart provenance
+
+- For routine version, queue, adoption or preservation inspection, read the existing
+  application state. If foreground activation is needed, launch without
+  `--terminate-existing`. Do not force-stop a production iOS process merely to
+  refresh an inspection.
+- A cold restart is a separate test action, not an ordinary read. When it is
+  necessary within the authorized scope, record the device, action, UTC start/end
+  and successful command result in the evidence ledger. Do not repeat it simply
+  because a diagnostic event appeared.
+- Sentry Cocoa watchdog events may be synthesized on the next launch from prior
+  process state. For SDK 9.26.1, the event timestamp is the last retained breadcrumb,
+  not the OS termination time. Compare event receipt time, exact previous OTA,
+  controlled restart receipts and available OS crash/Jetsam reports before
+  attributing an event to memory pressure, a hang or a release regression.
+- An externally forced foreground stop can contaminate watchdog observations.
+  Record such correlation explicitly; it is not proof that every correlated
+  incident was harmless. Do not disable watchdog collection, suppress all events,
+  mark an issue resolved, or claim zero crashes from this correlation alone.
 
 ## Completion, interruption, and permissions
 
