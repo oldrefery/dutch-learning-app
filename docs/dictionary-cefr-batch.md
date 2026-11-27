@@ -1,0 +1,15 @@
+# Background CEFR estimates
+
+Gemini 3.6 Flash Batch estimates the level of a published Dutch dictionary meaning from its lemma, original wording, grammatical category, translations and examples. The worker sends compact batches of up to 25 meanings and reserves at most eight batches per rolling day, including retries. It prioritizes recently published meanings. Model responses below 0.75 confidence stay unknown. Its predictive accuracy requires a live sample.
+
+A result becomes an `estimated` shared dictionary assessment for the current CEFR input digest. Existing dictionary delivery propagates the assessment to linked web and mobile cards. Private copies and cards with meaning overrides require a valid link with the same sense before they can inherit it. The analysis cache can continue holding analysis results independently. The batch selects published revisions eligible under the existing CEFR provenance checks. Other revisions, including content with machine-only source validation, stay outside the initial rollout.
+
+## Deployment
+
+1. Apply `20261126180000_add_dictionary_cefr_batch.sql` and deploy the `dictionary-cefr-batch` Edge Function with `--no-verify-jwt`. The function authenticates a dedicated `x-cefr-batch-secret` header and uses the existing `GEMINI_API_KEY` and Supabase service role internally.
+2. Store a random `CEFR_BATCH_WORKER_SECRET` in the Edge Function environment. Store the same value in Vault as `cefr_batch_worker_secret` and store the linked project URL as `cefr_batch_project_url`.
+3. Register an approved provider source with provenance locator `gemini-batch:cefr-estimate-v1` for the paid Gemini project and this estimate method. Record the owner's approval of provider/data use, the method version and the method configuration digest. This source approval enables publication as a model estimate. The separate qualified classifier remains governed by its existing calibration requirements.
+4. Choose up to 25 eligible entries with independently assessed reference levels. Run `scripts/shared-dictionary/enable-cefr-batch.sql` with `cefr_source_id` set to the approved source and `cefr_pilot_entry_ids` set to the PostgreSQL UUID array of the chosen entries. The script admits one batch. A retry of the script leaves that allowance consumed if the worker has already reserved it.
+5. Compare the completed batch with the reference levels and verify the estimated badge on linked web and mobile cards. To open rolling admission after the pilot, set `remaining_batches` and `pilot_entry_ids` in `private.dictionary_cefr_batch_settings` to `NULL`.
+
+The scheduler wakes every 15 minutes. The database limits paid submissions to at most one per hour, with one active batch at a time. If the receipt is lost, the worker looks for the original display name before proceeding. An unresolved receipt stays pending for operator reconciliation by batch ID. To pause the scheduler, set `private.dictionary_cefr_batch_settings.enabled` to false. Completed results remain available. A recorded in-flight batch can resume after re-enabling the same source.

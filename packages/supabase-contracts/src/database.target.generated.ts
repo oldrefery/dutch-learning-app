@@ -1,4 +1,4 @@
-// Generated from local migrations through 20261123120000_cache_word_variant_choices.sql.
+// Generated from local migrations through 20261126180000_add_dictionary_cefr_batch.sql.
 // Supabase Postgres Meta 0.99.0; source and options: target-schema.json.
 export type Json =
   | string
@@ -1374,6 +1374,10 @@ export type Database = {
         }
         Returns: Json
       }
+      finish_dictionary_cefr_batch_v1: {
+        Args: { p_batch: string; p_results: Json }
+        Returns: undefined
+      }
       finish_dictionary_cefr_run_v1: {
         Args: { p_run_id: string }
         Returns: Json
@@ -1749,6 +1753,7 @@ export type Database = {
         }
         Returns: Json
       }
+      next_dictionary_cefr_batch_v1: { Args: never; Returns: Json }
       persist_canonical_dictionary_analysis_v1: {
         Args: {
           p_cache_id?: string
@@ -1868,6 +1873,10 @@ export type Database = {
           p_validation: Json
         }
         Returns: Json
+      }
+      record_dictionary_cefr_batch_v1: {
+        Args: { p_batch: string; p_provider_name: string }
+        Returns: undefined
       }
       record_dictionary_creation_failure_v1: {
         Args: {
