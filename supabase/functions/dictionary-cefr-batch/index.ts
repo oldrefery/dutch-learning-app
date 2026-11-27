@@ -8,7 +8,7 @@ const sameSecret = (expected: string, given: string): boolean => {
   return left.length === right.length && timingSafeEqual(left, right)
 }
 
-Deno.serve(async (request) => {
+Deno.serve(async request => {
   if (request.method !== 'POST') return new Response(null, { status: 405 })
   const secret = Deno.env.get('CEFR_BATCH_WORKER_SECRET')
   if (
@@ -26,7 +26,7 @@ Deno.serve(async (request) => {
 
   const rpc = async (
     name: string,
-    parameters: Record<string, unknown> = {},
+    parameters: Record<string, unknown> = {}
   ) => {
     const response = await fetch(`${url}/rest/v1/rpc/${name}`, {
       method: 'POST',
@@ -61,7 +61,7 @@ Deno.serve(async (request) => {
   } catch (error) {
     console.error(
       'CEFR batch worker failed',
-      error instanceof Error ? error.message : 'Unexpected error',
+      error instanceof Error ? error.message : 'Unexpected error'
     )
     return Response.json({ status: 'failed' }, { status: 502 })
   }

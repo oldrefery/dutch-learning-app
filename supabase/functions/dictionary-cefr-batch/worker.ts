@@ -20,11 +20,11 @@ type Task =
   | { action: 'disabled' | 'idle' }
   | { action: 'submit'; batch_id: string; requests: RequestItem[] }
   | {
-    action: 'poll'
-    batch_id: string
-    provider_name: string
-    entry_ids: string[]
-  }
+      action: 'poll'
+      batch_id: string
+      provider_name: string
+      entry_ids: string[]
+    }
   | { action: 'awaiting_receipt'; batch_id: string }
 type Results = Record<string, Estimate>
 
@@ -36,7 +36,7 @@ export interface BatchStore {
 
 const record = (value: unknown): Record<string, unknown> | undefined =>
   value !== null && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : undefined
 
 const providerName = (value: unknown): string => {
@@ -57,9 +57,11 @@ const readEstimate = (item: Record<string, unknown>): Estimate => {
   if (candidate?.finishReason !== 'STOP' || !Array.isArray(parts)) {
     return { outcome: 'failed' }
   }
-  const text = parts.map(record).filter((part) => part?.thought !== true).map(
-    (part) => part?.text,
-  ).join('')
+  const text = parts
+    .map(record)
+    .filter(part => part?.thought !== true)
+    .map(part => part?.text)
+    .join('')
   let estimate: Record<string, unknown> | undefined
   try {
     estimate = record(JSON.parse(text))
@@ -69,11 +71,14 @@ const readEstimate = (item: Record<string, unknown>): Estimate => {
   if (estimate?.level === null && estimate.confidence === null) {
     return { outcome: 'unknown' }
   }
-  const level = CEFR_LEVELS.find((level) => level === estimate?.level)
+  const level = CEFR_LEVELS.find(level => level === estimate?.level)
   const confidence = estimate?.confidence
   if (
-    !level || typeof confidence !== 'number' || !Number.isFinite(confidence) ||
-    confidence < 0 || confidence > 1
+    !level ||
+    typeof confidence !== 'number' ||
+    !Number.isFinite(confidence) ||
+    confidence < 0 ||
+    confidence > 1
   ) {
     return { outcome: 'failed' }
   }
@@ -83,15 +88,14 @@ const readEstimate = (item: Record<string, unknown>): Estimate => {
 }
 
 const failed = (entryIds: string[]): Results =>
-  Object.fromEntries(
-    entryIds.map((entryId) => [entryId, { outcome: 'failed' }]),
-  )
+  Object.fromEntries(entryIds.map(entryId => [entryId, { outcome: 'failed' }]))
 
 const readResults = (
   body: Record<string, unknown>,
-  entryIds: string[],
+  entryIds: string[]
 ): Results => {
-  const responses = record(body.dest)?.inlinedResponses ??
+  const responses =
+    record(body.dest)?.inlinedResponses ??
     record(body.response)?.inlinedResponses
   const items = Array.isArray(responses)
     ? responses
@@ -106,7 +110,10 @@ const readResults = (
     const key = record(item?.metadata)?.key
     if (item?.error && key === undefined) continue
     if (
-      !item || typeof key !== 'string' || !expected.has(key) || results.has(key)
+      !item ||
+      typeof key !== 'string' ||
+      !expected.has(key) ||
+      results.has(key)
     ) {
       throw new Error('Gemini batch result identity mismatch')
     }
@@ -145,7 +152,7 @@ const makeRequest = ({ entry_id, meaning }: RequestItem) => ({
 export async function runBatch(
   store: BatchStore,
   apiKey: string,
-  request = fetch,
+  request = fetch
 ): Promise<string> {
   const call = (path: string, body?: unknown) =>
     request(`${baseUrl}/${path}`, {
@@ -167,10 +174,13 @@ export async function runBatch(
       const operations = body?.operations ?? body?.batches
       if (!Array.isArray(operations)) return 'awaiting_receipt'
       const displayName = `woordenaar-cefr-${task.batch_id}`
-      const matches = operations.map(record).filter((operation) =>
-        (operation?.displayName ?? record(operation?.metadata)?.displayName) ===
-          displayName
-      )
+      const matches = operations
+        .map(record)
+        .filter(
+          operation =>
+            (operation?.displayName ??
+              record(operation?.metadata)?.displayName) === displayName
+        )
       if (matches.length !== 1) return 'awaiting_receipt'
       await store.record(task.batch_id, providerName(matches[0]?.name))
       return 'receipt_recovered'
@@ -187,14 +197,14 @@ export async function runBatch(
       if ([400, 401, 403, 404, 429].includes(response.status)) {
         await store.finish(
           task.batch_id,
-          failed(task.requests.map((item) => item.entry_id)),
+          failed(task.requests.map(item => item.entry_id))
         )
         return 'submission_rejected'
       }
       if (!response.ok) throw new Error('Unconfirmed Gemini batch submission')
       await store.record(
         task.batch_id,
-        providerName(record(await response.json())?.name),
+        providerName(record(await response.json())?.name)
       )
       return 'submitted'
     }
@@ -215,8 +225,10 @@ export async function runBatch(
         return 'completed'
       }
       if (
-        state === 'JOB_STATE_FAILED' || state === 'JOB_STATE_CANCELLED' ||
-        state === 'JOB_STATE_EXPIRED' || body.error
+        state === 'JOB_STATE_FAILED' ||
+        state === 'JOB_STATE_CANCELLED' ||
+        state === 'JOB_STATE_EXPIRED' ||
+        body.error
       ) {
         await store.finish(task.batch_id, failed(task.entry_ids))
         return 'batch_failed'
